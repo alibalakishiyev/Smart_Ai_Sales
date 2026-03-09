@@ -106,7 +106,10 @@ public class SettingsActivity extends BaseActivity {
         new MaterialAlertDialogBuilder(this)
                 .setTitle("Haqqında")
                 .setMessage("Smart AI Sales v1.0.0\n\n" +
+                        "Ali Balakishiyev\n\n" +
+                        "Linkedin:linkedin.com/in/ali-balakishiyev\n\n" +
                         "AI ilə satış analitikası proqramı\n\n" +
+                        "Allah Ruzinizi Bol elesin\n\n" +
                         "© 2026 Bütün hüquqlar qorunur.")
                 .setPositiveButton("OK", null)
                 .show();

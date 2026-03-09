@@ -40,7 +40,6 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-
             <!-- Header Section with Animation -->
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -163,7 +162,7 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Main Menu Grid -->
+            <!-- Main Menu Grid - 3 sütun -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -177,7 +176,7 @@
             <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:columnCount="2"
+                android:columnCount="3"
                 android:rowCount="2"
                 android:alignmentMode="alignMargins"
                 android:columnOrderPreserved="false"
@@ -189,7 +188,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
-                    android:layout_marginRight="8dp"
+                    android:layout_marginRight="4dp"
                     android:layout_marginBottom="8dp"
                     app:cardBackgroundColor="@color/purple_500"
                     app:cardCornerRadius="20dp"
@@ -203,12 +202,12 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:gravity="center"
-                        android:padding="20dp">
+                        android:padding="12dp">
 
                         <ImageView
                             android:id="@+id/imgDashboard"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
                             android:src="@drawable/ic_dashboard"
                             android:tint="@color/white"/>
 
@@ -217,26 +216,25 @@
                             android:layout_height="wrap_content"
                             android:text="Dashboard"
                             android:textColor="@color/white"
-                            android:textSize="16sp"
+                            android:textSize="14sp"
                             android:textStyle="bold"
-                            android:layout_marginTop="8dp"/>
+                            android:layout_marginTop="4dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Analitik baxış"
+                            android:text="Analitik"
                             android:textColor="@color/white_80"
-                            android:textSize="12sp"
-                            android:layout_marginTop="4dp"/>
+                            android:textSize="10sp"/>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnDashboard"
                             android:layout_width="match_parent"
-                            android:layout_height="36dp"
-                            android:layout_marginTop="12dp"
-                            android:text="Keçid et"
+                            android:layout_height="28dp"
+                            android:layout_marginTop="8dp"
+                            android:text="Keçid"
                             android:textAllCaps="false"
-                            android:textSize="12sp"
+                            android:textSize="10sp"
                             android:backgroundTint="@color/white"
                             android:textColor="@color/purple_500"
                             style="@style/Widget.MaterialComponents.Button"/>
@@ -249,7 +247,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"
                     android:layout_marginBottom="8dp"
                     app:cardBackgroundColor="@color/income_green"
                     app:cardCornerRadius="20dp"
@@ -263,40 +262,39 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:gravity="center"
-                        android:padding="20dp">
+                        android:padding="12dp">
 
                         <ImageView
                             android:id="@+id/imgAddData"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
                             android:src="@drawable/ic_add"
                             android:tint="@color/white"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Məlumat Əlavə Et"
+                            android:text="Əlavə Et"
                             android:textColor="@color/white"
-                            android:textSize="16sp"
+                            android:textSize="14sp"
                             android:textStyle="bold"
-                            android:layout_marginTop="8dp"/>
+                            android:layout_marginTop="4dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Yeni satış/xərc"
+                            android:text="Məlumat"
                             android:textColor="@color/white_80"
-                            android:textSize="12sp"
-                            android:layout_marginTop="4dp"/>
+                            android:textSize="10sp"/>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnAddData"
                             android:layout_width="match_parent"
-                            android:layout_height="36dp"
-                            android:layout_marginTop="12dp"
+                            android:layout_height="28dp"
+                            android:layout_marginTop="8dp"
                             android:text="Əlavə et"
                             android:textAllCaps="false"
-                            android:textSize="12sp"
+                            android:textSize="10sp"
                             android:backgroundTint="@color/white"
                             android:textColor="@color/income_green"
                             style="@style/Widget.MaterialComponents.Button"/>
@@ -309,8 +307,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginBottom="8dp"
                     app:cardBackgroundColor="@color/info"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="8dp"
@@ -323,42 +321,101 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:gravity="center"
-                        android:padding="20dp">
+                        android:padding="12dp">
 
                         <ImageView
                             android:id="@+id/imgReports"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
                             android:src="@drawable/ic_reports"
                             android:tint="@color/white"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Hesabatlar"
+                            android:text="Hesabat"
                             android:textColor="@color/white"
-                            android:textSize="16sp"
+                            android:textSize="14sp"
                             android:textStyle="bold"
-                            android:layout_marginTop="8dp"/>
+                            android:layout_marginTop="4dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Analiz və qrafiklər"
+                            android:text="Analiz"
                             android:textColor="@color/white_80"
-                            android:textSize="12sp"
-                            android:layout_marginTop="4dp"/>
+                            android:textSize="10sp"/>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnReports"
                             android:layout_width="match_parent"
-                            android:layout_height="36dp"
-                            android:layout_marginTop="12dp"
+                            android:layout_height="28dp"
+                            android:layout_marginTop="8dp"
                             android:text="Bax"
                             android:textAllCaps="false"
-                            android:textSize="12sp"
+                            android:textSize="10sp"
                             android:backgroundTint="@color/white"
                             android:textColor="@color/info"
+                            style="@style/Widget.MaterialComponents.Button"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- RECEIPT SCANNER CARD - YENİ -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardReceiptScanner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginBottom="8dp"
+                    app:cardBackgroundColor="@color/scanner_purple"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="8dp"
+                    android:foreground="?selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="12dp">
+
+                        <ImageView
+                            android:id="@+id/imgReceiptScanner"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_receipt_scanner"
+                            android:tint="@color/white"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Qəbz Oxu"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="AI skan"
+                            android:textColor="@color/white_80"
+                            android:textSize="10sp"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnReceiptScanner"
+                            android:layout_width="match_parent"
+                            android:layout_height="28dp"
+                            android:layout_marginTop="8dp"
+                            android:text="Skan et"
+                            android:textAllCaps="false"
+                            android:textSize="10sp"
+                            android:backgroundTint="@color/white"
+                            android:textColor="@color/scanner_purple"
                             style="@style/Widget.MaterialComponents.Button"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -369,8 +426,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
                     app:cardBackgroundColor="@color/warning"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="8dp"
@@ -383,45 +442,54 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:gravity="center"
-                        android:padding="20dp">
+                        android:padding="12dp">
 
                         <ImageView
                             android:id="@+id/imgSettings"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
                             android:src="@drawable/ic_settings"
                             android:tint="@color/white"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Parametrlər"
+                            android:text="Parametr"
                             android:textColor="@color/white"
-                            android:textSize="16sp"
+                            android:textSize="14sp"
                             android:textStyle="bold"
-                            android:layout_marginTop="8dp"/>
+                            android:layout_marginTop="4dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Tənzimləmələr"
+                            android:text="Tənzimləmə"
                             android:textColor="@color/white_80"
-                            android:textSize="12sp"
-                            android:layout_marginTop="4dp"/>
+                            android:textSize="10sp"/>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnSettings"
                             android:layout_width="match_parent"
-                            android:layout_height="36dp"
-                            android:layout_marginTop="12dp"
+                            android:layout_height="28dp"
+                            android:layout_marginTop="8dp"
                             android:text="Daxil ol"
                             android:textAllCaps="false"
-                            android:textSize="12sp"
+                            android:textSize="10sp"
                             android:backgroundTint="@color/white"
                             android:textColor="@color/warning"
                             style="@style/Widget.MaterialComponents.Button"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
+
+                <!-- Boş kart (3 sütun üçün balans) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="invisible"/>
             </GridLayout>
 
             <!-- Version -->

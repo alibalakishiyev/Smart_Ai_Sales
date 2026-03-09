@@ -21,7 +21,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/card_dark"
             app:titleTextColor="@color/text_primary"
-            app:title="Smart AI Sales"
+            app:title="Cibim.AI"
             app:navigationIcon="@drawable/ic_menu">
 
             <LinearLayout
@@ -37,13 +37,13 @@
                     android:layout_width="12dp"
                     android:layout_height="12dp"
                     android:layout_marginEnd="4dp"
-                    android:src="@drawable/ic_circle_red"/>
+                    android:src="@drawable/ic_circle_green"/>
 
                 <TextView
                     android:id="@+id/tvModelStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="AI Model"
+                    android:text="AI Aktiv"
                     android:textSize="12sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginEnd="16dp"/>
@@ -70,7 +70,7 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Hoşgeldin Kartı -->
+                <!-- Hoşgəldin Kartı -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -95,7 +95,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Xoş gəldin,"
+                                android:text="Salam,"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="14sp"/>
 
@@ -139,7 +139,7 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Balans Kartı (Gradient) -->
+                <!-- Ümumi Balans Kartı -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -158,19 +158,18 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Ümumi Balans"
+                            android:text="Cari Balans"
                             android:textColor="@color/white_80"
                             android:textSize="14sp"/>
 
                         <TextView
-                            android:id="@+id/tvTotalProfit"
+                            android:id="@+id/tvTotalBalance"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="₼0.00"
                             android:textColor="@color/white"
                             android:textSize="36sp"
                             android:textStyle="bold"
-                            android:fontFamily="sans-serif-black"
                             android:layout_marginTop="4dp"/>
 
                         <View
@@ -185,7 +184,7 @@
                             android:columnCount="2"
                             android:rowCount="2">
 
-                            <!-- Bugün Gəlir -->
+                            <!-- Aylıq Maaş -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -198,12 +197,12 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Bugün Gəlir"
+                                    android:text="Aylıq Maaş"
                                     android:textColor="@color/white_60"
                                     android:textSize="12sp"/>
 
                                 <TextView
-                                    android:id="@+id/tvTodayIncome"
+                                    android:id="@+id/tvMonthlySalary"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="₼0.00"
@@ -213,7 +212,7 @@
                                     android:layout_marginTop="2dp"/>
                             </LinearLayout>
 
-                            <!-- Bugün Xərc -->
+                            <!-- Aylıq Xərc -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -226,66 +225,12 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Bugün Xərc"
+                                    android:text="Aylıq Xərc"
                                     android:textColor="@color/white_60"
                                     android:textSize="12sp"/>
 
                                 <TextView
-                                    android:id="@+id/tvTodayExpense"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="₼0.00"
-                                    android:textColor="@color/white"
-                                    android:textSize="18sp"
-                                    android:textStyle="bold"
-                                    android:layout_marginTop="2dp"/>
-                            </LinearLayout>
-
-                            <!-- Müştəri Sayı -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_columnWeight="1"
-                                android:layout_rowWeight="1"
-                                android:orientation="vertical"
-                                android:layout_marginEnd="8dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Müştəri"
-                                    android:textColor="@color/white_60"
-                                    android:textSize="12sp"/>
-
-                                <TextView
-                                    android:id="@+id/tvTodayCustomers"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="0"
-                                    android:textColor="@color/white"
-                                    android:textSize="18sp"
-                                    android:textStyle="bold"
-                                    android:layout_marginTop="2dp"/>
-                            </LinearLayout>
-
-                            <!-- Net Gəlir -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_columnWeight="1"
-                                android:layout_rowWeight="1"
-                                android:orientation="vertical"
-                                android:layout_marginStart="8dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Net Gəlir"
-                                    android:textColor="@color/white_60"
-                                    android:textSize="12sp"/>
-
-                                <TextView
-                                    android:id="@+id/tvTodayNetProfit"
+                                    android:id="@+id/tvMonthlyExpense"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="₼0.00"
@@ -295,136 +240,333 @@
                                     android:layout_marginTop="2dp"/>
                             </LinearLayout>
                         </GridLayout>
-
-                        <!-- Orta Qiymət -->
-                        <TextView
-                            android:id="@+id/tvTodayAvg"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Orta: ₼0.00"
-                            android:textColor="@color/white_60"
-                            android:textSize="14sp"
-                            android:gravity="center"
-                            android:layout_marginTop="12dp"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Statistik Kartlar (Günlük, Həftəlik, Aylıq) -->
-                <LinearLayout
+                <!-- Günlük/Həftəlik/Aylıq Statistikalar -->
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="3"
+                    android:text="📊 Maliyyə Göstəriciləri"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="12dp"/>
+
+                <!-- Günlük -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/card_dark"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    android:layout_marginBottom="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📅 Bugün"
+                            android:textColor="@color/purple_500"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="12dp"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="3">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Gəlir"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp"/>
+
+                                <TextView
+                                    android:id="@+id/tvTodayIncome"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₼0.00"
+                                    android:textColor="@color/success"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Xərc"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp"/>
+
+                                <TextView
+                                    android:id="@+id/tvTodayExpense"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₼0.00"
+                                    android:textColor="@color/expense_red"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Net"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp"/>
+
+                                <TextView
+                                    android:id="@+id/tvTodayNet"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₼0.00"
+                                    android:textColor="@color/warning"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Həftəlik -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/card_dark"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    android:layout_marginBottom="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📆 Bu Həftə"
+                            android:textColor="@color/purple_500"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="12dp"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="3">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Gəlir"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp"/>
+
+                                <TextView
+                                    android:id="@+id/tvWeeklyIncome"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₼0.00"
+                                    android:textColor="@color/success"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Xərc"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp"/>
+
+                                <TextView
+                                    android:id="@+id/tvWeeklyExpense"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₼0.00"
+                                    android:textColor="@color/expense_red"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Net"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp"/>
+
+                                <TextView
+                                    android:id="@+id/tvWeeklyNet"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₼0.00"
+                                    android:textColor="@color/warning"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Aylıq -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/card_dark"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
                     android:layout_marginBottom="20dp">
 
-                    <!-- Günlük Net -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="@color/card_dark"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp"
-                        android:layout_marginEnd="6dp">
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📊 Bu Ay"
+                            android:textColor="@color/purple_500"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="12dp"/>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="16dp">
+                            android:orientation="horizontal"
+                            android:weightSum="3">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="Günlük Net"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="12sp"/>
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
 
-                            <TextView
-                                android:id="@+id/tvTodayProfit"
-                                android:layout_width="wrap_content"
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Gəlir"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp"/>
+
+                                <TextView
+                                    android:id="@+id/tvMonthlyIncome"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₼0.00"
+                                    android:textColor="@color/success"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="₼0.00"
-                                android:textColor="@color/success"
-                                android:textSize="20sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="4dp"/>
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Xərc"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp"/>
+
+                                <TextView
+                                    android:id="@+id/tvMonthlyExpense"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₼0.00"
+                                    android:textColor="@color/expense_red"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Net"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp"/>
+
+                                <TextView
+                                    android:id="@+id/tvMonthlyNet"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₼0.00"
+                                    android:textColor="@color/warning"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"/>
+                            </LinearLayout>
                         </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Həftəlik Net -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="@color/card_dark"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp"
-                        android:layout_marginHorizontal="3dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="16dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Həftəlik Net"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="12sp"/>
-
-                            <TextView
-                                android:id="@+id/tvWeeklyProfit"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₼0.00"
-                                android:textColor="@color/info"
-                                android:textSize="20sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="4dp"/>
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- Aylıq Net -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="@color/card_dark"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp"
-                        android:layout_marginStart="6dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="16dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Aylıq Net"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="12sp"/>
-
-                            <TextView
-                                android:id="@+id/tvMonthlyProfit"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₼0.00"
-                                android:textColor="@color/warning"
-                                android:textSize="20sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="4dp"/>
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-                </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
                 <!-- Chart Kartı -->
                 <androidx.cardview.widget.CardView
@@ -452,7 +594,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Gəlir vs Xərc"
+                                android:text="Gəlir vs Xərc Trendi"
                                 android:textColor="@color/text_primary"
                                 android:textSize="18sp"
                                 android:textStyle="bold"/>
@@ -475,14 +617,14 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Məhsul Analizi Kartı (YENİ) -->
+                <!-- Kateqoriya Analizi -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:cardBackgroundColor="@color/card_dark"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="8dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="20dp"
                     android:padding="16dp">
 
                     <LinearLayout
@@ -490,224 +632,370 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="16dp">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="📦 Məhsul Analizi"
-                                android:textColor="@color/purple_500"
-                                android:textSize="18sp"
-                                android:textStyle="bold"/>
-
-                            <TextView
-                                android:id="@+id/tvTopProduct"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Butun Ai Analiz"
-                                android:textColor="@color/success"
-                                android:textSize="14sp"
-                                android:background="@drawable/chip_success"
-                                android:paddingHorizontal="10dp"
-                                android:paddingVertical="4dp"/>
-                        </LinearLayout>
-
-                        <!-- Ən çox satılan məhsullar -->
                         <TextView
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🏆 Ən çox satılanlar"
-                            android:textColor="@color/text_primary"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="12dp"/>
-
-                        <!-- Məhsul 1 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="12dp"
-                            android:background="@drawable/item_background"
-                            android:padding="12dp">
-
-                            <TextView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:text="1"
-                                android:textColor="@color/white"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:gravity="center"
-                                android:background="@drawable/circle_purple"/>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginStart="12dp">
-
-                                <TextView
-                                    android:id="@+id/tvProduct1Name"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Məhsul adı"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold"/>
-
-                                <TextView
-                                    android:id="@+id/tvProduct1Stats"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="0 satış • ₼0.00"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp"
-                                    android:layout_marginTop="2dp"/>
-                            </LinearLayout>
-
-                            <TextView
-                                android:id="@+id/tvProduct1Trend"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="📈"
-                                android:textSize="16sp"
-                                android:layout_marginStart="8dp"/>
-                        </LinearLayout>
-
-                        <!-- Məhsul 2 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="12dp"
-                            android:background="@drawable/item_background"
-                            android:padding="12dp">
-
-                            <TextView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:text="2"
-                                android:textColor="@color/white"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:gravity="center"
-                                android:background="@drawable/circle_purple_light"/>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginStart="12dp">
-
-                                <TextView
-                                    android:id="@+id/tvProduct2Name"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Məhsul adı"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold"/>
-
-                                <TextView
-                                    android:id="@+id/tvProduct2Stats"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="0 satış • ₼0.00"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp"
-                                    android:layout_marginTop="2dp"/>
-                            </LinearLayout>
-
-                            <TextView
-                                android:id="@+id/tvProduct2Trend"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="📊"
-                                android:textSize="16sp"
-                                android:layout_marginStart="8dp"/>
-                        </LinearLayout>
-
-                        <!-- Məhsul 3 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="12dp"
-                            android:background="@drawable/item_background"
-                            android:padding="12dp">
-
-                            <TextView
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
-                                android:text="3"
-                                android:textColor="@color/white"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:gravity="center"
-                                android:background="@drawable/circle_purple_light"/>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginStart="12dp">
-
-                                <TextView
-                                    android:id="@+id/tvProduct3Name"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Məhsul adı"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold"/>
-
-                                <TextView
-                                    android:id="@+id/tvProduct3Stats"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="0 satış • ₼0.00"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp"
-                                    android:layout_marginTop="2dp"/>
-                            </LinearLayout>
-
-                            <TextView
-                                android:id="@+id/tvProduct3Trend"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="📉"
-                                android:textSize="16sp"
-                                android:layout_marginStart="8dp"/>
-                        </LinearLayout>
-
-                        <!-- Daha çox məhsul linki -->
-                        <TextView
-                            android:id="@+id/tvViewAllProducts"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Bütün məhsulları gör →"
+                            android:text="📊 Xərc Kateqoriyaları"
                             android:textColor="@color/purple_500"
-                            android:textSize="14sp"
-                            android:gravity="end"
-                            android:layout_marginTop="8dp"
-                            android:padding="8dp"/>
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="16dp"/>
+
+                        <!-- Kateqoriya 1 -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="12dp">
+
+                            <TextView
+                                android:id="@+id/tvTopCategory1"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Kateqoriya"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/tvTopCategory1Amount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="₼0.00"
+                                android:textColor="@color/expense_red"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:id="@+id/tvTopCategory1Percent"
+                                android:layout_width="48dp"
+                                android:layout_height="24dp"
+                                android:text="0%"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp"
+                                android:gravity="center"
+                                android:background="@drawable/percent_background"/>
+                        </LinearLayout>
+
+                        <!-- Kateqoriya 2 -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="12dp">
+
+                            <TextView
+                                android:id="@+id/tvTopCategory2"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Kateqoriya"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/tvTopCategory2Amount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="₼0.00"
+                                android:textColor="@color/expense_red"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:id="@+id/tvTopCategory2Percent"
+                                android:layout_width="48dp"
+                                android:layout_height="24dp"
+                                android:text="0%"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp"
+                                android:gravity="center"
+                                android:background="@drawable/percent_background"/>
+                        </LinearLayout>
+
+                        <!-- Kateqoriya 3 -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:id="@+id/tvTopCategory3"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Kateqoriya"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/tvTopCategory3Amount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="₼0.00"
+                                android:textColor="@color/expense_red"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:id="@+id/tvTopCategory3Percent"
+                                android:layout_width="48dp"
+                                android:layout_height="24dp"
+                                android:text="0%"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp"
+                                android:gravity="center"
+                                android:background="@drawable/percent_background"/>
+                        </LinearLayout>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- AI Analiz Kartı (GENİŞLƏNDİRİLMİŞ) -->
+                <!-- Maliyyə Sağlamlığı -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/card_dark"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="8dp"
+                    android:layout_marginBottom="20dp"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="💪 Maliyyə Sağlamlığı"
+                            android:textColor="@color/purple_500"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="16dp"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="12dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Qənaət dərəcəsi:"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/tvSavingsRate"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0%"
+                                android:textColor="@color/success"
+                                android:textSize="16sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Xərc nisbəti:"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/tvExpenseRatio"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0%"
+                                android:textColor="@color/expense_red"
+                                android:textSize="16sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/chip_background"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Vəziyyət:"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/tvFinancialHealth"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Məlumat az"
+                                android:textColor="@color/warning"
+                                android:textSize="16sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- AI Proqnoz Kartı -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardMLPrediction"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/card_dark"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="8dp"
+                    android:layout_marginBottom="20dp"
+                    android:padding="16dp"
+                    android:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🔮 AI Proqnoz"
+                            android:textColor="@color/purple_500"
+                            android:textSize="18sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sabah üçün təxmin"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:layout_marginBottom="16dp"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="3"
+                            android:layout_marginBottom="16dp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Gəlir"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp"/>
+
+                                <TextView
+                                    android:id="@+id/tvPredictedIncome"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₼0.00"
+                                    android:textColor="@color/success"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Xərc"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp"/>
+
+                                <TextView
+                                    android:id="@+id/tvPredictedExpense"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₼0.00"
+                                    android:textColor="@color/expense_red"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Net"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp"/>
+
+                                <TextView
+                                    android:id="@+id/tvPredictedNet"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="₼0.00"
+                                    android:textColor="@color/warning"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold"/>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:background="@drawable/confidence_background"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Proqnoz dəqiqliyi"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="13sp"/>
+
+                            <TextView
+                                android:id="@+id/tvPredictionConfidence"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0%"
+                                android:textColor="@color/purple_500"
+                                android:textSize="16sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- AI Insights Kartı -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardAiInsights"
                     android:layout_width="match_parent"
@@ -736,35 +1024,13 @@
                                 android:layout_weight="1"
                                 android:text="🤖 AI Analiz"
                                 android:textColor="@color/purple_500"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:maxLines="1"
-                                android:ellipsize="end"/>
-
-                            <HorizontalScrollView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:scrollbars="horizontal"
-                                android:fadeScrollbars="false">
-
-                                <TextView
-                                    android:id="@+id/tvTrendAnalysis"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text=""
-                                    android:textColor="@color/info"
-                                    android:textSize="11sp"
-                                    android:background="@drawable/chip_info"
-                                    android:paddingHorizontal="6dp"
-                                    android:paddingVertical="2dp"
-                                    android:maxLines="1"/>
-                            </HorizontalScrollView>
+                                android:textSize="18sp"
+                                android:textStyle="bold"/>
                         </LinearLayout>
 
-                        <!-- AI Insights TextView - Hündürlük limitli və scroll -->
                         <ScrollView
                             android:layout_width="match_parent"
-                            android:layout_height="120dp"
+                            android:layout_height="140dp"
                             android:scrollbars="vertical"
                             android:fadeScrollbars="false">
 
@@ -775,398 +1041,77 @@
                                 android:text="Analiz edilir..."
                                 android:textColor="@color/text_secondary"
                                 android:textSize="14sp"
-                                android:lineSpacingExtra="6dp"
+                                android:lineSpacingExtra="4dp"
                                 android:fontFamily="monospace"/>
                         </ScrollView>
 
-                        <!-- Daha çox göstər göstəricisi -->
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Daha ətraflı üçün kartı klikləyin →"
+                            android:text="Ətraflı analiz üçün klikləyin →"
                             android:textColor="@color/purple_500"
                             android:textSize="12sp"
                             android:gravity="end"
                             android:layout_marginTop="8dp"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
-                <!-- ML Proqnoz Kartı -->
+
+                <!-- Əməliyyatlar Kartı -->
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardMLPrediction"
+                    android:id="@+id/cardTransactions"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:cardBackgroundColor="@color/card_dark"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
                     android:layout_marginBottom="16dp"
-                    android:padding="16dp">
+                    android:foreground="?selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🔮 AI Proqnoz"
-                            android:textColor="@color/purple_500"
-                            android:textSize="18sp"
-                            android:textStyle="bold"/>
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_transactions"
+                            android:tint="@color/purple_500"
+                            android:padding="8dp"
+                            android:background="@drawable/circle_purple_light"/>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Sabah üçün təxmin"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="14sp"
-                            android:layout_marginBottom="16dp"/>
-
-                        <!-- Proqnoz göstəriciləri -->
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:weightSum="3"
-                            android:layout_marginBottom="16dp">
-
-                            <!-- Gəlir -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Gəlir"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp"/>
-
-                                <TextView
-                                    android:id="@+id/tvPredictedIncome"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="₼0.00"
-                                    android:textColor="@color/success"
-                                    android:textSize="18sp"
-                                    android:textStyle="bold"
-                                    android:layout_marginTop="4dp"/>
-                            </LinearLayout>
-
-                            <!-- Xərc -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Xərc"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp"/>
-
-                                <TextView
-                                    android:id="@+id/tvPredictedExpense"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="₼0.00"
-                                    android:textColor="@color/expense_red"
-                                    android:textSize="18sp"
-                                    android:textStyle="bold"
-                                    android:layout_marginTop="4dp"/>
-                            </LinearLayout>
-
-                            <!-- Net -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Net"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp"/>
-
-                                <TextView
-                                    android:id="@+id/tvPredictedNetProfit"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="₼0.00"
-                                    android:textColor="@color/warning"
-                                    android:textSize="18sp"
-                                    android:textStyle="bold"
-                                    android:layout_marginTop="4dp"/>
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <!-- Güvən səviyyəsi -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:background="@drawable/confidence_background"
-                            android:padding="12dp">
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="12dp">
 
                             <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Proqnoz güvən səviyyəsi"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="13sp"/>
-
-                            <TextView
-                                android:id="@+id/tvPredictionConfidence"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="%0"
-                                android:textColor="@color/purple_500"
+                                android:text="Bütün Əməliyyatlar"
+                                android:textColor="@color/text_primary"
                                 android:textSize="16sp"
                                 android:textStyle="bold"/>
-                        </LinearLayout>
-
-                        <!-- Məhsul proqnozları (YENİ) -->
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="📦 Məhsul proqnozları"
-                            android:textColor="@color/text_primary"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginBottom="8dp"/>
-
-                        <!-- Məhsul 1 proqnoz -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="8dp">
 
                             <TextView
-                                android:id="@+id/tvProductPrediction1Name"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Məhsul"
-                                android:textColor="@color/text_primary"
-                                android:textSize="13sp"/>
-
-                            <TextView
-                                android:id="@+id/tvProductPrediction1Value"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="₼0.00"
-                                android:textColor="@color/success"
-                                android:textSize="13sp"
-                                android:textStyle="bold"/>
-                        </LinearLayout>
-
-                        <!-- Məhsul 2 proqnoz -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="8dp">
-
-                            <TextView
-                                android:id="@+id/tvProductPrediction2Name"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Məhsul"
-                                android:textColor="@color/text_primary"
-                                android:textSize="13sp"/>
-
-                            <TextView
-                                android:id="@+id/tvProductPrediction2Value"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₼0.00"
-                                android:textColor="@color/success"
-                                android:textSize="13sp"
-                                android:textStyle="bold"/>
-                        </LinearLayout>
-
-                        <!-- Məhsul 3 proqnoz -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="8dp">
-
-                            <TextView
-                                android:id="@+id/tvProductPrediction3Name"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Məhsul"
-                                android:textColor="@color/text_primary"
-                                android:textSize="13sp"/>
-
-                            <TextView
-                                android:id="@+id/tvProductPrediction3Value"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₼0.00"
-                                android:textColor="@color/success"
-                                android:textSize="13sp"
-                                android:textStyle="bold"/>
-                        </LinearLayout>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- Kateqoriya Analizi Kartı (YENİ) -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:cardBackgroundColor="@color/card_dark"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="8dp"
-                    android:layout_marginBottom="16dp"
-                    android:padding="16dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="📊 Kateqoriya Analizi"
-                            android:textColor="@color/purple_500"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="16dp"/>
-
-                        <!-- Kateqoriya 1 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="12dp">
-
-                            <TextView
-                                android:id="@+id/tvCategory1Name"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Kateqoriya"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp"/>
-
-                            <TextView
-                                android:id="@+id/tvCategory1Amount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₼0.00"
-                                android:textColor="@color/success"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:layout_marginEnd="8dp"/>
-
-                            <TextView
-                                android:id="@+id/tvCategory1Percent"
-                                android:layout_width="48dp"
-                                android:layout_height="24dp"
-                                android:text="0%"
+                                android:text="Son əməliyyatları gör"
                                 android:textColor="@color/text_secondary"
-                                android:textSize="12sp"
-                                android:gravity="center"
-                                android:background="@drawable/percent_background"/>
+                                android:textSize="12sp"/>
                         </LinearLayout>
 
-                        <!-- Kateqoriya 2 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="12dp">
-
-                            <TextView
-                                android:id="@+id/tvCategory2Name"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Kateqoriya"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp"/>
-
-                            <TextView
-                                android:id="@+id/tvCategory2Amount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₼0.00"
-                                android:textColor="@color/success"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:layout_marginEnd="8dp"/>
-
-                            <TextView
-                                android:id="@+id/tvCategory2Percent"
-                                android:layout_width="48dp"
-                                android:layout_height="24dp"
-                                android:text="0%"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="12sp"
-                                android:gravity="center"
-                                android:background="@drawable/percent_background"/>
-                        </LinearLayout>
-
-                        <!-- Kateqoriya 3 -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="8dp">
-
-                            <TextView
-                                android:id="@+id/tvCategory3Name"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Kateqoriya"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp"/>
-
-                            <TextView
-                                android:id="@+id/tvCategory3Amount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₼0.00"
-                                android:textColor="@color/success"
-                                android:textSize="14sp"
-                                android:textStyle="bold"
-                                android:layout_marginEnd="8dp"/>
-
-                            <TextView
-                                android:id="@+id/tvCategory3Percent"
-                                android:layout_width="48dp"
-                                android:layout_height="24dp"
-                                android:text="0%"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="12sp"
-                                android:gravity="center"
-                                android:background="@drawable/percent_background"/>
-                        </LinearLayout>
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_arrow_right"
+                            android:tint="@color/text_secondary"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -1211,7 +1156,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Məlumat Əlavə Et"
+                                android:text="Əlavə Et"
                                 android:textColor="@color/white"
                                 android:textSize="13sp"
                                 android:textStyle="bold"/>
@@ -1261,7 +1206,7 @@
         </androidx.core.widget.NestedScrollView>
     </LinearLayout>
 
-    <!-- Navigation Drawer (Menu) -->
+    <!-- Navigation Drawer -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
         android:layout_width="280dp"

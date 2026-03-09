@@ -70,6 +70,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
 import com.smart_ai_sales.R;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -568,6 +570,42 @@ public class AddDataActivity extends AppCompatActivity {
                     productsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, errorList);
                     spinnerProducts.setAdapter(productsAdapter);
                 });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
+            // OCR-dan gələn məlumatları doldur
+            ArrayList<String> productNames = data.getStringArrayListExtra("product_names");
+            ArrayList<Double> productPrices = (ArrayList<Double>) data.getSerializableExtra("product_prices");
+            ArrayList<Double> productQuantities = (ArrayList<Double>) data.getSerializableExtra("product_quantities");
+
+            String storeName = data.getStringExtra("store_name");
+            String date = data.getStringExtra("date");
+            String time = data.getStringExtra("time");
+            double totalAmount = data.getDoubleExtra("total_amount", 0);
+
+            // Əgər məlumat varsa, formanı doldur
+            if (productNames != null && !productNames.isEmpty()) {
+                // İlk məhsul
+                etProductName.setText(productNames.get(0));
+                if (productQuantities != null && productQuantities.size() > 0) {
+                    etQuantity.setText(String.valueOf(productQuantities.get(0).intValue()));
+                }
+                if (productPrices != null && productPrices.size() > 0) {
+                    etAmount.setText(String.valueOf(productPrices.get(0)));
+                }
+            }
+
+            // Mağaza adı varsa, note-a əlavə et
+            if (storeName != null && !storeName.isEmpty()) {
+                etNote.setText(storeName + " - " + etNote.getText().toString());
+            }
+
+            Toast.makeText(this, "OCR məlumatları əlavə edildi", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loadLocationsFromFirebase() {

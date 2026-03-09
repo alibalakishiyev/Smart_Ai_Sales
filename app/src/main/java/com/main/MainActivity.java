@@ -3,6 +3,7 @@ package com.main;
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,7 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -38,6 +41,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.ocr_service.ReceiptScannerActivity;
 import com.smart_ai_sales.R;
 import com.utils.BaseActivity;
 import com.utils.SettingsActivity;
@@ -55,11 +59,12 @@ import java.util.Map;
 public class MainActivity extends BaseActivity {
 
     private static final String TAG = "MAIN_ACTIVITY";
+    private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
 
     // UI Elements
-    private MaterialCardView cardDashboard, cardAddData, cardReports, cardSettings;
-    private MaterialButton btnDashboard, btnAddData, btnReports, btnSettings;
-    private ImageView imgDashboard, imgAddData, imgReports, imgSettings;
+    private MaterialCardView cardDashboard, cardAddData, cardReports, cardSettings, cardReceiptScanner; // <-- ƏLAVƏ
+    private MaterialButton btnDashboard, btnAddData, btnReports, btnSettings, btnReceiptScanner; // <-- ƏLAVƏ
+    private ImageView imgDashboard, imgAddData, imgReports, imgSettings, imgReceiptScanner; // <-- ƏLAVƏ
     private TextView tvWelcome, tvQuote, tvVersion;
     private LottieAnimationView animationView;
     private ViewPager2 viewPagerFeatures;
@@ -144,18 +149,21 @@ public class MainActivity extends BaseActivity {
         cardAddData = findViewById(R.id.cardAddData);
         cardReports = findViewById(R.id.cardReports);
         cardSettings = findViewById(R.id.cardSettings);
+        cardReceiptScanner = findViewById(R.id.cardReceiptScanner); // <-- ƏLAVƏ
 
         // Buttons
         btnDashboard = findViewById(R.id.btnDashboard);
         btnAddData = findViewById(R.id.btnAddData);
         btnReports = findViewById(R.id.btnReports);
         btnSettings = findViewById(R.id.btnSettings);
+        btnReceiptScanner = findViewById(R.id.btnReceiptScanner); // <-- ƏLAVƏ
 
         // Images
         imgDashboard = findViewById(R.id.imgDashboard);
         imgAddData = findViewById(R.id.imgAddData);
         imgReports = findViewById(R.id.imgReports);
         imgSettings = findViewById(R.id.imgSettings);
+        imgReceiptScanner = findViewById(R.id.imgReceiptScanner); // <-- ƏLAVƏ
 
         // Text
         tvWelcome = findViewById(R.id.tvWelcome);
@@ -545,11 +553,15 @@ public class MainActivity extends BaseActivity {
             Toast.makeText(this, "Hesabatlar hazırlanır...", Toast.LENGTH_SHORT).show();
         });
         btnReports.setOnClickListener(v -> cardReports.performClick());
-        // Logout button
-        ImageView btnLogout = findViewById(R.id.btnLogout);
-        btnLogout.setOnClickListener(v -> {
-            LogoutManager.getInstance().showLogoutConfirmationDialog(this);
-        });
+
+        // ===== RECEIPT SCANNER - YENİ ƏLAVƏ =====
+        View.OnClickListener receiptScannerClick = v -> {
+            animateClick(v);
+            checkCameraPermissionAndOpenScanner();
+        };
+        cardReceiptScanner.setOnClickListener(receiptScannerClick);
+        btnReceiptScanner.setOnClickListener(receiptScannerClick);
+
         // Settings
         View.OnClickListener settingsClick = v -> {
             animateClick(v);
@@ -560,6 +572,60 @@ public class MainActivity extends BaseActivity {
         };
         cardSettings.setOnClickListener(settingsClick);
         btnSettings.setOnClickListener(settingsClick);
+
+        // Logout button
+        ImageView btnLogout = findViewById(R.id.btnLogout);
+        btnLogout.setOnClickListener(v -> {
+            LogoutManager.getInstance().showLogoutConfirmationDialog(this);
+        });
+    }
+
+    // ===== YENİ METOD: Kamera permission yoxlaması =====
+    private void checkCameraPermissionAndOpenScanner() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                // Kamera icazəsi var - scanner aç
+                openReceiptScanner();
+            } else {
+                // Kamera icazəsi yox - istə
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        CAMERA_PERMISSION_REQUEST_CODE);
+            }
+        } else {
+            // Android 6-dan aşağı - birbaşa aç
+            openReceiptScanner();
+        }
+    }
+
+    // ===== YENİ METOD: Receipt scanner aç =====
+    private void openReceiptScanner() {
+        Intent intent = new Intent(this, ReceiptScannerActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
+
+    // ===== Permission nəticəsi =====
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // İcazə verildi
+                openReceiptScanner();
+            } else {
+                // İcazə verilmədi
+                Toast.makeText(this, "Qəbz skan etmək üçün kamera icazəsi lazımdır", Toast.LENGTH_LONG).show();
+
+                // İcazə niyə lazımdır izah et
+                new AlertDialog.Builder(this)
+                        .setTitle("Kamera İcazəsi")
+                        .setMessage("Qəbzləri skan etmək üçün kamera icazəsi lazımdır. İcazəni settings-dən verə bilərsiniz.")
+                        .setPositiveButton("Başa düşdüm", null)
+                        .show();
+            }
+        }
     }
 
     private void animateClick(View view) {
@@ -585,6 +651,7 @@ public class MainActivity extends BaseActivity {
         new Handler().postDelayed(() -> cardDashboard.startAnimation(slideUp), 100);
         new Handler().postDelayed(() -> cardAddData.startAnimation(slideUp), 200);
         new Handler().postDelayed(() -> cardReports.startAnimation(slideUp), 300);
+        new Handler().postDelayed(() -> cardReceiptScanner.startAnimation(slideUp), 350); // <-- ƏLAVƏ
         new Handler().postDelayed(() -> cardSettings.startAnimation(slideUp), 400);
     }
 
@@ -609,7 +676,8 @@ public class MainActivity extends BaseActivity {
                 "Hər satış yeni bir hekayədir",
                 "Məlumat gələcəyin ən dəyərli sərvətidir",
                 "AI ilə satışlarınızı zirvəyə qaldırın",
-                "Bugün dünəndən daha yaxşı olsun"
+                "Bugün dünəndən daha yaxşı olsun",
+                "Qəbzləri skan et, vaxta qənaət et" // <-- YENİ
         };
         return quotes[(int) (System.currentTimeMillis() / (1000 * 60 * 60 * 24)) % quotes.length];
     }

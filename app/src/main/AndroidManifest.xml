@@ -2,11 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
         android:allowBackup="true"
@@ -18,11 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartAiSales">
 
-        <!-- Google Play Services metadata - BU HİSSƏNİ ƏLAVƏ EDİN -->
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
+        <!-- Splash Activity (Launcher) -->
         <activity
             android:name="com.main.SplashActivity"
             android:exported="true"
@@ -53,6 +54,12 @@
             android:exported="false"
             android:theme="@style/Theme.SmartAiSales" />
 
+        <!-- Main Activity -->
+        <activity
+            android:name="com.main.MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SmartAiSales" />
+
         <!-- Dashboard Activity -->
         <activity
             android:name="com.dashboard.DashboardActivity"
@@ -65,6 +72,12 @@
             android:exported="false"
             android:theme="@style/Theme.SmartAiSales" />
 
+        <!-- OCR Scanner Activity -->
+        <activity
+            android:name="com.ocr_service.ReceiptScannerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SmartAiSales" />  <!-- Öz theme-iniz -->
+
         <!-- Utils Activities -->
         <activity
             android:name="com.utils.SettingsActivity"
@@ -75,11 +88,21 @@
             android:exported="false"
             android:theme="@style/Theme.SmartAiSales" />
 
-        <!-- Main Activity -->
-        <activity
-            android:name="com.main.MainActivity"
+        <!-- FileProvider -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
-            android:theme="@style/Theme.SmartAiSales" />
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- Google Play Services metadata -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
         <!-- Salary Reminder Receiver -->
         <receiver
@@ -87,5 +110,4 @@
             android:exported="false" />
 
     </application>
-
 </manifest>

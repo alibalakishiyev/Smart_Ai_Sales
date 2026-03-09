@@ -1,6 +1,5 @@
 package com.dashboard.dialog;
 
-
 import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,19 +10,14 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.dashboard.ProductAnalysis;
 import com.smart_ai_sales.R;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -31,193 +25,231 @@ public class AIAnalysisDialog extends AppCompatDialogFragment {
 
     private String analysisText;
     private String title;
-    private List<ProductAnalysis> topProducts;
     private Map<String, Double> categoryData;
     private double totalIncome;
     private double totalExpense;
+    private double monthlySalary;
 
-    public AIAnalysisDialog(String analysisText, String title, List<ProductAnalysis> topProducts,
-                            Map<String, Double> categoryData, double totalIncome, double totalExpense) {
-        this.analysisText = analysisText;
-        this.title = title;
-        this.topProducts = topProducts;
+    public AIAnalysisDialog(String analysisText, String title,
+                            Map<String, Double> categoryData,
+                            double totalIncome, double totalExpense,
+                            double monthlySalary) {
+        this.analysisText = analysisText != null ? analysisText : "Analiz məlumatı yoxdur";
+        this.title = title != null ? title : "AI Analiz";
         this.categoryData = categoryData;
         this.totalIncome = totalIncome;
         this.totalExpense = totalExpense;
+        this.monthlySalary = monthlySalary;
     }
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        if (dialog.getWindow() != null) {
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        }
         return dialog;
     }
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_ai_analysis, container, false);
 
-        // Dialog görünüşünü tənzimlə
         if (getDialog() != null && getDialog().getWindow() != null) {
             getDialog().getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-            getDialog().getWindow().setLayout(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-            );
         }
 
-        // Başlıq
-        TextView tvTitle = view.findViewById(R.id.tvDialogTitle);
-        tvTitle.setText(title);
-
-        // Bağlama düyməsi
-        ImageView btnClose = view.findViewById(R.id.btnClose);
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
+        try {
+            // Başlıq
+            TextView tvTitle = view.findViewById(R.id.tvDialogTitle);
+            if (tvTitle != null) {
+                tvTitle.setText(title);
             }
-        });
 
-        // AI Analiz Text
-        TextView tvAnalysis = view.findViewById(R.id.tvAnalysis);
-        tvAnalysis.setText(analysisText);
-        tvAnalysis.setMovementMethod(new ScrollingMovementMethod());
-
-        // Ən yaxşı məhsullar
-        setupTopProducts(view);
-
-        // Kateqoriya məlumatları
-        setupCategoryData(view);
-
-        // Ümumi statistika
-        setupSummary(view);
-
-        // Bağlama düyməsi 2
-        TextView btnClose2 = view.findViewById(R.id.btnClose2);
-        btnClose2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
+            // Bağlama düyməsi
+            ImageView btnClose = view.findViewById(R.id.btnClose);
+            if (btnClose != null) {
+                btnClose.setOnClickListener(v -> dismiss());
             }
-        });
+
+            // AI Analiz Mətni
+            TextView tvAnalysis = view.findViewById(R.id.tvAnalysis);
+            if (tvAnalysis != null) {
+                tvAnalysis.setText(analysisText);
+                tvAnalysis.setMovementMethod(new ScrollingMovementMethod());
+            }
+
+            // Kateqoriya məlumatları
+            setupCategoryData(view);
+
+            // Ümumi statistika
+            setupSummary(view);
+
+            // Bağlama düyməsi 2
+            TextView btnClose2 = view.findViewById(R.id.btnClose2);
+            if (btnClose2 != null) {
+                btnClose2.setOnClickListener(v -> dismiss());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return view;
     }
 
-    private void setupTopProducts(View view) {
-        LinearLayout container = view.findViewById(R.id.topProductsContainer);
-        container.removeAllViews();
-
-        if (topProducts == null || topProducts.isEmpty()) {
-            TextView emptyView = new TextView(getContext());
-            emptyView.setText("Məhsul məlumatı yoxdur");
-            emptyView.setTextColor(Color.parseColor("#B3FFFFFF"));
-            emptyView.setTextSize(14);
-            emptyView.setPadding(16, 16, 16, 16);
-            container.addView(emptyView);
-            return;
-        }
-
-        int count = 0;
-        for (ProductAnalysis product : topProducts) {
-            if (count >= 5) break;
-
-            View itemView = LayoutInflater.from(getContext()).inflate(R.layout.item_analysis_product, container, false);
-
-            TextView tvRank = itemView.findViewById(R.id.tvRank);
-            TextView tvProductName = itemView.findViewById(R.id.tvProductName);
-            TextView tvAmount = itemView.findViewById(R.id.tvAmount);
-            TextView tvSales = itemView.findViewById(R.id.tvSales);
-            TextView tvTrend = itemView.findViewById(R.id.tvTrend);
-
-            tvRank.setText(String.valueOf(count + 1));
-            tvProductName.setText(product.getProductName());
-            tvAmount.setText(String.format(Locale.getDefault(), "₼%.2f", product.getTotalAmount()));
-            tvSales.setText(product.getTransactionCount() + " satış");
-            tvTrend.setText(product.getTrend());
-
-            // Trend rəngi
-            int trendColor;
-            if (product.getTrend().contains("Sürətli artım")) {
-                trendColor = Color.parseColor("#10B981");
-            } else if (product.getTrend().contains("Yavaş artım")) {
-                trendColor = Color.parseColor("#34D399");
-            } else if (product.getTrend().contains("Stabil")) {
-                trendColor = Color.parseColor("#F59E0B");
-            } else if (product.getTrend().contains("Yavaş eniş")) {
-                trendColor = Color.parseColor("#F97316");
-            } else {
-                trendColor = Color.parseColor("#EF4444");
-            }
-            tvTrend.setTextColor(trendColor);
-
-            container.addView(itemView);
-            count++;
-        }
-    }
-
     private void setupCategoryData(View view) {
-        LinearLayout container = view.findViewById(R.id.categoryContainer);
+        if (view == null) return;
+
+        LinearLayout container = view.findViewById(R.id.cardCategory);
+        if (container == null) return;
+
         container.removeAllViews();
 
         if (categoryData == null || categoryData.isEmpty()) {
-            TextView emptyView = new TextView(getContext());
-            emptyView.setText("Kateqoriya məlumatı yoxdur");
-            emptyView.setTextColor(Color.parseColor("#B3FFFFFF"));
-            emptyView.setTextSize(14);
-            emptyView.setPadding(16, 16, 16, 16);
-            container.addView(emptyView);
+            addEmptyView(container, "Kateqoriya məlumatı yoxdur");
             return;
         }
 
         double total = 0;
         for (Map.Entry<String, Double> entry : categoryData.entrySet()) {
-            total += entry.getValue();
+            if (entry.getValue() != null) {
+                total += entry.getValue();
+            }
         }
 
         int count = 0;
         for (Map.Entry<String, Double> entry : categoryData.entrySet()) {
             if (count >= 5) break;
 
-            View itemView = LayoutInflater.from(getContext()).inflate(R.layout.item_analysis_category, container, false);
-
-            TextView tvCategoryName = itemView.findViewById(R.id.tvCategoryName);
-            TextView tvCategoryAmount = itemView.findViewById(R.id.tvCategoryAmount);
-            TextView tvCategoryPercent = itemView.findViewById(R.id.tvCategoryPercent);
-
             String category = entry.getKey();
-            double amount = entry.getValue();
-            int percent = total > 0 ? (int) ((amount / total) * 100) : 0;
+            Double amount = entry.getValue();
+            if (category == null || amount == null) continue;
 
-            tvCategoryName.setText(category);
-            tvCategoryAmount.setText(String.format(Locale.getDefault(), "₼%.2f", amount));
-            tvCategoryPercent.setText(percent + "%");
+            try {
+                View itemView = LayoutInflater.from(getContext()).inflate(R.layout.item_analysis_category, container, false);
 
-            container.addView(itemView);
-            count++;
+                TextView tvCategoryName = itemView.findViewById(R.id.tvCategoryName);
+                TextView tvCategoryAmount = itemView.findViewById(R.id.tvCategoryAmount);
+                TextView tvCategoryPercent = itemView.findViewById(R.id.tvCategoryPercent);
+
+                if (tvCategoryName != null) {
+                    tvCategoryName.setText(category);
+                }
+
+                if (tvCategoryAmount != null) {
+                    tvCategoryAmount.setText(String.format(Locale.getDefault(), "₼%.2f", amount));
+                }
+
+                if (tvCategoryPercent != null) {
+                    int percent = total > 0 ? (int) ((amount / total) * 100) : 0;
+                    tvCategoryPercent.setText(percent + "%");
+                }
+
+                container.addView(itemView);
+                count++;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (count == 0) {
+            addEmptyView(container, "Kateqoriya məlumatı yoxdur");
         }
     }
 
+    private void addEmptyView(LinearLayout container, String message) {
+        if (container == null || getContext() == null) return;
+
+        TextView emptyView = new TextView(getContext());
+        emptyView.setText(message);
+        emptyView.setTextColor(Color.parseColor("#B3FFFFFF"));
+        emptyView.setTextSize(14);
+        emptyView.setPadding(32, 32, 32, 32);
+        emptyView.setGravity(android.view.Gravity.CENTER);
+        container.addView(emptyView);
+    }
+
     private void setupSummary(View view) {
-        TextView tvTotalIncome = view.findViewById(R.id.tvTotalIncome);
-        TextView tvTotalExpense = view.findViewById(R.id.tvTotalExpense);
-        TextView tvNetProfit = view.findViewById(R.id.tvNetProfit);
-        TextView tvNetProfitValue = view.findViewById(R.id.tvNetProfitValue);
+        if (view == null) return;
 
-        tvTotalIncome.setText(String.format(Locale.getDefault(), "₼%.2f", totalIncome));
-        tvTotalExpense.setText(String.format(Locale.getDefault(), "₼%.2f", totalExpense));
+        try {
+            TextView tvTotalIncome = view.findViewById(R.id.chipIncome);
+            TextView tvTotalExpense = view.findViewById(R.id.chipExpense);
+            TextView tvNetProfit = view.findViewById(R.id.cardProfile);
+            TextView tvNetProfitValue = view.findViewById(R.id.cardProfile);
+            TextView tvMonthlySalaryText = view.findViewById(R.id.etSalaryNote);
+            TextView tvMonthlySalaryValue = view.findViewById(R.id.tvMonthlySalary);
 
-        double netProfit = totalIncome - totalExpense;
-        tvNetProfitValue.setText(String.format(Locale.getDefault(), "₼%.2f", netProfit));
+            if (tvTotalIncome != null) {
+                tvTotalIncome.setText(String.format(Locale.getDefault(), "₼%.2f", totalIncome));
+            }
 
-        if (netProfit >= 0) {
-            tvNetProfitValue.setTextColor(Color.parseColor("#10B981"));
-        } else {
-            tvNetProfitValue.setTextColor(Color.parseColor("#EF4444"));
+            if (tvTotalExpense != null) {
+                tvTotalExpense.setText(String.format(Locale.getDefault(), "₼%.2f", totalExpense));
+            }
+
+            double netProfit = totalIncome - totalExpense;
+
+            if (tvNetProfitValue != null) {
+                tvNetProfitValue.setText(String.format(Locale.getDefault(), "₼%.2f", netProfit));
+
+                if (netProfit >= 0) {
+                    tvNetProfitValue.setTextColor(Color.parseColor("#10B981"));
+                } else {
+                    tvNetProfitValue.setTextColor(Color.parseColor("#EF4444"));
+                }
+            }
+
+            if (tvNetProfit != null) {
+                tvNetProfit.setText(netProfit >= 0 ? "Mənfəət" : "Zərər");
+            }
+
+            // Aylıq maaş
+            if (monthlySalary > 0) {
+                if (tvMonthlySalaryText != null) {
+                    tvMonthlySalaryText.setVisibility(View.VISIBLE);
+                }
+                if (tvMonthlySalaryValue != null) {
+                    tvMonthlySalaryValue.setVisibility(View.VISIBLE);
+                    tvMonthlySalaryValue.setText(String.format(Locale.getDefault(), "₼%.2f", monthlySalary));
+                }
+
+                // Parent layout-i göstər
+                View monthlySalaryLayout = view.findViewById(R.id.tvMonthlySalary);
+                if (monthlySalaryLayout != null) {
+                    monthlySalaryLayout.setVisibility(View.VISIBLE);
+                }
+            } else {
+                if (tvMonthlySalaryText != null) {
+                    tvMonthlySalaryText.setVisibility(View.GONE);
+                }
+                if (tvMonthlySalaryValue != null) {
+                    tvMonthlySalaryValue.setVisibility(View.GONE);
+                }
+                View monthlySalaryLayout = view.findViewById(R.id.tvMonthlySalary);
+                if (monthlySalaryLayout != null) {
+                    monthlySalaryLayout.setVisibility(View.GONE);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
 
-        tvNetProfit.setText(netProfit >= 0 ? "Mənfəət" : "Zərər");
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Dialog ölçüsünü tənzimlə
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow().setLayout(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+        }
     }
 }
