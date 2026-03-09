@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_dashboard"
+        android:icon="@drawable/ic_dashboard"
+        android:title="Ana Səhifə"/>
+    <item
+        android:id="@+id/nav_sales"
+        android:icon="@drawable/ic_sales"
+        android:title="Satışlar"/>
+    <item
+        android:id="@+id/nav_expenses"
+        android:icon="@drawable/ic_expenses"
+        android:title="Xərclər"/>
+    <item
+        android:id="@+id/nav_customers"
+        android:icon="@drawable/ic_customers"
+        android:title="Müştərilər"/>
+    <item
+        android:id="@+id/nav_reports"
+        android:icon="@drawable/ic_reports"
+        android:title="Hesabatlar"/>
+    <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="Parametrlər"/>
+    <item
+        android:id="@+id/nav_logout"
+        android:icon="@drawable/ic_logout"
+        android:title="Çıxış"/>
+</menu>

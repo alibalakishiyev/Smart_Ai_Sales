@@ -1,0 +1,876 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_dark"
+    tools:context="com.data.AddDataActivity">
+
+    <!-- Lottie Animation (başlanğıc animasiyası) -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:lottie_rawRes="@raw/add_data_animation"
+        app:lottie_autoPlay="false"
+        app:lottie_loop="false"
+        android:visibility="gone"/>
+
+    <!-- Progress Indicator -->
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progressIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:visibility="gone"
+        app:indicatorColor="@color/purple_500"
+        app:trackColor="@color/card_dark"/>
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/card_dark"
+        app:titleTextColor="@color/white"
+        app:navigationIconTint="@color/white"
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
+
+        <!-- Bu ImageView-i silin və ya aşağıdakı kimi dəyişin -->
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="start|center_vertical"
+            android:src="@drawable/ic_back"
+            android:tint="@color/white"
+            android:padding="4dp"
+            android:visibility="visible"/>
+        <TextView
+            android:id="@+id/informassion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Məlumat Əlavə Et"
+            android:textSize="20sp"
+            android:textColor="@color/success"
+            android:layout_marginEnd="16dp"/>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_gravity="end">
+
+
+
+            <!-- Offline Status -->
+            <ImageView
+                android:id="@+id/ivOfflineStatus"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_marginEnd="4dp"
+                android:src="@drawable/ic_online"/>
+
+            <TextView
+                android:id="@+id/tvOfflineStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Online"
+                android:textSize="12sp"
+                android:textColor="@color/success"
+                android:layout_marginEnd="16dp"/>
+
+            <!-- Existing logout button -->
+            <ImageView
+                android:id="@+id/btnLogout"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_logout"
+                android:tint="@color/text_secondary"
+                android:padding="4dp"/>
+        </LinearLayout>
+    </com.google.android.material.appbar.MaterialToolbar>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Balans Kartı -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardBalance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/gradient_start"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="8dp"
+                android:layout_marginBottom="16dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    android:background="@drawable/balance_gradient">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cari Balans"
+                        android:textColor="@color/white_80"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif-medium"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="4dp">
+
+                        <TextView
+                            android:id="@+id/tvCurrentBalance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="₼ 0.00"
+                            android:textColor="@color/white"
+                            android:textSize="36sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-black"/>
+
+                        <TextView
+                            android:id="@+id/tvBalanceChange"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/income_green"
+                            android:visibility="gone"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Tarix və Saat Kartı -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDateTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/card_dark"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="3"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tarix"
+                            android:textColor="@color/white_60"
+                            android:textSize="12sp"/>
+
+                        <TextView
+                            android:id="@+id/tvCurrentDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="10 Mart 2026"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp"/>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/white_20"
+                        android:layout_marginHorizontal="8dp"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Saat"
+                            android:textColor="@color/white_60"
+                            android:textSize="12sp"/>
+
+                        <TextView
+                            android:id="@+id/tvCurrentTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="14:30"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp"/>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/white_20"
+                        android:layout_marginHorizontal="8dp"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Gün"
+                            android:textColor="@color/white_60"
+                            android:textSize="12sp"/>
+
+                        <TextView
+                            android:id="@+id/tvDayOfWeek"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Çərşənbə"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Əməliyyat Növü Kartı -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/card_dark"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Əməliyyat Növü"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp"/>
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:singleSelection="true"
+                        app:selectionRequired="true"
+                        android:layout_gravity="center_horizontal">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipIncome"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="💵 Gəlir"
+                            android:textColor="@color/white"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:checkable="true"
+                            app:chipBackgroundColor="@color/card_dark"
+                            app:chipStrokeColor="@color/income_green"
+                            app:chipStrokeWidth="2dp"
+                            app:checkedIconVisible="false"/>
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipExpense"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="💳 Xərc"
+                            android:textColor="@color/white"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:checkable="true"
+                            app:chipBackgroundColor="@color/expense_red"
+                            app:chipStrokeColor="@color/expense_red"
+                            app:chipStrokeWidth="2dp"
+                            app:checkedIconVisible="false"
+                            android:checked="true"/>
+                    </com.google.android.material.chip.ChipGroup>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Kateqoriya Kartı -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/card_dark"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Kateqoriya"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <Spinner
+                        android:id="@+id/spinnerCategory"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:background="@drawable/spinner_background"
+                        android:popupBackground="@color/card_dark"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- Məhsul Kartı -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardProduct"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/card_dark"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Məhsul"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp"/>
+
+                    <!-- Firebase-dən gələn məhsul spinner -->
+                    <Spinner
+                        android:id="@+id/spinnerProducts"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:background="@drawable/spinner_background"
+                        android:popupBackground="@color/card_dark"/>
+
+                    <!-- Məhsul adı -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeColor="@color/purple_500"
+                        app:startIconDrawable="@drawable/ic_product"
+                        app:startIconTint="@color/purple_500"
+                        app:endIconMode="clear_text">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etProductName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Məhsul adı"
+                            android:textColor="@color/white"
+                            android:textColorHint="@color/white_60"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- 1-ci sətir: Qiymət və Miqdar -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+                        android:layout_marginBottom="8dp">
+
+                        <!-- Qiymət (AZN) -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxStrokeColor="@color/purple_500"
+                            app:startIconDrawable="@drawable/ic_amount"
+                            app:startIconTint="@color/purple_500"
+                            app:endIconMode="clear_text"
+                            app:prefixText="₼ ">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etAmount"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Qiymət"
+                                android:inputType="numberDecimal"
+                                android:textColor="@color/white"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Miqdar (ədəd) -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxStrokeColor="@color/purple_500"
+                            app:startIconDrawable="@drawable/ic_quantity"
+                            app:startIconTint="@color/purple_500"
+                            app:endIconMode="clear_text"
+                            app:suffixText="ədəd">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etQuantity"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Miqdar"
+                                android:inputType="numberDecimal"
+                                android:text="1"
+                                android:textColor="@color/white"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <!-- 2-ci sətir: Litr və Kiloqram -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+                        android:layout_marginBottom="8dp">
+
+                        <!-- Litr -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxStrokeColor="@color/purple_500"
+                            app:startIconDrawable="@drawable/ic_quantity"
+                            app:startIconTint="@color/purple_500"
+                            app:endIconMode="clear_text"
+                            app:suffixText="L">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etLiter"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Litr"
+                                android:inputType="numberDecimal"
+                                android:text="0"
+                                android:textColor="@color/white"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Kiloqram -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxStrokeColor="@color/purple_500"
+                            app:startIconDrawable="@drawable/ic_quantity"
+                            app:startIconTint="@color/purple_500"
+                            app:endIconMode="clear_text"
+                            app:suffixText="kq">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etKg"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Kiloqram"
+                                android:inputType="numberDecimal"
+                                android:text="0"
+                                android:textColor="@color/white"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <!-- Ümumi məlumat xətti (isteğe bağlı) -->
+                    <TextView
+                        android:id="@+id/tvTotalInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Cəmi: 0.00 ₼"
+                        android:textColor="@color/purple_500"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:gravity="end"
+                        android:layout_marginTop="4dp"
+                        android:visibility="gone"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- Konum Kartı -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/card_dark"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <!-- Başlıq və Konum Al Butonu -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Konum"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnGetLocation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Konum Al"
+                            android:textColor="@color/purple_500"
+                            android:textAllCaps="false"
+                            app:icon="@drawable/ic_location"
+                            app:iconGravity="start"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            app:strokeColor="@color/purple_500"
+                            app:iconTint="@color/purple_500"/>
+                    </LinearLayout>
+
+                    <!-- Yadda saxlanılan konumlar spinner + Əlavə et düyməsi -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <Spinner
+                            android:id="@+id/spinnerSavedLocations"
+                            android:layout_width="300dp"
+                            android:layout_height="55dp"
+                            android:background="@drawable/spinner_background"
+                            android:popupBackground="@color/card_dark"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAddLocation"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:text="+"
+                            android:textSize="20sp"
+                            android:textColor="@color/white"
+                            android:backgroundTint="@color/purple_500"
+                            app:cornerRadius="24dp"
+                            app:icon="@null"
+                            style="@style/Widget.MaterialComponents.Button"
+                            android:insetLeft="0dp"
+                            android:insetTop="0dp"
+                            android:insetRight="0dp"
+                            android:insetBottom="0dp"/>
+                    </LinearLayout>
+
+                    <!-- Seçilmiş konum göstəricisi -->
+                    <TextView
+                        android:id="@+id/tvLocation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Konum alınmadı"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:padding="12dp"
+                        android:background="@drawable/location_background"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Qeyd Kartı -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/card_dark"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Qeyd (istəyə bağlı)"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeColor="@color/purple_500"
+                        app:hintTextColor="@color/white_60">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etNote"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Əlavə qeyd"
+                            android:textColor="@color/white"
+                            android:textColorHint="@color/white_60"
+                            android:maxLines="3"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Preview Kartı -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardPreview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/card_dark"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Önizləmə"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Növ:"
+                            android:textColor="@color/white_60"/>
+
+                        <TextView
+                            android:id="@+id/tvPreviewType"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Xərc"
+                            android:textColor="@color/expense_red"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Kateqoriya:"
+                            android:textColor="@color/white_60"/>
+
+                        <TextView
+                            android:id="@+id/tvPreviewCategory"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Seçilməyib"
+                            android:textColor="@color/white"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Məhsul:"
+                            android:textColor="@color/white_60"/>
+
+                        <TextView
+                            android:id="@+id/tvPreviewProduct"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Daxil edilməyib"
+                            android:textColor="@color/white"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Məbləğ:"
+                            android:textColor="@color/white_60"/>
+
+                        <TextView
+                            android:id="@+id/tvPreviewAmount"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="₼ 0.00"
+                            android:textColor="@color/white"/>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/white_20"
+                        android:layout_marginVertical="8dp"/>
+
+                    <TextView
+                        android:id="@+id/tvPreviewTotal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Cəmi: ₼ 0.00"
+                        android:textColor="@color/purple_500"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:gravity="end"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Action Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="20dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCancel"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Ləğv et"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    app:strokeColor="@color/white_60"
+                    android:textColor="@color/white"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSave"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Əlavə et"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    app:icon="@drawable/ic_save"
+                    app:iconGravity="start"
+                    app:iconTint="@color/white"
+                    android:backgroundTint="@color/purple_500"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- FAB for Scan -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabScan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_scan"
+        android:contentDescription="Scan"
+        app:backgroundTint="@color/purple_500"
+        app:fabSize="normal"
+        app:tint="@color/white"/>
+</LinearLayout>

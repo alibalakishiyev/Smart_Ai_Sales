@@ -1,0 +1,78 @@
+plugins {
+    id 'com.android.application'
+    alias(libs.plugins.google.gms.google.services)
+}
+
+android {
+    namespace 'com.smart_ai_sales'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.smart_ai_sales"
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // TensorFlow Lite üçün
+    aaptOptions {
+        noCompress "tflite"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    // Android Core
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0' // Yeniləndi
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.activity:activity:1.8.2'
+
+    // Firebase BoM - Bütün Firebase dependency-ləri üçün
+    implementation platform('com.google.firebase:firebase-bom:33.1.2') // Yeniləndi
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-storage'
+    implementation 'com.google.firebase:firebase-database'
+
+    // Google Play Services
+    implementation 'com.google.android.gms:play-services-location:21.3.0' // Yeniləndi
+    implementation 'com.google.android.gms:play-services-maps:19.1.0'
+    implementation 'com.google.android.gms:play-services-auth:21.2.0'
+    implementation 'com.google.android.gms:play-services-base:18.5.0'  // Əlavə edildi
+
+    // TensorFlow Lite
+    implementation 'org.tensorflow:tensorflow-lite:2.13.0'
+
+    // MPAndroidChart
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
+    // OSMDroid (OpenStreetMap)
+    implementation 'org.osmdroid:osmdroid-android:6.1.20'
+
+    // Lottie Animation
+    implementation 'com.airbnb.android:lottie:6.0.0'
+
+    implementation 'com.google.code.gson:gson:2.8.9'
+
+    // Testing
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    implementation 'org.tensorflow:tensorflow-lite:2.17.0'
+    implementation 'org.tensorflow:tensorflow-lite-gpu:2.17.0'
+}

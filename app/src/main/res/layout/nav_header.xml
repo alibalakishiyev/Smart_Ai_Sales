@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="180dp"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/balance_gradient"
+    android:padding="16dp">
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/ic_ai"
+        android:tint="@color/white"/>
+
+    <TextView
+        android:id="@+id/navUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="İstifadəçi Adı"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/navUserEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="email@example.com"
+        android:textColor="@color/white_80"
+        android:textSize="12sp"
+        android:layout_marginTop="4dp"/>
+</LinearLayout>

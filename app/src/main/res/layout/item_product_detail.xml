@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/item_background"
+    android:padding="12dp"
+    android:layout_marginBottom="8dp">
+
+    <!-- Üst sıra: Sıra nömrəsi, Məhsul adı, Kateqoriya -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/tvRank"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:text="1"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="@drawable/circle_purple"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/tvProductName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Məhsul adı"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kateqoriya"
+            android:textColor="@color/purple_500"
+            android:textSize="12sp"
+            android:background="@drawable/chip_purple"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"/>
+    </LinearLayout>
+
+    <!-- İkinci sıra: Məbləğ və satış sayı -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="4dp">
+
+        <TextView
+            android:id="@+id/tvTotalAmount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="₼0.00"
+            android:textColor="@color/success"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvSalesCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 satış"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+    <!-- Üçüncü sıra: Orta qiymət və trend -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="4dp">
+
+        <TextView
+            android:id="@+id/tvAvgPrice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Orta: ₼0.00"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"/>
+
+        <TextView
+            android:id="@+id/tvTrend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trend"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="8dp"/>
+    </LinearLayout>
+
+    <!-- Dördüncü sıra: Proqnoz -->
+    <TextView
+        android:id="@+id/tvPrediction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Proqnoz: ₼0.00"
+        android:textColor="@color/warning"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:layout_marginTop="4dp"/>
+</LinearLayout>

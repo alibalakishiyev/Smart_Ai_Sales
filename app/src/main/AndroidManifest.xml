@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SmartAiSales">
+
+        <!-- Google Play Services metadata - BU HİSSƏNİ ƏLAVƏ EDİN -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name="com.main.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Smart_Ai_Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Onboarding Activity -->
+        <activity
+            android:name="com.main.OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SmartAiSales" />
+
+        <!-- Authentication Activities -->
+        <activity
+            android:name="com.authentication.LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SmartAiSales" />
+        <activity
+            android:name="com.authentication.RegisterActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SmartAiSales" />
+        <activity
+            android:name="com.authentication.ForgotPasswordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SmartAiSales" />
+
+        <!-- Dashboard Activity -->
+        <activity
+            android:name="com.dashboard.DashboardActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SmartAiSales" />
+
+        <!-- Data Activities -->
+        <activity
+            android:name="com.data.AddDataActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SmartAiSales" />
+
+        <!-- Utils Activities -->
+        <activity
+            android:name="com.utils.SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SmartAiSales" />
+        <activity
+            android:name="com.utils.AddSalaryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SmartAiSales" />
+
+        <!-- Main Activity -->
+        <activity
+            android:name="com.main.MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SmartAiSales" />
+
+        <!-- Salary Reminder Receiver -->
+        <receiver
+            android:name="com.utils.SalaryReminderReceiver"
+            android:exported="false" />
+
+    </application>
+
+</manifest>

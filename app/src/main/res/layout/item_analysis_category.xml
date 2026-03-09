@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/item_background"
+    android:padding="12dp"
+    android:layout_marginBottom="8dp">
+
+    <TextView
+        android:id="@+id/tvCategoryName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Kateqoriya"
+        android:textColor="@color/text_primary"
+        android:textSize="15sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/tvCategoryAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="₼0.00"
+        android:textColor="@color/success"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_marginEnd="12dp"/>
+
+    <TextView
+        android:id="@+id/tvCategoryPercent"
+        android:layout_width="48dp"
+        android:layout_height="24dp"
+        android:text="0%"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:background="@drawable/percent_background"/>
+</LinearLayout>
