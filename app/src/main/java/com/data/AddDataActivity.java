@@ -42,6 +42,13 @@ import androidx.core.content.ContextCompat;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.data.location.LocationItem;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -68,8 +75,10 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Transaction;
+import com.main.MainActivity;
 import com.smart_ai_sales.R;
 
+import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -159,6 +168,11 @@ public class AddDataActivity extends AppCompatActivity {
     private boolean isProductNameValid = false;
     private boolean isAmountValid = false;
     private boolean isCategoryValid = false;
+
+    private AdView mAdView;
+    private InterstitialAd mInterstitialAd;
+    private long lastAdShownTime = 0;
+    private final long AD_INTERVAL = 60000;
 
     // Offline support
     private SQLiteDatabase localDB;
@@ -270,6 +284,10 @@ public class AddDataActivity extends AppCompatActivity {
         animateViews();
         checkConnectivityAndSync();
         startConnectivityMonitoring();
+
+        loadInterstitialAd();
+        showInterstitialAd();
+
     }
 
     private void initializeLocalDatabase() {
@@ -393,6 +411,10 @@ public class AddDataActivity extends AppCompatActivity {
             finish();
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         });
+
+        mAdView = findViewById(R.id.adView3);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         updateSaveButtonState();
     }
@@ -577,34 +599,136 @@ public class AddDataActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
-            // OCR-dan gələn məlumatları doldur
-            ArrayList<String> productNames = data.getStringArrayListExtra("product_names");
-            ArrayList<Double> productPrices = (ArrayList<Double>) data.getSerializableExtra("product_prices");
-            ArrayList<Double> productQuantities = (ArrayList<Double>) data.getSerializableExtra("product_quantities");
-
+            // OCR-dan gələn məlumatları al
             String storeName = data.getStringExtra("store_name");
             String date = data.getStringExtra("date");
             String time = data.getStringExtra("time");
             double totalAmount = data.getDoubleExtra("total_amount", 0);
+            String docId = data.getStringExtra("doc_id");
 
-            // Əgər məlumat varsa, formanı doldur
+            // Məhsul list'lərini al (String ArrayList olaraq)
+            ArrayList<String> productNames = data.getStringArrayListExtra("product_names");
+            ArrayList<String> productPrices = data.getStringArrayListExtra("product_prices");
+            ArrayList<String> productQuantities = data.getStringArrayListExtra("product_quantities");
+            ArrayList<String> productUnits = data.getStringArrayListExtra("product_units");
+
+            Log.d(TAG, "OCR məlumatları alındı:");
+            Log.d(TAG, "Mağaza: " + storeName);
+            Log.d(TAG, "Məhsul sayı: " + (productNames != null ? productNames.size() : 0));
+
+            // Əgər məhsul varsa, ilk məhsulu formaya doldur
             if (productNames != null && !productNames.isEmpty()) {
                 // İlk məhsul
-                etProductName.setText(productNames.get(0));
+                String firstName = productNames.get(0);
+                etProductName.setText(firstName);
+
+                // İlk məhsulun miqdarı
                 if (productQuantities != null && productQuantities.size() > 0) {
-                    etQuantity.setText(String.valueOf(productQuantities.get(0).intValue()));
+                    try {
+                        double qty = Double.parseDouble(productQuantities.get(0));
+                        // Əgər tam ədəddirsə, int kimi göstər
+                        if (qty == Math.floor(qty)) {
+                            etQuantity.setText(String.valueOf((int) qty));
+                        } else {
+                            etQuantity.setText(String.valueOf(qty));
+                        }
+                    } catch (NumberFormatException e) {
+                        etQuantity.setText("1");
+                    }
                 }
+
+                // İlk məhsulun qiyməti
                 if (productPrices != null && productPrices.size() > 0) {
-                    etAmount.setText(String.valueOf(productPrices.get(0)));
+                    try {
+                        double price = Double.parseDouble(productPrices.get(0));
+                        etAmount.setText(String.valueOf(price));
+                    } catch (NumberFormatException e) {
+                        // Ignore
+                    }
                 }
-            }
 
-            // Mağaza adı varsa, note-a əlavə et
-            if (storeName != null && !storeName.isEmpty()) {
-                etNote.setText(storeName + " - " + etNote.getText().toString());
-            }
+                // Əgər birdən çox məhsul varsa, note-a əlavə et
+                if (productNames.size() > 1) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("📦 OCR-dan gələn məhsullar:\n");
 
-            Toast.makeText(this, "OCR məlumatları əlavə edildi", Toast.LENGTH_SHORT).show();
+                    double calculatedTotal = 0;
+                    for (int i = 0; i < productNames.size(); i++) {
+                        String name = productNames.get(i);
+                        String qtyStr = (productQuantities != null && i < productQuantities.size())
+                                ? productQuantities.get(i) : "1";
+                        String priceStr = (productPrices != null && i < productPrices.size())
+                                ? productPrices.get(i) : "0";
+
+                        sb.append(String.format("%d. %s - %s x %s\n",
+                                i + 1, name, qtyStr, priceStr));
+
+                        try {
+                            double qty = Double.parseDouble(qtyStr);
+                            double price = Double.parseDouble(priceStr);
+                            calculatedTotal += qty * price;
+                        } catch (NumberFormatException e) {
+                            // Ignore
+                        }
+                    }
+
+                    if (storeName != null && !storeName.isEmpty()) {
+                        sb.insert(0, "🏪 " + storeName + "\n");
+                    }
+
+                    if (totalAmount > 0) {
+                        sb.append(String.format("💰 Ümumi: %.2f AZN", totalAmount));
+                    } else if (calculatedTotal > 0) {
+                        sb.append(String.format("💰 Ümumi: %.2f AZN", calculatedTotal));
+                    }
+
+                    etNote.setText(sb.toString());
+                } else {
+                    // Tək məhsul varsa, sadəcə mağaza adını note-a yaz
+                    if (storeName != null && !storeName.isEmpty()) {
+                        String existingNote = etNote.getText().toString();
+                        if (existingNote.isEmpty()) {
+                            etNote.setText("🏪 " + storeName);
+                        } else {
+                            etNote.setText(storeName + " - " + existingNote);
+                        }
+                    }
+                }
+
+                // Tarix və saat varsa, onları da doldura bilərik
+                if (date != null && !date.isEmpty() && !date.equals("Mağaza adı tapılmadı")) {
+                    // Tarixi formatla (GG.AA.YYYY -> dd MMMM yyyy)
+                    try {
+                        SimpleDateFormat inputFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.US);
+                        SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("az"));
+                        Date parsedDate = inputFormat.parse(date);
+                        if (parsedDate != null) {
+                            tvCurrentDate.setText(outputFormat.format(parsedDate));
+                        }
+                    } catch (Exception e) {
+                        // Ignore, default tarix qalsın
+                    }
+                }
+
+                if (time != null && !time.isEmpty()) {
+                    tvCurrentTime.setText(time);
+                }
+
+                // Preview-i yenilə
+                updatePreview();
+
+                Toast.makeText(this,
+                        "✅ OCR məlumatları əlavə edildi\n" +
+                                productNames.size() + " məhsul tapıldı",
+                        Toast.LENGTH_LONG).show();
+
+                // Məhsul adı və məbləği doldurulduğu üçün button-u aktiv et
+                updateSaveButtonState();
+            } else {
+                Toast.makeText(this,
+                        "⚠️ OCR-dan məlumat gəlmədi",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -1373,6 +1497,8 @@ public class AddDataActivity extends AppCompatActivity {
             }
         }
 
+
+
         // 6. Əgər internet varsa Firebase-ə yadda saxla, yoxsa local
         if (isNetworkAvailable()) {
             // 6a. Yeni məhsuldursa, əvvəl məhsulu əlavə et, sonra transaction
@@ -1388,6 +1514,59 @@ public class AddDataActivity extends AppCompatActivity {
             // 7. Offline rejim - local database-ə yadda saxla
             saveTransactionOffline(productNameInput, amountInput, quantityInput,
                     totalAmount, newBalance, transactionId);
+        }
+    }
+
+    private void loadInterstitialAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(this, "ca-app-pub-5367924704859976/7665228092", adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                mInterstitialAd = interstitialAd;
+                Log.d("MainActivity", "Interstitial reklamı uğurla yükləndi.");
+                showInterstitialAd();
+
+                mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                    @Override
+                    public void onAdDismissedFullScreenContent() {
+                        Log.d("MainActivity", "Reklam bağlandı. Yeni reklam yüklənir...");
+                        mInterstitialAd = null; // Mövcud reklam obyektini null edin.
+                        loadInterstitialAd();
+                    }
+
+                    @Override
+                    public void onAdFailedToShowFullScreenContent(AdError adError) {
+                        Log.d("MainActivity", "Reklam göstərilmədi: " + adError.getMessage());
+                    }
+
+                    @Override
+                    public void onAdShowedFullScreenContent() {
+                        Log.d("MainActivity", "Reklam göstərilir.");
+                    }
+
+                });
+
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                mInterstitialAd = null;
+                Log.d("MainActivity", "Interstitial reklamı yüklənmədi: " + loadAdError.getMessage());
+            }
+        });
+
+    }
+
+    private void showInterstitialAd() {
+        long currentTime = System.currentTimeMillis();
+        if (mInterstitialAd != null && (currentTime - lastAdShownTime >= AD_INTERVAL)) {
+            Log.d("MainActivity", "Reklam göstərilir...");
+            mInterstitialAd.show(AddDataActivity.this);
+            lastAdShownTime = currentTime; // Son reklam göstərilmə vaxtını yeniləyin
+        } else if (mInterstitialAd == null) {
+            Log.d("MainActivity", "Reklam hazır deyil.");
+        } else {
+            Log.d("MainActivity", "Reklam vaxtı tamamlanmayıb. Gözlənilir...");
         }
     }
 

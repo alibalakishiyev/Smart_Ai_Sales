@@ -26,6 +26,13 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +40,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.android.material.navigation.NavigationView;
+import com.main.MainActivity;
 import com.model.FinanceMLModel;
 import com.smart_ai_sales.R;  // BURADA DOĞRU R IMPORT OLDUĞUNA ƏMİN OLUN
 import com.utils.BaseActivity;
@@ -68,6 +76,12 @@ public class DashboardActivity extends BaseActivity {
     private ImageView btnLogout, ivModelStatus;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+
+    private AdView mAdView;
+    private InterstitialAd mInterstitialAd;
+    private long lastAdShownTime = 0;
+    private final long AD_INTERVAL = 60000;
+
 
     // Firebase
     private FirebaseAuth mAuth;
@@ -109,11 +123,17 @@ public class DashboardActivity extends BaseActivity {
         initViews();
         setupClickListeners();
         updateDateTime();
+        loadInterstitialAd();
+        showInterstitialAd();
+
+
 
         initializeMLModel();
         fetchAllDataFromFirebase();
         startRealTimeUpdates();
         setupNavigationDrawer();
+
+
     }
 
     private void initViews() {
@@ -190,6 +210,10 @@ public class DashboardActivity extends BaseActivity {
         // Kartlar
         cardAddData = findViewById(R.id.cardAddData);
         cardTransactions = findViewById(R.id.cardTransactions);
+
+        mAdView = findViewById(R.id.adView2);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     private void initializeMLModel() {
@@ -308,6 +332,59 @@ public class DashboardActivity extends BaseActivity {
                         });
                     }
                 });
+    }
+
+    private void loadInterstitialAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(this, "ca-app-pub-5367924704859976/9401961534", adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                mInterstitialAd = interstitialAd;
+                Log.d("MainActivity", "Interstitial reklamı uğurla yükləndi.");
+                showInterstitialAd();
+
+                mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                    @Override
+                    public void onAdDismissedFullScreenContent() {
+                        Log.d("MainActivity", "Reklam bağlandı. Yeni reklam yüklənir...");
+                        mInterstitialAd = null; // Mövcud reklam obyektini null edin.
+                        loadInterstitialAd();
+                    }
+
+                    @Override
+                    public void onAdFailedToShowFullScreenContent(AdError adError) {
+                        Log.d("MainActivity", "Reklam göstərilmədi: " + adError.getMessage());
+                    }
+
+                    @Override
+                    public void onAdShowedFullScreenContent() {
+                        Log.d("MainActivity", "Reklam göstərilir.");
+                    }
+
+                });
+
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                mInterstitialAd = null;
+                Log.d("MainActivity", "Interstitial reklamı yüklənmədi: " + loadAdError.getMessage());
+            }
+        });
+
+    }
+
+    private void showInterstitialAd() {
+        long currentTime = System.currentTimeMillis();
+        if (mInterstitialAd != null && (currentTime - lastAdShownTime >= AD_INTERVAL)) {
+            Log.d("MainActivity", "Reklam göstərilir...");
+            mInterstitialAd.show(DashboardActivity.this);
+            lastAdShownTime = currentTime; // Son reklam göstərilmə vaxtını yeniləyin
+        } else if (mInterstitialAd == null) {
+            Log.d("MainActivity", "Reklam hazır deyil.");
+        } else {
+            Log.d("MainActivity", "Reklam vaxtı tamamlanmayıb. Gözlənilir...");
+        }
     }
 
     private void fetchMonthlyData() {

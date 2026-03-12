@@ -30,6 +30,13 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.authentication.LogoutManager;
 import com.dashboard.DashboardActivity;
 import com.data.AddDataActivity;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.tabs.TabLayout;
@@ -94,6 +101,12 @@ public class MainActivity extends BaseActivity {
     private int totalProducts = 0;
     private double balance = 0;
 
+
+    private AdView mAdView;
+    private InterstitialAd mInterstitialAd;
+    private long lastAdShownTime = 0;
+    private final long AD_INTERVAL = 60000;
+
     // Formatting
     private NumberFormat currencyFormat;
     private SimpleDateFormat dateFormat;
@@ -133,6 +146,9 @@ public class MainActivity extends BaseActivity {
         // Initialize Adapters
         initAdapters();
 
+        loadInterstitialAd();
+        showInterstitialAd();
+
         // Load Real Data
         loadRealData();
 
@@ -141,6 +157,8 @@ public class MainActivity extends BaseActivity {
 
         // Check User
         checkUserStatus();
+
+
     }
 
     private void initViews() {
@@ -181,6 +199,10 @@ public class MainActivity extends BaseActivity {
         recyclerViewStats = findViewById(R.id.recyclerViewStats);
 
         tvVersion.setText("Version 1.0.0");
+
+        mAdView = findViewById(R.id.adView1);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     private void loadAnimations() {
@@ -578,6 +600,59 @@ public class MainActivity extends BaseActivity {
         btnLogout.setOnClickListener(v -> {
             LogoutManager.getInstance().showLogoutConfirmationDialog(this);
         });
+    }
+
+    private void loadInterstitialAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(this, "ca-app-pub-5367924704859976/6825294889", adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                mInterstitialAd = interstitialAd;
+                Log.d("MainActivity", "Interstitial reklamı uğurla yükləndi.");
+                showInterstitialAd();
+
+                mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                    @Override
+                    public void onAdDismissedFullScreenContent() {
+                        Log.d("MainActivity", "Reklam bağlandı. Yeni reklam yüklənir...");
+                        mInterstitialAd = null; // Mövcud reklam obyektini null edin.
+                        loadInterstitialAd();
+                    }
+
+                    @Override
+                    public void onAdFailedToShowFullScreenContent(AdError adError) {
+                        Log.d("MainActivity", "Reklam göstərilmədi: " + adError.getMessage());
+                    }
+
+                    @Override
+                    public void onAdShowedFullScreenContent() {
+                        Log.d("MainActivity", "Reklam göstərilir.");
+                    }
+
+                });
+
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                mInterstitialAd = null;
+                Log.d("MainActivity", "Interstitial reklamı yüklənmədi: " + loadAdError.getMessage());
+            }
+        });
+
+    }
+
+    private void showInterstitialAd() {
+        long currentTime = System.currentTimeMillis();
+        if (mInterstitialAd != null && (currentTime - lastAdShownTime >= AD_INTERVAL)) {
+            Log.d("MainActivity", "Reklam göstərilir...");
+            mInterstitialAd.show(MainActivity.this);
+            lastAdShownTime = currentTime; // Son reklam göstərilmə vaxtını yeniləyin
+        } else if (mInterstitialAd == null) {
+            Log.d("MainActivity", "Reklam hazır deyil.");
+        } else {
+            Log.d("MainActivity", "Reklam vaxtı tamamlanmayıb. Gözlənilir...");
+        }
     }
 
     // ===== YENİ METOD: Kamera permission yoxlaması =====

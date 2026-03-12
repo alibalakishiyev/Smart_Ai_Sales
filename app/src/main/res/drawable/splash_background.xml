@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Fon rəngi -->
+    <item android:drawable="@color/purple_500" />
+
+    <!-- Logo və ya mətn (opsiyonel) -->
+    <item
+        android:width="150dp"
+        android:height="150dp"
+        android:drawable="@drawable/ic_launcher_foreground"
+        android:gravity="center" />
+
+    <!-- App adı (opsiyonel) -->
+    <!--
+    <item
+        android:width="wrap_content"
+        android:height="wrap_content"
+        android:drawable="@drawable/splash_text"
+        android:gravity="bottom|center_horizontal"
+        android:bottom="50dp" />
+    -->
+</layer-list>
