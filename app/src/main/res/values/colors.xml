@@ -1,43 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Əsas rənglər -->
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_200">#BB86FC</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="purple_500_alpha">#206200EE</color>
+    <color name="scanner_purple">#6200EE</color>
 
-    <!-- ƏLAVƏ EDİLDİ -->
-    <color name="divider">#33FFFFFF</color>
-    <color name="black_50">#80000000</color>
-    <color name="scanner_purple">#9C27B0</color>
+    <!-- Teal rənglər -->
+    <color name="teal_200">#03DAC5</color>
+    <color name="teal_700">#018786</color>
 
-    <!-- Ağ rənglərin şəffaf variantları -->
-    <color name="white">#FFFFFF</color>
-    <color name="purple_200">#C4B5FD</color>
-    <color name="income_green">#10B981</color>    <!-- income_green əlavə edildi -->
-    <color name="expense_red">#EF4444</color>
-    <color name="card_light">#2A2A2A</color>
+    <!-- Gradient rənglər -->
+    <color name="gradient_start">#6200EE</color>
+    <color name="gradient_end">#3700B3</color>
 
-    <color name="background_dark">#0A0A0F</color>
-    <color name="card_dark">#1E1E2A</color>
+    <!-- Background rənglər -->
+    <color name="background_dark">#121212</color>
+    <color name="card_dark">#1E1E1E</color>
+    <color name="card_light">#2D2D2D</color>
+
+    <!-- Text rənglər -->
     <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#8E8E99</color>
-    <color name="purple_500">#8B5CF6</color>
-    <color name="purple_700">#7C3AED</color>
-    <color name="gradient_start">#8B5CF6</color>
-    <color name="gradient_end">#EC4899</color>
-    <color name="success">#10B981</color>
-    <color name="warning">#F59E0B</color>
-    <color name="info">#3B82F6</color>
-    <color name="white_80">#CCFFFFFF</color>
-    <color name="white_60">#99FFFFFF</color>
+    <color name="text_secondary">#B3FFFFFF</color>
+    <color name="white">#FFFFFF</color>
     <color name="white_20">#33FFFFFF</color>
+    <color name="white_60">#99FFFFFF</color>
+    <color name="white_80">#CCFFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="black_50">#80000000</color>
+    <color name="black_alpha">#99000000</color>
 
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="gray">#888888</color>
-    <color name="light_gray">#F0F0F0</color>
+    <!-- Boz rənglər -->
+    <color name="gray">#9E9E9E</color>
+    <color name="gray_light">#E0E0E0</color>
+    <color name="gray_dark">#616161</color>
 
-
+    <!-- Status rənglər -->
+    <color name="success">#4CAF50</color>
     <color name="error">#F44336</color>
+    <color name="warning">#FFC107</color>
+    <color name="info">#2196F3</color>
 
+    <!-- Gəlir və xərc rəngləri -->
+    <color name="income_green">#4CAF50</color>
+    <color name="expense_red">#F44336</color>
 
+    <!-- Divider rəngi -->
+    <color name="divider">#1FFFFFFF</color>
 
+    <!-- Əlavə rənglər -->
+    <color name="blue_light">#64B5F6</color>
+    <color name="blue_dark">#1976D2</color>
+    <color name="orange">#FF9800</color>
+    <color name="orange_dark">#F57C00</color>
+    <color name="yellow">#FFEB3B</color>
+    <color name="yellow_dark">#FBC02D</color>
+    <color name="grey">#9E9E9E</color>
+    <color name="grey_dark">#616161</color>
+    <color name="grey_light">#E0E0E0</color>
+
+    <color name="error_alpha">#20F44336</color>
+    <color name="success_alpha">#204CAF50</color>
+
+    <!-- Transparent rəng -->
+    <color name="transparent">#00000000</color>
+
+    <color name="green">#FF4CAF50</color>
+    <color name="blue">#FF2196F3</color>
 
 </resources>

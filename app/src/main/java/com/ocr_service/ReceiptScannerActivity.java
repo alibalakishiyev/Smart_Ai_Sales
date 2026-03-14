@@ -22,8 +22,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,14 +32,18 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.core.widget.NestedScrollView;
 
+import com.data.ProductItem;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.Timestamp;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.RGBLuminanceSource;
@@ -57,7 +59,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -85,11 +86,11 @@ public class ReceiptScannerActivity extends AppCompatActivity {
     private CardView cardImage, cardResults, cardQrInfo, cardManualFiscal;
     private LinearLayout productsContainer;
     private LinearProgressIndicator progressIndicator;
-    private ProgressBar progressBar;
+    private CircularProgressIndicator progressBar;
     private MaterialButton btnScan, btnSave, btnRetake, btnFetchFromEKassa, btnManualSearch;
     private FloatingActionButton fabCamera, fabGallery;
     private EditText etStoreName, etDate, etTime, etManualDocId;
-    private ScrollView mainScrollView;
+    private NestedScrollView mainScrollView;
 
     // OCR Helper
     private RealOCRHelper realOCRHelper;
@@ -105,6 +106,8 @@ public class ReceiptScannerActivity extends AppCompatActivity {
     private String receiptDate = "";
     private String receiptTime = "";
     private String qrDocId = "";
+    private String fiscalCode = "";
+    private String userId = "test_user"; // Firebase Auth-dan alınacaq
 
     // Drag and Drop üçün
     private View draggedView = null;
@@ -112,32 +115,14 @@ public class ReceiptScannerActivity extends AppCompatActivity {
     private int draggedPosition = -1;
     private boolean isDragging = false;
 
-    // Məhsul sinfi
-    public static class ProductItem {
-        String name;
-        double price;
-        double quantity;
-        String unit;
-        double total;
-
-        public ProductItem(String name, double price, double quantity, String unit, double total) {
-            this.name = name;
-            this.price = price;
-            this.quantity = quantity;
-            this.unit = unit;
-            this.total = total;
-        }
-
-        public ProductItem copy() {
-            return new ProductItem(name, price, quantity, unit, total);
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receipt_scanner);
 
+
+        // JSON düzəlişlərini yüklə
+        ReceiptParser.loadOcrCorrections(this);
         initViews();
         initOCR();
         setupClickListeners();
@@ -155,7 +140,7 @@ public class ReceiptScannerActivity extends AppCompatActivity {
         cardManualFiscal = findViewById(R.id.cardManualFiscal);
         productsContainer = findViewById(R.id.productsContainer);
         progressIndicator = findViewById(R.id.progressIndicator);
-        progressBar = findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.circularProgress);
         btnScan = findViewById(R.id.btnScan);
         btnSave = findViewById(R.id.btnSave);
         btnRetake = findViewById(R.id.btnRetake);
@@ -169,10 +154,12 @@ public class ReceiptScannerActivity extends AppCompatActivity {
         etStoreName = findViewById(R.id.etStoreName);
         etDate = findViewById(R.id.etDate);
         etTime = findViewById(R.id.etTime);
-        mainScrollView = findViewById(R.id.mainScrollView);
+        mainScrollView = findViewById(R.id.nestedScrollView);
 
-        ImageView btnBack = findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(v -> onBackPressed());
+        // Toolbar
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+
 
         cardResults.setVisibility(View.GONE);
         cardQrInfo.setVisibility(View.GONE);
@@ -196,7 +183,13 @@ public class ReceiptScannerActivity extends AppCompatActivity {
     }
 
     private void setupClickListeners() {
-        fabCamera.setOnClickListener(v -> checkCameraPermission());
+        fabCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               Intent intent = new Intent(ReceiptScannerActivity.this, RealTimeQrScanner.class);
+               startActivity(intent);
+            }
+        });
 
         fabGallery.setOnClickListener(v -> checkStoragePermission());
 
@@ -230,18 +223,28 @@ public class ReceiptScannerActivity extends AppCompatActivity {
             showImageSourceDialog();
         });
 
-        btnSave.setOnClickListener(v -> saveDataAndReturn());
+        // btnSave listener - artıq var, əmin olun ki, doğrudur
+        btnSave.setOnClickListener(v -> {
+            Log.d(TAG, "btnSave klikləndi");
+            saveDataAndReturn();
+        });
 
         etStoreName.addTextChangedListener(new SimpleTextWatcher() {
-            @Override public void afterTextChanged(Editable s) { storeName = s.toString(); }
+            @Override public void afterTextChanged(Editable s) {
+                storeName = s.toString();
+            }
         });
 
         etDate.addTextChangedListener(new SimpleTextWatcher() {
-            @Override public void afterTextChanged(Editable s) { receiptDate = s.toString(); }
+            @Override public void afterTextChanged(Editable s) {
+                receiptDate = s.toString();
+            }
         });
 
         etTime.addTextChangedListener(new SimpleTextWatcher() {
-            @Override public void afterTextChanged(Editable s) { receiptTime = s.toString(); }
+            @Override public void afterTextChanged(Editable s) {
+                receiptTime = s.toString();
+            }
         });
     }
 
@@ -520,6 +523,7 @@ public class ReceiptScannerActivity extends AppCompatActivity {
             JSONObject json = new JSONObject(jsonStr);
 
             storeName = json.optString("sellerName", "Mağaza adı tapılmadı");
+            fiscalCode = json.optString("fiscalCode", "");
 
             String dateStr = json.optString("date", "");
             if (!dateStr.isEmpty()) {
@@ -548,10 +552,26 @@ public class ReceiptScannerActivity extends AppCompatActivity {
                     double price = item.optDouble("price", 0.0);
                     double quantity = item.optDouble("quantity", 1.0);
                     String unit = item.optString("unit", "ədəd");
-                    double total = price * quantity;
+                    boolean isTaxFree = item.optBoolean("isTaxFree", false);
 
-                    scannedProducts.add(new ProductItem(name, price, quantity, unit, total));
-                    totalAmount += total;
+                    // ProductItem yarat - quantity-ni düzgün set et
+                    ProductItem product;
+                    if (unit.equals("kg") || unit.equals("kq")) {
+                        product = new ProductItem(name, quantity, price, price * quantity);
+                        product.setKg(quantity);
+                    } else {
+                        product = new ProductItem(name, (int) quantity, price);
+                    }
+
+                    product.setTaxFree(isTaxFree);
+                    product.setStoreName(storeName);
+                    product.setFiscalCode(fiscalCode);
+                    product.setReceiptId(qrDocId);
+                    product.setPurchaseDate(new Date());
+                    product.setCreatedAt(Timestamp.now());
+
+                    scannedProducts.add(product);
+                    totalAmount += product.getTotalAmount();
                 }
                 return true;
             }
@@ -581,43 +601,48 @@ public class ReceiptScannerActivity extends AppCompatActivity {
         realOCRHelper.detectText(currentBitmap, new RealOCRHelper.OCRCallback() {
             @Override
             public void onSuccess(List<RealOCRHelper.TextBlock> textBlocks) {
-                ReceiptParser.ReceiptData receiptData = ReceiptParser.parseReceipt(textBlocks);
+                // ReceiptParser ilə parse et
+                List<ProductItem> products = ReceiptParser.parseReceiptToProducts(textBlocks, userId);
 
-                storeName = receiptData.storeName;
-                receiptDate = receiptData.date;
-                receiptTime = receiptData.time;
-                qrDocId = receiptData.fiscalCode;
+                if (!products.isEmpty()) {
+                    scannedProducts.clear();
+                    scannedProducts.addAll(products);
 
-                scannedProducts.clear();
-                for (ReceiptParser.ReceiptData.ProductItem product : receiptData.products) {
-                    scannedProducts.add(new ProductItem(
-                            product.name,
-                            product.price,
-                            product.quantity,
-                            product.unit,
-                            product.total
-                    ));
+                    // Ümumi məlumatları topla
+                    ReceiptParser.ReceiptData data = ReceiptParser.parseReceipt(textBlocks);
+                    storeName = data.storeName;
+                    receiptDate = data.date;
+                    receiptTime = data.time;
+                    fiscalCode = data.fiscalCode;
+                    qrDocId = data.receiptNumber;
+                    totalAmount = data.totalAmount;
+
+                    runOnUiThread(() -> {
+                        progressIndicator.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.GONE);
+                        tvLoading.setVisibility(View.GONE);
+                        btnScan.setEnabled(true);
+
+                        if (!fiscalCode.isEmpty()) {
+                            tvQrStatus.setText("✅ Fiskal kod tapıldı: " + fiscalCode);
+                            tvDocId.setText("Sənəd ID: " + fiscalCode);
+                            btnFetchFromEKassa.setEnabled(true);
+                            btnFetchFromEKassa.setAlpha(1f);
+                        } else {
+                            tvQrStatus.setText("✅ Çek analiz edildi");
+                        }
+
+                        displayResults();
+                    });
+                } else {
+                    runOnUiThread(() -> {
+                        progressIndicator.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.GONE);
+                        tvLoading.setVisibility(View.GONE);
+                        btnScan.setEnabled(true);
+                        showError("Məhsul məlumatları tapılmadı");
+                    });
                 }
-
-                totalAmount = receiptData.totalAmount;
-
-                runOnUiThread(() -> {
-                    progressIndicator.setVisibility(View.GONE);
-                    progressBar.setVisibility(View.GONE);
-                    tvLoading.setVisibility(View.GONE);
-                    btnScan.setEnabled(true);
-
-                    if (!receiptData.fiscalCode.isEmpty()) {
-                        tvQrStatus.setText("✅ Fiskal kod tapıldı: " + receiptData.fiscalCode);
-                        tvDocId.setText("Sənəd ID: " + receiptData.fiscalCode);
-                        btnFetchFromEKassa.setEnabled(true);
-                        btnFetchFromEKassa.setAlpha(1f);
-                    } else {
-                        tvQrStatus.setText("✅ Çek analiz edildi");
-                    }
-
-                    displayResults();
-                });
             }
 
             @Override
@@ -634,59 +659,77 @@ public class ReceiptScannerActivity extends AppCompatActivity {
         });
     }
 
-    private void displayResults() {
-        cardResults.setVisibility(View.VISIBLE);
 
-        etStoreName.setText(storeName.isEmpty() ? "Mağaza adı tapılmadı" : storeName);
-        etDate.setText(receiptDate.isEmpty() ? new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(new Date()) : receiptDate);
-        etTime.setText(receiptTime.isEmpty() ? new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()) : receiptTime);
 
-        productsContainer.removeAllViews();
-
-        if (scannedProducts.isEmpty()) {
-            addEmptyProductRow();
-        } else {
-            for (ProductItem product : scannedProducts) {
-                addProductRow(product, false);
-            }
-        }
-
-        // Əlavə et düyməsini əlavə et
-        addAddProductButton();
-
-        tvTotalAmount.setText(String.format(Locale.getDefault(), "₼%.2f", totalAmount));
-        btnSave.setEnabled(true);
-
-        cardResults.setAlpha(0f);
-        cardResults.setTranslationY(50f);
-        cardResults.animate().alpha(1f).translationY(0f).setDuration(400).start();
-    }
-
-    private void addProductRow(ProductItem product, boolean isNew) {
+    private void addProductRow(ProductItem product, boolean isNew, int position) {
         View rowView = LayoutInflater.from(this).inflate(R.layout.item_product_drag, productsContainer, false);
 
-        EditText etProductName = rowView.findViewById(R.id.etProductName);
-        EditText etQuantity = rowView.findViewById(R.id.etQuantity);
-        EditText etPrice = rowView.findViewById(R.id.etPrice);
+        TextInputEditText etProductName = rowView.findViewById(R.id.etProductName);
+        TextInputEditText etQuantity = rowView.findViewById(R.id.etQuantity);
+        TextInputEditText etPrice = rowView.findViewById(R.id.etPrice);
         TextView tvTotal = rowView.findViewById(R.id.tvTotal);
-        ImageView ivRemove = rowView.findViewById(R.id.ivRemove);
+        MaterialButton btnRemove = rowView.findViewById(R.id.btnRemove);
         ImageView ivDragHandle = rowView.findViewById(R.id.ivDragHandle);
 
-        etProductName.setText(product.name);
-        etQuantity.setText(String.valueOf(product.quantity));
-        etPrice.setText(String.format(Locale.getDefault(), "%.2f", product.price));
-        tvTotal.setText(String.format(Locale.getDefault(), "%.2f", product.total));
+        // Sıra nömrəsi elementlərini tap
+        TextView tvRowNumber = rowView.findViewById(R.id.tvRowNumber);
+        MaterialCardView cardRowNumber = rowView.findViewById(R.id.cardRowNumber);
 
-        // TextWatcher ilə dəyişiklikləri izlə
+        // Sıra nömrəsini set et (1-dən başlayır)
+        int rowNumber = position + 1;
+        tvRowNumber.setText(String.valueOf(rowNumber));
+
+        // Fərqli rənglər (isteğe bağlı)
+        int[] colors = {
+                getColor(R.color.purple_500),
+                getColor(R.color.teal_200),
+                getColor(R.color.orange),
+                getColor(R.color.green),
+                getColor(R.color.blue)
+        };
+
+        // Hər 5 məhsulda bir rəng dəyişir
+        int colorIndex = (rowNumber - 1) % colors.length;
+        cardRowNumber.setCardBackgroundColor(colors[colorIndex]);
+
+        // Məhsul məlumatlarını set et
+        etProductName.setText(product.getName());
+
+        // Quantity dəyərini düzgün set et
+        if (product.getKg() > 0) {
+            etQuantity.setText(String.format(Locale.getDefault(), "%.3f", product.getKg()));
+        } else {
+            etQuantity.setText(String.valueOf(product.getQuantity()));
+        }
+
+        etPrice.setText(String.format(Locale.getDefault(), "%.2f", product.getPrice()));
+        tvTotal.setText(product.getFormattedTotal());
+
         TextWatcher textWatcher = new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
-                updateProductTotal(rowView);
+                updateProductTotal(rowView, product);
+                // Məhsul dəyişdikdə save düyməsini aktiv et
+                btnSave.setEnabled(true);
+                btnSave.setAlpha(1f);
+
+                // Bütün sıra nömrələrini yenilə
+                updateAllRowNumbers();
             }
         };
 
         etQuantity.addTextChangedListener(textWatcher);
         etPrice.addTextChangedListener(textWatcher);
+
+        // Məhsul adı dəyişdikdə də save aktiv olsun
+        etProductName.addTextChangedListener(new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                product.setName(s.toString());
+                btnSave.setEnabled(true);
+                btnSave.setAlpha(1f);
+            }
+        });
 
         // Focus itirdikdə klaviaturanı gizlət
         View.OnFocusChangeListener focusListener = (v, hasFocus) -> {
@@ -700,26 +743,106 @@ public class ReceiptScannerActivity extends AppCompatActivity {
         etPrice.setOnFocusChangeListener(focusListener);
 
         // Silmə düyməsi
-        ivRemove.setOnClickListener(v -> {
+        btnRemove.setOnClickListener(v -> {
             productsContainer.removeView(rowView);
+            scannedProducts.remove(product);
             calculateGrandTotal();
 
-            // Əgər bütün məhsullar silinibsə, boş sətir əlavə et
-            if (productsContainer.getChildCount() <= 1) { // +1 əlavə et düyməsi üçün
+            // Bütün sıra nömrələrini yenilə
+            updateAllRowNumbers();
+
+            if (productsContainer.getChildCount() <= 1) {
                 addEmptyProductRow();
+                btnSave.setEnabled(false);
+                btnSave.setAlpha(0.5f);
+            } else {
+                btnSave.setEnabled(true);
+                btnSave.setAlpha(1f);
             }
         });
 
         // Drag and drop üçün
-        setupDragAndDrop(rowView, ivDragHandle);
+        setupDragAndDrop(rowView, ivDragHandle, product);
 
-        productsContainer.addView(rowView, productsContainer.getChildCount() - 1); // Əlavə et düyməsindən əvvəl əlavə et
+        productsContainer.addView(rowView, productsContainer.getChildCount() - 1);
     }
 
+    /**
+     * Bütün sıra nömrələrini yenilə
+     */
+    private void updateAllRowNumbers() {
+        int childCount = productsContainer.getChildCount() - 1; // Sonuncu "Əlavə et" düyməsidir
+
+        int[] colors = {
+                getColor(R.color.purple_500),
+                getColor(R.color.teal_200),
+                getColor(R.color.orange),
+                getColor(R.color.green),
+                getColor(R.color.blue)
+        };
+
+        for (int i = 0; i < childCount; i++) {
+            View rowView = productsContainer.getChildAt(i);
+            TextView tvRowNumber = rowView.findViewById(R.id.tvRowNumber);
+            MaterialCardView cardRowNumber = rowView.findViewById(R.id.cardRowNumber);
+
+            if (tvRowNumber != null && cardRowNumber != null) {
+                // Sıra nömrəsini yenilə (1-dən başlayır)
+                int rowNumber = i + 1;
+                tvRowNumber.setText(String.valueOf(rowNumber));
+
+                // Rəngi yenilə
+                int colorIndex = (rowNumber - 1) % colors.length;
+                cardRowNumber.setCardBackgroundColor(colors[colorIndex]);
+            }
+        }
+    }
+
+    // displayResults() metodunda addProductRow çağırışını dəyişdirin:
+    private void displayResults() {
+        cardResults.setVisibility(View.VISIBLE);
+
+        etStoreName.setText(storeName.isEmpty() ? "Mağaza adı tapılmadı" : storeName);
+        etDate.setText(receiptDate.isEmpty() ? new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(new Date()) : receiptDate);
+        etTime.setText(receiptTime.isEmpty() ? new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date()) : receiptTime);
+
+        productsContainer.removeAllViews();
+
+        if (scannedProducts.isEmpty()) {
+            addEmptyProductRow();
+            btnSave.setEnabled(false);
+            btnSave.setAlpha(0.5f);
+        } else {
+            for (int i = 0; i < scannedProducts.size(); i++) {
+                addProductRow(scannedProducts.get(i), false, i);
+            }
+            btnSave.setEnabled(true);
+            btnSave.setAlpha(1f);
+        }
+
+        // Əlavə et düyməsini əlavə et
+        addAddProductButton();
+
+        tvTotalAmount.setText(String.format(Locale.getDefault(), "₼%.2f", totalAmount));
+
+        Log.d(TAG, "displayResults: " + scannedProducts.size() + " məhsul, save enabled=" + btnSave.isEnabled());
+
+        cardResults.setAlpha(0f);
+        cardResults.setTranslationY(50f);
+        cardResults.animate().alpha(1f).translationY(0f).setDuration(400).start();
+    }
+
+    // addEmptyProductRow() metodunu dəyişdirin:
     private void addEmptyProductRow() {
-        ProductItem emptyProduct = new ProductItem("", 0.0, 1.0, "ədəd", 0.0);
-        addProductRow(emptyProduct, true);
+        ProductItem emptyProduct = new ProductItem("", 1, 0.0);
+        int newPosition = scannedProducts.size(); // Cari say qədər (0-dan başlayır)
+        addProductRow(emptyProduct, true, newPosition);
+        scannedProducts.add(emptyProduct);
+        btnSave.setEnabled(false);
+        btnSave.setAlpha(0.5f);
     }
+
+
 
     private void addAddProductButton() {
         View addButton = LayoutInflater.from(this).inflate(R.layout.item_add_product, productsContainer, false);
@@ -727,19 +850,20 @@ public class ReceiptScannerActivity extends AppCompatActivity {
 
         tvAddProduct.setOnClickListener(v -> {
             addEmptyProductRow();
-            // Yeni əlavə olunan sətrə focus et
-            mainScrollView.post(() -> mainScrollView.fullScroll(ScrollView.FOCUS_DOWN));
+            mainScrollView.post(() -> mainScrollView.fullScroll(View.FOCUS_DOWN));
         });
 
         productsContainer.addView(addButton);
     }
 
-    private void updateProductTotal(View rowView) {
+    private void updateProductTotal(View rowView, ProductItem product) {
         try {
-            EditText etQuantity = rowView.findViewById(R.id.etQuantity);
-            EditText etPrice = rowView.findViewById(R.id.etPrice);
+            TextInputEditText etProductName = rowView.findViewById(R.id.etProductName);
+            TextInputEditText etQuantity = rowView.findViewById(R.id.etQuantity);
+            TextInputEditText etPrice = rowView.findViewById(R.id.etPrice);
             TextView tvTotal = rowView.findViewById(R.id.tvTotal);
 
+            String name = etProductName.getText().toString().trim();
             String qtyStr = etQuantity.getText().toString();
             String priceStr = etPrice.getText().toString();
 
@@ -747,7 +871,18 @@ public class ReceiptScannerActivity extends AppCompatActivity {
             double price = priceStr.isEmpty() ? 0.0 : Double.parseDouble(priceStr.replace(",", "."));
 
             double total = quantity * price;
-            tvTotal.setText(String.format(Locale.getDefault(), "%.2f", total));
+            tvTotal.setText(String.format(Locale.getDefault(), "%.2f ₼", total));
+
+            // ProductItem-ı yenilə
+            product.setName(name);
+
+            if (product.getKg() > 0) {
+                product.setKg(quantity);
+            } else {
+                product.setQuantity((int) quantity);
+            }
+            product.setPrice(price);
+            product.setTotalAmount(total);
 
             calculateGrandTotal();
         } catch (NumberFormatException e) {
@@ -757,27 +892,43 @@ public class ReceiptScannerActivity extends AppCompatActivity {
 
     private void calculateGrandTotal() {
         double grandTotal = 0.0;
+        boolean hasValidProduct = false;
 
-        // Əlavə et düyməsini nəzərə alma
         for (int i = 0; i < productsContainer.getChildCount() - 1; i++) {
             View rowView = productsContainer.getChildAt(i);
             TextView tvTotal = rowView.findViewById(R.id.tvTotal);
+            EditText etProductName = rowView.findViewById(R.id.etProductName);
 
-            if (tvTotal != null) {
-                String totalStr = tvTotal.getText().toString().replace("₼", "").replace(",", ".");
+            if (tvTotal != null && etProductName != null) {
+                String name = etProductName.getText().toString().trim();
+                String totalStr = tvTotal.getText().toString().replace("₼", "").replace(",", ".").trim();
+
+                if (!name.isEmpty()) {
+                    hasValidProduct = true;
+                }
+
                 try {
                     grandTotal += Double.parseDouble(totalStr);
                 } catch (NumberFormatException e) {
-                    Log.e(TAG, "Cəm parse xətası", e);
+                    Log.e(TAG, "Cəm parse xətası: " + totalStr, e);
                 }
             }
         }
 
         totalAmount = grandTotal;
         tvTotalAmount.setText(String.format(Locale.getDefault(), "₼%.2f", grandTotal));
+
+        // Ən azı bir düzgün məhsul varsa save aktiv olsun
+        if (hasValidProduct) {
+            btnSave.setEnabled(true);
+            btnSave.setAlpha(1f);
+        } else {
+            btnSave.setEnabled(false);
+            btnSave.setAlpha(0.5f);
+        }
     }
 
-    private void setupDragAndDrop(View rowView, ImageView dragHandle) {
+    private void setupDragAndDrop(View rowView, ImageView dragHandle, ProductItem product) {
         dragHandle.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -786,7 +937,6 @@ public class ReceiptScannerActivity extends AppCompatActivity {
                     draggedPosition = productsContainer.indexOfChild(rowView);
                     isDragging = true;
 
-                    // Yüngül kölgə effekti
                     draggedView.setElevation(10f);
                     draggedView.setAlpha(0.9f);
                     return true;
@@ -796,10 +946,10 @@ public class ReceiptScannerActivity extends AppCompatActivity {
                         float currentY = event.getRawY();
                         float deltaY = currentY - initialY;
 
-                        // Müvəqqəti olaraq yeri dəyiş
                         int newPosition = calculateNewPosition(draggedPosition, deltaY);
                         if (newPosition != draggedPosition && newPosition >= 0 && newPosition < productsContainer.getChildCount() - 1) {
                             swapViews(draggedPosition, newPosition);
+                            swapProductsInList(draggedPosition, newPosition);
                             draggedPosition = newPosition;
                         }
                     }
@@ -847,62 +997,102 @@ public class ReceiptScannerActivity extends AppCompatActivity {
         productsContainer.addView(fromView, to > from ? to - 1 : to);
     }
 
+    private void swapProductsInList(int from, int to) {
+        if (from < 0 || to < 0 || from >= scannedProducts.size() || to >= scannedProducts.size()) return;
+
+        ProductItem temp = scannedProducts.get(from);
+        scannedProducts.set(from, scannedProducts.get(to));
+        scannedProducts.set(to, temp);
+    }
+
     private void hideKeyboard(View view) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+
+    // ReceiptScannerActivity-də saveDataAndReturn() metodu
     private void saveDataAndReturn() {
-        Intent resultIntent = new Intent();
+        try {
+            Log.d(TAG, "saveDataAndReturn çağırıldı");
 
-        storeName = etStoreName.getText().toString();
-        receiptDate = etDate.getText().toString();
-        receiptTime = etTime.getText().toString();
+            // Heç olmasa bir düzgün məhsul varmı yoxla
+            boolean hasValidProduct = false;
+            for (int i = 0; i < productsContainer.getChildCount() - 1; i++) {
+                View rowView = productsContainer.getChildAt(i);
+                EditText etProductName = rowView.findViewById(R.id.etProductName);
+                String name = etProductName.getText().toString().trim();
+                if (!name.isEmpty()) {
+                    hasValidProduct = true;
+                    break;
+                }
+            }
 
-        resultIntent.putExtra("store_name", storeName);
-        resultIntent.putExtra("date", receiptDate);
-        resultIntent.putExtra("time", receiptTime);
-        resultIntent.putExtra("total_amount", totalAmount);
-        resultIntent.putExtra("doc_id", qrDocId);
+            if (!hasValidProduct) {
+                Toast.makeText(this, "Heç bir məhsul daxil edilməyib", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        ArrayList<String> productNames = new ArrayList<>();
-        ArrayList<String> productPrices = new ArrayList<>();  // String olaraq saxla
-        ArrayList<String> productQuantities = new ArrayList<>(); // String olaraq saxla
-        ArrayList<String> productUnits = new ArrayList<>();
+            Intent resultIntent = new Intent();
 
-        // Məhsulları topla (əlavə et düyməsini nəzərə alma)
-        for (int i = 0; i < productsContainer.getChildCount() - 1; i++) {
-            View rowView = productsContainer.getChildAt(i);
+            // UI-dan məlumatları topla
+            storeName = etStoreName.getText().toString();
+            receiptDate = etDate.getText().toString();
+            receiptTime = etTime.getText().toString();
 
-            EditText etProductName = rowView.findViewById(R.id.etProductName);
-            EditText etQuantity = rowView.findViewById(R.id.etQuantity);
-            EditText etPrice = rowView.findViewById(R.id.etPrice);
+            // Məhsulları topla
+            ArrayList<String> productNames = new ArrayList<>();
+            ArrayList<String> productPrices = new ArrayList<>();
+            ArrayList<String> productQuantities = new ArrayList<>();
+            ArrayList<String> productUnits = new ArrayList<>();
 
-            String name = etProductName.getText().toString().trim();
-            if (name.isEmpty()) continue;
+            for (int i = 0; i < productsContainer.getChildCount() - 1; i++) {
+                View rowView = productsContainer.getChildAt(i);
 
-            try {
-                double quantity = etQuantity.getText().toString().isEmpty() ?
-                        1.0 : Double.parseDouble(etQuantity.getText().toString().replace(",", "."));
-                double price = etPrice.getText().toString().isEmpty() ?
-                        0.0 : Double.parseDouble(etPrice.getText().toString().replace(",", "."));
+                EditText etProductName = rowView.findViewById(R.id.etProductName);
+                EditText etQuantity = rowView.findViewById(R.id.etQuantity);
+                EditText etPrice = rowView.findViewById(R.id.etPrice);
+
+                String name = etProductName.getText().toString().trim();
+                if (name.isEmpty()) continue;
 
                 productNames.add(name);
-                productPrices.add(String.valueOf(price));  // String kimi əlavə et
-                productQuantities.add(String.valueOf(quantity)); // String kimi əlavə et
+                productPrices.add(etPrice.getText().toString());
+                productQuantities.add(etQuantity.getText().toString());
                 productUnits.add("ədəd");
-            } catch (NumberFormatException e) {
-                Log.e(TAG, "Məhsul məlumatları parse xətası", e);
             }
+
+            Log.d(TAG, "Toplanan məhsullar: " + productNames.size());
+
+            // Intent-ə əlavə et
+            resultIntent.putExtra("store_name", storeName);
+            resultIntent.putExtra("date", receiptDate);
+            resultIntent.putExtra("time", receiptTime);
+            resultIntent.putExtra("total_amount", totalAmount);
+            resultIntent.putExtra("doc_id", qrDocId);
+            resultIntent.putExtra("fiscal_code", fiscalCode);
+
+            resultIntent.putStringArrayListExtra("product_names", productNames);
+            resultIntent.putStringArrayListExtra("product_prices", productPrices);
+            resultIntent.putStringArrayListExtra("product_quantities", productQuantities);
+            resultIntent.putStringArrayListExtra("product_units", productUnits);
+
+            // Nəticəni qaytar
+            setResult(RESULT_OK, resultIntent);
+
+            Log.d(TAG, "Məlumatlar qaytarılır: " + productNames.size() + " məhsul");
+
+            // ƏSAS: finish() çağır - bu avtomatik olaraq əvvəlki activity-yə qayıdır
+            finish();
+
+            // Animasiya
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Save xətası: " + e.getMessage());
+            setResult(RESULT_CANCELED);
+            finish();
         }
-
-        resultIntent.putStringArrayListExtra("product_names", productNames);
-        resultIntent.putStringArrayListExtra("product_prices", productPrices);  // String ArrayList göndər
-        resultIntent.putStringArrayListExtra("product_quantities", productQuantities); // String ArrayList göndər
-        resultIntent.putStringArrayListExtra("product_units", productUnits);
-
-        setResult(RESULT_OK, resultIntent);
-        finish();
     }
 
     private void resetUI() {
@@ -923,6 +1113,7 @@ public class ReceiptScannerActivity extends AppCompatActivity {
         receiptDate = "";
         receiptTime = "";
         qrDocId = "";
+        fiscalCode = "";
 
         etStoreName.setText("");
         etDate.setText("");

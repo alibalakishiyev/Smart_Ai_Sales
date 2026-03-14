@@ -36,7 +36,6 @@
         app:navigationIconTint="@color/white"
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
 
-        <!-- Bu ImageView-i silin və ya aşağıdakı kimi dəyişin -->
         <ImageView
             android:id="@+id/btnBack"
             android:layout_width="28dp"
@@ -46,6 +45,7 @@
             android:tint="@color/white"
             android:padding="4dp"
             android:visibility="visible"/>
+
         <TextView
             android:id="@+id/informassion"
             android:layout_width="wrap_content"
@@ -55,15 +55,12 @@
             android:textColor="@color/success"
             android:layout_marginEnd="16dp"/>
 
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:layout_gravity="end">
-
-
 
             <!-- Offline Status -->
             <ImageView
@@ -82,7 +79,6 @@
                 android:textColor="@color/success"
                 android:layout_marginEnd="16dp"/>
 
-            <!-- Existing logout button -->
             <ImageView
                 android:id="@+id/btnLogout"
                 android:layout_width="24dp"
@@ -92,7 +88,6 @@
                 android:padding="4dp"/>
         </LinearLayout>
     </com.google.android.material.appbar.MaterialToolbar>
-
 
     <ScrollView
         android:layout_width="match_parent"
@@ -364,10 +359,8 @@
                         android:layout_height="55dp"
                         android:background="@drawable/spinner_background"
                         android:popupBackground="@color/card_dark"/>
-
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
 
             <!-- Məhsul Kartı -->
             <com.google.android.material.card.MaterialCardView
@@ -388,150 +381,228 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Məhsul"
+                        android:text="Məhsullar"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="12dp"/>
 
-                    <!-- Firebase-dən gələn məhsul spinner -->
+                    <!-- Məhsul seçim spinner -->
                     <Spinner
                         android:id="@+id/spinnerProducts"
                         android:layout_width="match_parent"
                         android:layout_height="55dp"
                         android:background="@drawable/spinner_background"
-                        android:popupBackground="@color/card_dark"/>
+                        android:popupBackground="@color/card_dark"
+                        android:layout_marginBottom="16dp"/>
 
-                    <!-- Məhsul adı -->
-                    <com.google.android.material.textfield.TextInputLayout
+                    <!-- Məhsul əlavə et bölməsi -->
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="12dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:boxStrokeColor="@color/purple_500"
-                        app:startIconDrawable="@drawable/ic_product"
-                        app:startIconTint="@color/purple_500"
-                        app:endIconMode="clear_text">
+                        android:orientation="vertical"
+                        android:background="@drawable/location_background"
+                        android:padding="12dp"
+                        android:layout_marginBottom="16dp">
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etProductName"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="➕ Yeni Məhsul Əlavə Et"
+                            android:textColor="@color/purple_500"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="8dp"/>
+
+                        <!-- Məhsul adı -->
+                        <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Məhsul adı"
+                            android:layout_marginBottom="8dp"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            app:boxStrokeColor="@color/purple_500"
+                            app:startIconDrawable="@drawable/ic_product"
+                            app:startIconTint="@color/purple_500"
+                            app:endIconMode="clear_text">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etProductName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Məhsul adı"
+                                android:textColor="@color/white"
+                                android:textColorHint="@color/white_60"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Qiymət və Miqdar -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="2"
+                            android:layout_marginBottom="8dp">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="4dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                app:boxStrokeColor="@color/purple_500"
+                                app:startIconDrawable="@drawable/ic_amount"
+                                app:startIconTint="@color/purple_500"
+                                app:endIconMode="clear_text"
+                                app:prefixText="₼ ">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etAmount"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Qiymət"
+                                    android:inputType="numberDecimal"
+                                    android:textColor="@color/white"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="4dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                app:boxStrokeColor="@color/purple_500"
+                                app:startIconDrawable="@drawable/ic_quantity"
+                                app:startIconTint="@color/purple_500"
+                                app:endIconMode="clear_text"
+                                app:suffixText="ədəd">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etQuantity"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Miqdar"
+                                    android:inputType="number"
+                                    android:text="1"
+                                    android:textColor="@color/white"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+
+                        <!-- Litr və Kiloqram -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="2"
+                            android:layout_marginBottom="12dp">
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="4dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                app:boxStrokeColor="@color/purple_500"
+                                app:startIconDrawable="@drawable/ic_quantity"
+                                app:startIconTint="@color/purple_500"
+                                app:endIconMode="clear_text"
+                                app:suffixText="L">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etLiter"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Litr"
+                                    android:inputType="numberDecimal"
+                                    android:text="0"
+                                    android:textColor="@color/white"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="4dp"
+                                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                                app:boxStrokeColor="@color/purple_500"
+                                app:startIconDrawable="@drawable/ic_quantity"
+                                app:startIconTint="@color/purple_500"
+                                app:endIconMode="clear_text"
+                                app:suffixText="kq">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etKg"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Kiloqram"
+                                    android:inputType="numberDecimal"
+                                    android:text="0"
+                                    android:textColor="@color/white"/>
+                            </com.google.android.material.textfield.TextInputLayout>
+                        </LinearLayout>
+
+                        <!-- Məhsulu listə əlavə et düyməsi -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAddToList"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:text="📋 Məhsulu Listə Əlavə Et"
+                            android:textAllCaps="false"
                             android:textColor="@color/white"
-                            android:textColorHint="@color/white_60"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+                            app:icon="@drawable/ic_add"
+                            app:iconGravity="start"
+                            app:iconTint="@color/white"
+                            android:backgroundTint="@color/purple_500"
+                            style="@style/Widget.MaterialComponents.Button"/>
+                    </LinearLayout>
 
-                    <!-- 1-ci sətir: Qiymət və Miqdar -->
+                    <!-- Məhsul listi başlığı -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:weightSum="2"
                         android:layout_marginBottom="8dp">
 
-                        <!-- Qiymət (AZN) -->
-                        <com.google.android.material.textfield.TextInputLayout
+                        <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:layout_marginEnd="8dp"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            app:boxStrokeColor="@color/purple_500"
-                            app:startIconDrawable="@drawable/ic_amount"
-                            app:startIconTint="@color/purple_500"
-                            app:endIconMode="clear_text"
-                            app:prefixText="₼ ">
+                            android:text="Məhsul Listi"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"/>
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etAmount"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Qiymət"
-                                android:inputType="numberDecimal"
-                                android:textColor="@color/white"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <!-- Miqdar (ədəd) -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:id="@+id/tvSelectedCount"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="8dp"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            app:boxStrokeColor="@color/purple_500"
-                            app:startIconDrawable="@drawable/ic_quantity"
-                            app:startIconTint="@color/purple_500"
-                            app:endIconMode="clear_text"
-                            app:suffixText="ədəd">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etQuantity"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Miqdar"
-                                android:inputType="numberDecimal"
-                                android:text="1"
-                                android:textColor="@color/white"/>
-                        </com.google.android.material.textfield.TextInputLayout>
+                            android:text="0 seçilib"
+                            android:textColor="@color/purple_500"
+                            android:textSize="12sp"/>
                     </LinearLayout>
 
-                    <!-- 2-ci sətir: Litr və Kiloqram -->
-                    <LinearLayout
+                    <!-- RecyclerView -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerViewProducts"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:background="@drawable/location_background"
+                        android:padding="8dp"
+                        android:scrollbars="vertical"/>
+
+                    <!-- Ümumi məbləğ -->
+                    <TextView
+                        android:id="@+id/tvTotalSelectedAmount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="2"
-                        android:layout_marginBottom="8dp">
+                        android:text="Seçilmiş ümumi: 0.00 ₼"
+                        android:textColor="@color/income_green"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:gravity="end"
+                        android:layout_marginTop="8dp"
+                        android:padding="8dp"
+                        android:background="@drawable/location_background"/>
 
-                        <!-- Litr -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="8dp"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            app:boxStrokeColor="@color/purple_500"
-                            app:startIconDrawable="@drawable/ic_quantity"
-                            app:startIconTint="@color/purple_500"
-                            app:endIconMode="clear_text"
-                            app:suffixText="L">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etLiter"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Litr"
-                                android:inputType="numberDecimal"
-                                android:text="0"
-                                android:textColor="@color/white"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <!-- Kiloqram -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="8dp"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            app:boxStrokeColor="@color/purple_500"
-                            app:startIconDrawable="@drawable/ic_quantity"
-                            app:startIconTint="@color/purple_500"
-                            app:endIconMode="clear_text"
-                            app:suffixText="kq">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etKg"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Kiloqram"
-                                android:inputType="numberDecimal"
-                                android:text="0"
-                                android:textColor="@color/white"/>
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
-
-                    <!-- Ümumi məlumat xətti (isteğe bağlı) -->
+                    <!-- Ümumi məlumat (əlavə) -->
                     <TextView
                         android:id="@+id/tvTotalInfo"
                         android:layout_width="match_parent"
@@ -541,11 +612,10 @@
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:gravity="end"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="8dp"
                         android:visibility="gone"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
 
             <!-- Konum Kartı -->
             <com.google.android.material.card.MaterialCardView
@@ -563,7 +633,6 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <!-- Başlıq və Konum Al Butonu -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -594,7 +663,6 @@
                             app:iconTint="@color/purple_500"/>
                     </LinearLayout>
 
-                    <!-- Yadda saxlanılan konumlar spinner + Əlavə et düyməsi -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -604,8 +672,10 @@
 
                         <Spinner
                             android:id="@+id/spinnerSavedLocations"
-                            android:layout_width="300dp"
+                            android:layout_width="0dp"
                             android:layout_height="55dp"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="8dp"
                             android:background="@drawable/spinner_background"
                             android:popupBackground="@color/card_dark"/>
 
@@ -626,7 +696,6 @@
                             android:insetBottom="0dp"/>
                     </LinearLayout>
 
-                    <!-- Seçilmiş konum göstəricisi -->
                     <TextView
                         android:id="@+id/tvLocation"
                         android:layout_width="match_parent"
@@ -858,14 +927,18 @@
                     app:iconTint="@color/white"
                     android:backgroundTint="@color/purple_500"/>
             </LinearLayout>
+
+            <!-- Banner Reklam -->
             <LinearLayout
                 android:id="@+id/linearLayout2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp">
+                android:layout_marginEnd="8dp"
+                android:orientation="horizontal"
+                android:gravity="center">
 
-                <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+                <com.google.android.gms.ads.AdView
                     android:id="@+id/adView3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -873,8 +946,8 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="2dp"
                     android:gravity="center"
-                    ads:adSize="BANNER"
-                    ads:adUnitId="ca-app-pub-5367924704859976/2684364154"/>
+                    app:adSize="BANNER"
+                    app:adUnitId="ca-app-pub-5367924704859976/2684364154"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

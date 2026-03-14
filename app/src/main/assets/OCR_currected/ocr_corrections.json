@@ -1,0 +1,169 @@
+{
+  "productCorrections": [
+    {
+      "wrong": "TOST COREYI 600 OR",
+      "correct": "TOST ÇÖRƏYİ 600 QR"
+    },
+    {
+      "wrong": "XONCA Q0ZLU PAXLAVA",
+      "correct": "XONCA QOZLU PAXLAVA"
+    },
+    {
+      "wrong": "TACUKURUZ CUBUQ PE",
+      "correct": "TAC QARĞIDALI ÇUBUQ"
+    },
+    {
+      "wrong": "BANAN KG ENDIRIMLI",
+      "correct": "BANAN KG ENDİRİMLİ"
+    },
+    {
+      "wrong": "SKITTLES KISLOMIX S",
+      "correct": "SKITTLES KISLO MIX"
+    },
+    {
+      "wrong": "QARABASAQ 1KG CEKI",
+      "correct": "QARABAŞAQ 1KG ÇƏKİ"
+    },
+    {
+      "wrong": "ALMA MAJESTI KG",
+      "correct": "ALMA MAJESTIC KG"
+    },
+    {
+      "wrong": "MANDARIN MURKOT KG",
+      "correct": "MANDARİN MURKOT KG"
+    },
+    {
+      "wrong": "TP-B ARAKIS QOVRULMUS",
+      "correct": "TP-B ARAKİS QOVRULMUŞ"
+    },
+    {
+      "wrong": "SAB HALAL DOYME SOSI",
+      "correct": "SAB HALAL DÖYMƏ SOSU"
+    },
+    {
+      "wrong": "MERCAN TEZE BUD USTU",
+      "correct": "MERCAN TƏZƏ BUD ÜSTÜ"
+    },
+    {
+      "wrong": "MERCAN TEZE BUTULKA",
+      "correct": "MERCAN TƏZƏ BUTULKA"
+    },
+    {
+      "wrong": "IYDE KG",
+      "correct": "İYDƏ KG"
+    },
+    {
+      "wrong": "CIKO QARA GUNEBAXAN",
+      "correct": "ÇİKO QARA GÜNƏBAXAN"
+    },
+    {
+      "wrong": "TAC LEBLEBI 250 GR",
+      "correct": "TAC LƏBLƏBİ 250 GR"
+    },
+    {
+      "wrong": "INNAB KG",
+      "correct": "İNNƏB KG"
+    },
+    {
+      "wrong": "XURMA XIRDA KG",
+      "correct": "XURMA XIRDA KG"
+    },
+    {
+      "wrong": "NESTLE WAFERS MILK K",
+      "correct": "NESTLE WAFERS MILK"
+    },
+    {
+      "wrong": "AZERSUD XAMA 25% 300",
+      "correct": "AZERSUD XAMA 25% 300GR"
+    },
+    {
+      "wrong": "SEKRET VKUSA MAYONEZ",
+      "correct": "SEKRET VKUSA MAYONEZ"
+    },
+    {
+      "wrong": "ULKER ALBENI BITTES",
+      "correct": "ÜLKER ALBENİ BITTES"
+    }
+  ],
+  "patterns": [
+    {
+      "pattern": "0(?=[A-ZƏİĞÖÜÇŞ])",
+      "replacement": "O",
+      "description": "Rəqəm 0-ı hərf O-ya çevir"
+    },
+    {
+      "pattern": "O(?=\\d)",
+      "replacement": "0",
+      "description": "Hərf O-nu rəqəm 0-a çevir"
+    },
+    {
+      "pattern": "1(?=[A-ZƏİĞÖÜÇŞ])",
+      "replacement": "I",
+      "description": "Rəqəm 1-i hərf I-ya çevir"
+    },
+    {
+      "pattern": "I(?=\\d)",
+      "replacement": "1",
+      "description": "Hərf I-nı rəqəm 1-ə çevir"
+    },
+    {
+      "pattern": "5(?=[A-ZƏİĞÖÜÇŞ])",
+      "replacement": "S",
+      "description": "Rəqəm 5-i hərf S-ə çevir"
+    },
+    {
+      "pattern": "S(?=\\d)",
+      "replacement": "5",
+      "description": "Hərf S-i rəqəm 5-ə çevir"
+    },
+    {
+      "pattern": "8(?=[A-ZƏİĞÖÜÇŞ])",
+      "replacement": "B",
+      "description": "Rəqəm 8-i hərf B-yə çevir"
+    },
+    {
+      "pattern": "B(?=\\d)",
+      "replacement": "8",
+      "description": "Hərf B-ni rəqəm 8-ə çevir"
+    }
+  ],
+  "dictionary": {
+    "Q0ZLU": "QOZLU",
+    "COREYI": "ÇÖRƏYİ",
+    "KERE": "KƏRƏ",
+    "YAGI": "YAĞI",
+    "KRUASSAN": "KRUAŞAN",
+    "CIYE": "ÇİYƏ",
+    "PENDIRI": "PENDİR",
+    "MAYONEZ": "MAYONEZ",
+    "MANTI": "MANTI",
+    "LEBLEBI": "LƏBLƏBİ",
+    "QARABASAQ": "QARABAŞAQ",
+    "MANDARIN": "MANDARİN",
+    "MURKOT": "MURKOT",
+    "BANAN": "BANAN",
+    "ALMA": "ALMA",
+    "ARMUD": "ARMUD",
+    "XIYAR": "XIYAR",
+    "BADAM": "BADAM",
+    "INNAB": "İNNƏB",
+    "XURMA": "XURMA",
+    "PAKET": "PAKET",
+    "CIKO": "ÇİKO",
+    "QARA": "QARA",
+    "GUNEBAXAN": "GÜNƏBAXAN",
+    "ENDIRIMLI": "ENDİRİMLİ",
+    "KISLO": "KİSLO",
+    "CEKI": "ÇƏKİ",
+    "ARAKIS": "ARAKİS",
+    "QOVRULMUS": "QOVRULMUŞ",
+    "DOYME": "DÖYMƏ",
+    "SOSU": "SOSU",
+    "TEZE": "TƏZƏ",
+    "USTU": "ÜSTÜ",
+    "BUTULKA": "BUTULKA",
+    "IYDE": "İYDƏ",
+    "XIRDA": "XIRDA",
+    "ALBENI": "ALBENİ"
+  }
+}

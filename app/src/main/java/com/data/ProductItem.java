@@ -1,6 +1,9 @@
 package com.data;
 
 import com.google.firebase.Timestamp;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProductItem {
     private String id;
@@ -13,8 +16,22 @@ public class ProductItem {
     private String userId;
     private Timestamp createdAt;
 
+    // YENİ: Məhsulun seçilib-seçilmədiyini göstərən field
+    private boolean isSelected;
+
+    // Qəbzdən əlavə məlumatlar
+    private String receiptId;
+    private String storeName;
+    private Date purchaseDate;
+    private double totalAmount;
+    private double taxAmount;
+    private boolean isTaxFree;
+    private String fiscalCode;
+    private String barcode;
+
     // 1. Boş constructor (Firebase üçün)
     public ProductItem() {
+        this.isSelected = false; // Default olaraq seçilməyib
     }
 
     // 2. Sadə constructor
@@ -24,9 +41,29 @@ public class ProductItem {
         this.price = price;
         this.kg = 0;
         this.liter = 0;
+        this.totalAmount = price * quantity;
+        this.isSelected = false;
     }
 
-    // 3. Tam constructor
+    // 3. Qəbz məhsulu üçün constructor
+    public ProductItem(String name, double quantity, double price, double total) {
+        this.name = name;
+        this.price = price;
+        this.totalAmount = total;
+        this.isSelected = false;
+
+        // Quantity tipinə görə təyin et
+        if (name.contains("KG") || name.toLowerCase().contains("kq") || quantity != Math.floor(quantity)) {
+            this.kg = quantity;  // çəki ilə satılan məhsul
+            this.quantity = 0;
+        } else {
+            this.quantity = (int) Math.round(quantity);  // ədəd ilə satılan məhsul
+            this.kg = 0;
+        }
+        this.liter = 0;
+    }
+
+    // 4. Tam constructor
     public ProductItem(String id, String name, String category, double price,
                        double kg, double liter, int quantity, String userId,
                        Timestamp createdAt) {
@@ -39,14 +76,28 @@ public class ProductItem {
         this.quantity = quantity;
         this.userId = userId;
         this.createdAt = createdAt;
+        this.totalAmount = calculateTotal();
+        this.isSelected = false;
     }
 
-    // Getter metodları
+    // Ümumi məbləği hesabla
+    private double calculateTotal() {
+        double total = 0;
+        if (kg > 0) {
+            total = kg * price;
+        } else if (liter > 0) {
+            total = liter * price;
+        } else {
+            total = quantity * price;
+        }
+        return total;
+    }
+
+    // Getter və Setter metodları
     public String getId() {
         return id;
     }
 
-    // Setter metodları
     public void setId(String id) {
         this.id = id;
     }
@@ -73,6 +124,7 @@ public class ProductItem {
 
     public void setPrice(double price) {
         this.price = price;
+        this.totalAmount = calculateTotal();
     }
 
     public double getKg() {
@@ -81,6 +133,9 @@ public class ProductItem {
 
     public void setKg(double kg) {
         this.kg = kg;
+        this.quantity = 0;
+        this.liter = 0;
+        this.totalAmount = calculateTotal();
     }
 
     public double getLiter() {
@@ -89,6 +144,9 @@ public class ProductItem {
 
     public void setLiter(double liter) {
         this.liter = liter;
+        this.kg = 0;
+        this.quantity = 0;
+        this.totalAmount = calculateTotal();
     }
 
     public int getQuantity() {
@@ -97,6 +155,9 @@ public class ProductItem {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+        this.kg = 0;
+        this.liter = 0;
+        this.totalAmount = calculateTotal();
     }
 
     public String getUserId() {
@@ -115,19 +176,140 @@ public class ProductItem {
         this.createdAt = createdAt;
     }
 
-    // Display üçün köməkçi metod
+    // ƏN ÖNƏMLİ: isSelected üçün getter və setter
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
+    // Yeni getter/setter-lar
+    public String getReceiptId() {
+        return receiptId;
+    }
+
+    public void setReceiptId(String receiptId) {
+        this.receiptId = receiptId;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
+
+    public Date getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public void setPurchaseDate(Date purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public double getTaxAmount() {
+        return taxAmount;
+    }
+
+    public void setTaxAmount(double taxAmount) {
+        this.taxAmount = taxAmount;
+    }
+
+    public boolean isTaxFree() {
+        return isTaxFree;
+    }
+
+    public void setTaxFree(boolean taxFree) {
+        isTaxFree = taxFree;
+    }
+
+    public String getFiscalCode() {
+        return fiscalCode;
+    }
+
+    public void setFiscalCode(String fiscalCode) {
+        this.fiscalCode = fiscalCode;
+    }
+
+    public String getBarcode() {
+        return barcode;
+    }
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
+
+    // Display üçün köməkçi metodlar
     public String getDisplayName() {
         String display = name != null ? name : "Məhsul";
         if (kg > 0) {
-            display += " (" + kg + " kq)";
+            display += " (" + String.format("%.3f", kg) + " kq)";
         } else if (liter > 0) {
-            display += " (" + liter + " L)";
+            display += " (" + String.format("%.3f", liter) + " L)";
+        } else if (quantity > 0) {
+            display += " (" + quantity + " ədəd)";
         }
         return display;
     }
 
+    public String getFormattedPrice() {
+        return String.format("%.2f AZN", price);
+    }
+
+    public String getFormattedTotal() {
+        return String.format("%.2f AZN", totalAmount);
+    }
+
+    public String getFormattedKg() {
+        if (kg > 0) {
+            return String.format("%.3f kq", kg);
+        }
+        return "";
+    }
+
+    // Məhsul tipini qaytar
+    public String getProductType() {
+        if (kg > 0) return "Çəki";
+        if (liter > 0) return "Maye";
+        return "Ədəd";
+    }
+
     @Override
     public String toString() {
-        return getDisplayName();
+        return getDisplayName() + " - " + getFormattedTotal();
+    }
+
+    // Firebase Firestore üçün map-ə çevir
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", name);
+        map.put("category", category);
+        map.put("price", price);
+        map.put("kg", kg);
+        map.put("liter", liter);
+        map.put("quantity", quantity);
+        map.put("userId", userId);
+        map.put("createdAt", createdAt != null ? createdAt : Timestamp.now());
+        map.put("receiptId", receiptId);
+        map.put("storeName", storeName);
+        map.put("purchaseDate", purchaseDate);
+        map.put("totalAmount", totalAmount);
+        map.put("taxAmount", taxAmount);
+        map.put("isTaxFree", isTaxFree);
+        map.put("fiscalCode", fiscalCode);
+        map.put("barcode", barcode);
+        map.put("isSelected", isSelected); // YENİ: isSelected field-i
+        return map;
     }
 }

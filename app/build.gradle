@@ -72,6 +72,7 @@ dependencies {
 
     // Gson
     implementation 'com.google.code.gson:gson:2.8.9'
+    implementation libs.androidx.activity
 
     // Testing
     testImplementation 'junit:junit:4.13.2'
@@ -104,4 +105,5 @@ dependencies {
 
     // JSoup
     implementation 'org.jsoup:jsoup:1.17.2'
+
 }

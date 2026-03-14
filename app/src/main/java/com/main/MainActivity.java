@@ -53,6 +53,8 @@ import com.smart_ai_sales.R;
 import com.utils.BaseActivity;
 import com.utils.SettingsActivity;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -673,11 +675,52 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    // ===== YENİ METOD: Receipt scanner aç =====
+    // MainActivity-də
+    private void showOCRChoiceDialog() {
+        String[] options = {"AddDataActivity-də OCR", "ReceiptScannerActivity"};
+        new AlertDialog.Builder(this)
+                .setTitle("OCR seçimi")
+                .setItems(options, (dialog, which) -> {
+                    if (which == 0) {
+                        // Birbaşa AddDataActivity
+                        Intent intent = new Intent(this, AddDataActivity.class);
+                        intent.putExtra("open_scanner", true);
+                        startActivity(intent);
+                    } else {
+                        // ReceiptScannerActivity
+                        checkCameraPermissionAndOpenScanner();
+                    }
+                })
+                .show();
+    }
     private void openReceiptScanner() {
         Intent intent = new Intent(this, ReceiptScannerActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 1001); // <-- startActivityForResult istifadə edin
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1001) {
+            if (resultCode == RESULT_OK) {
+                // OCR-dan uğurla qayıtdı, məlumatları əldə et
+                Log.d(TAG, "OCR tamamlandı, məlumatlar alındı");
+
+                // İstəyə bağlı olaraq məlumatları göstərə bilərsiniz
+                if (data != null) {
+                    String storeName = data.getStringExtra("store_name");
+                    int productCount = data.getStringArrayListExtra("product_names").size();
+
+                    Toast.makeText(this,
+                            "📄 " + storeName + " - " + productCount + " məhsul",
+                            Toast.LENGTH_SHORT).show();
+                }
+            } else if (resultCode == RESULT_CANCELED) {
+                Log.d(TAG, "OCR ləğv edildi");
+            }
+        }
     }
 
     // ===== Permission nəticəsi =====

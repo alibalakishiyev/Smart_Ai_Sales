@@ -10,9 +10,11 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature
         android:name="android.hardware.location"
         android:required="false" />
@@ -28,8 +30,7 @@
         android:theme="@style/Theme.SmartAiSales">
         <activity
             android:name="com.ocr_service.RealTimeQrScanner"
-            android:exported="false" />
-        <!-- Splash Activity (Launcher) -->
+            android:exported="false" /> <!-- Splash Activity (Launcher) -->
         <activity
             android:name="com.main.SplashActivity"
             android:exported="true"
