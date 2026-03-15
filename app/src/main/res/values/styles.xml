@@ -104,6 +104,10 @@
         <item name="boxStrokeColor">@color/purple_500</item>
         <item name="android:textColorHint">@color/text_secondary</item>
     </style>
+    <style name="cornerCutShapeAppearance" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
+    </style>
 
     <!-- Progress Indicator Style - LinearProgressIndicator üçün -->
     <style name="Widget.Material3.LinearProgressIndicator" parent="Widget.MaterialComponents.LinearProgressIndicator">
