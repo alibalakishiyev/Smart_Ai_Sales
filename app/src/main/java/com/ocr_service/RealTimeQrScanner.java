@@ -41,6 +41,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.MultiFormatReader;
+import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
@@ -233,7 +234,7 @@ public class RealTimeQrScanner extends AppCompatActivity {
     }
 
     private File getOutputDirectory() {
-        File mediaDir = new File(getExternalMediaDirs()[0], "QR_Scans");
+        File mediaDir = new File(getExternalFilesDir(null), "QR_Scans");
         if (!mediaDir.exists()) {
             mediaDir.mkdirs();
         }
@@ -277,13 +278,29 @@ public class RealTimeQrScanner extends AppCompatActivity {
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                 .build();
 
-        // Image Analysis
+        // Image Analysis - DÜZƏLİŞ: YUV_420_888 formatında analiz
         ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
-                .setTargetResolution(new Size(1280, 720))
+                .setTargetResolution(new Size(640, 480))  // Daha kiçik ölçü, daha sürətli
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
 
-        imageAnalysis.setAnalyzer(executorService, image -> {
+        imageAnalysis.setAnalyzer(executorService, new QrCodeAnalyzer());
+
+        try {
+            cameraProvider.unbindAll();
+            camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture, imageAnalysis);
+            preview.setSurfaceProvider(previewView.getSurfaceProvider());
+        } catch (Exception e) {
+            Log.e(TAG, "Camera bind error", e);
+        }
+    }
+
+    /**
+     * QR kod analizatoru - DÜZƏLİŞ: Birbaşa YUV formatından oxuyur
+     */
+    private class QrCodeAnalyzer implements ImageAnalysis.Analyzer {
+        @Override
+        public void analyze(@NonNull ImageProxy image) {
             if (!isScanning) {
                 image.close();
                 return;
@@ -296,8 +313,8 @@ public class RealTimeQrScanner extends AppCompatActivity {
             }
 
             try {
-                Bitmap bitmap = imageProxyToBitmap(image);
-                String qrText = scanQRCode(bitmap);
+                // YUV formatından birbaşa QR oxu
+                String qrText = scanQRCodeFromImage(image);
 
                 if (qrText != null && !qrText.isEmpty() && !qrText.equals(lastScannedQr)) {
                     lastScanTime = currentTime;
@@ -315,44 +332,71 @@ public class RealTimeQrScanner extends AppCompatActivity {
 
                 image.close();
             } catch (Exception e) {
-                Log.e(TAG, "QR analysis error", e);
+                Log.e(TAG, "QR analysis error: " + e.getMessage());
                 image.close();
             }
-        });
-
-        try {
-            cameraProvider.unbindAll();
-            camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture, imageAnalysis);
-            preview.setSurfaceProvider(previewView.getSurfaceProvider());
-        } catch (Exception e) {
-            Log.e(TAG, "Camera bind error", e);
         }
     }
 
-    private Bitmap imageProxyToBitmap(ImageProxy image) {
-        ImageProxy.PlaneProxy[] planes = image.getPlanes();
-        ByteBuffer yBuffer = planes[0].getBuffer();
-        ByteBuffer uBuffer = planes[1].getBuffer();
-        ByteBuffer vBuffer = planes[2].getBuffer();
+    /**
+     * YÜKSƏK SÜRƏTLİ QR OXUMA - ImageProxy-dən birbaşa YUV formatında oxuyur
+     */
+    private String scanQRCodeFromImage(ImageProxy image) {
+        try {
+            ImageProxy.PlaneProxy[] planes = image.getPlanes();
+            if (planes.length < 3) return null;
 
-        int ySize = yBuffer.remaining();
-        int uSize = uBuffer.remaining();
-        int vSize = vBuffer.remaining();
+            ByteBuffer yBuffer = planes[0].getBuffer();
+            ByteBuffer uBuffer = planes[1].getBuffer();
+            ByteBuffer vBuffer = planes[2].getBuffer();
 
-        byte[] nv21 = new byte[ySize + uSize + vSize];
+            int width = image.getWidth();
+            int height = image.getHeight();
 
-        yBuffer.get(nv21, 0, ySize);
-        vBuffer.get(nv21, ySize, vSize);
-        uBuffer.get(nv21, ySize + vSize, uSize);
+            // YUV420 formatında məlumatları düzgün birləşdir
+            int ySize = yBuffer.remaining();
+            int uSize = uBuffer.remaining();
+            int vSize = vBuffer.remaining();
 
-        YuvImage yuvImage = new YuvImage(nv21, ImageFormat.NV21, image.getWidth(), image.getHeight(), null);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        yuvImage.compressToJpeg(new Rect(0, 0, image.getWidth(), image.getHeight()), 70, out);
+            byte[] nv21 = new byte[ySize + uSize + vSize];
 
-        byte[] imageBytes = out.toByteArray();
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+            // Y (luminance) məlumatını köçür
+            yBuffer.get(nv21, 0, ySize);
+
+            // U və V məlumatlarını düzgün qaydada köçür
+            // NV21 formatında: YYYYYYYY... VUVU...
+            // Android kamera adətən NV21 formatında məlumat verir
+
+            // V məlumatını köçür (əvvəl)
+            vBuffer.get(nv21, ySize, vSize);
+
+            // U məlumatını köçür (sonra)
+            uBuffer.get(nv21, ySize + vSize, uSize);
+
+            // PlanarYUVLuminanceSource ilə birbaşa ZXing-ə ver
+            PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(
+                    nv21,
+                    width,
+                    height,
+                    0,
+                    0,
+                    width,
+                    height,
+                    false);
+
+            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+            Result result = new MultiFormatReader().decode(bitmap);
+            return result != null ? result.getText() : null;
+
+        } catch (Exception e) {
+            Log.e(TAG, "QR scan error: " + e.getMessage(), e);
+            return null;
+        }
     }
 
+    /**
+     * Köhnə metod - ehtiyat üçün saxlanılır
+     */
     private String scanQRCode(Bitmap bitmap) {
         try {
             int width = bitmap.getWidth();
@@ -406,6 +450,7 @@ public class RealTimeQrScanner extends AppCompatActivity {
     private String extractDocIdFromQR(String qrText) {
         if (qrText == null || qrText.isEmpty()) return "";
 
+        // URL formatını yoxla
         Pattern pattern = Pattern.compile("[?&]doc=([^&]+)");
         Matcher matcher = pattern.matcher(qrText);
 
@@ -413,6 +458,23 @@ public class RealTimeQrScanner extends AppCompatActivity {
             return matcher.group(1);
         }
 
+        // JSON formatını yoxla
+        try {
+            org.json.JSONObject json = new org.json.JSONObject(qrText);
+            if (json.has("doc")) {
+                return json.getString("doc");
+            }
+            if (json.has("docId")) {
+                return json.getString("docId");
+            }
+            if (json.has("documentId")) {
+                return json.getString("documentId");
+            }
+        } catch (Exception e) {
+            // JSON deyil
+        }
+
+        // Birbaşa mətn formatı (8-25 simvol, alfasayısal)
         if (qrText.length() >= 8 && qrText.length() <= 25 &&
                 qrText.matches("[A-Za-z0-9]+")) {
             return qrText;

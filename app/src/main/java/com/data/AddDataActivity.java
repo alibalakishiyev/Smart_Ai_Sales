@@ -116,6 +116,9 @@ public class AddDataActivity extends AppCompatActivity {
     private TextInputEditText etProductName, etAmount, etQuantity, etNote, etLiter, etKg;
     private Spinner spinnerCategory, spinnerSavedLocations, spinnerProducts;
     private ChipGroup chipGroupType;
+
+    private NestedScrollView mainScrollView;
+
     private Chip chipIncome, chipExpense;
     private MaterialButton btnSave, btnGetLocation, btnCancel, btnAddLocation;
     private ImageView btnBack, ivOfflineStatus;
@@ -155,8 +158,6 @@ public class AddDataActivity extends AppCompatActivity {
     private int quantity = 1;
     private String productName = "";
     private String note = "";
-
-    private NestedScrollView mainScrollView;  // BURADA ƏLAVƏ EDİN
 
     // Formatting
     private NumberFormat currencyFormat;
@@ -349,6 +350,8 @@ public class AddDataActivity extends AppCompatActivity {
         cardNote = findViewById(R.id.cardNote);
         cardPreview = findViewById(R.id.cardPreview);
         cardProduct = findViewById(R.id.cardProduct);
+
+        mainScrollView = findViewById(R.id.nestedScrollView); // və ya ScrollView-in id-si nədirsə
 
         // TextViews
         tvCurrentBalance = findViewById(R.id.tvCurrentBalance);
@@ -605,22 +608,53 @@ public class AddDataActivity extends AppCompatActivity {
                 .show();
     }
     // Cari məhsulu listə əlavə et
+
     private void addCurrentProductToList() {
         // Inputları yoxla
         if (!validateProductInput()) {
             return;
         }
 
-        // Məhsul məlumatlarını al
-        String name = etProductName.getText().toString().trim();
-        double price = getDoubleFromEditText(etAmount);
-        int quantity = Integer.parseInt(etQuantity.getText().toString());
-        double kg = getDoubleFromEditText(etKg);
-        double liter = getDoubleFromEditText(etLiter);
+        // Məhsul məlumatlarını al - FINAL dəyişənlər
+        final String name = etProductName.getText().toString().trim();
 
-        // Yeni məhsul obyekti yarat - ProductItem modelinizi istifadə edirik
-        ProductItem newProduct = new ProductItem();
-        newProduct.setId(UUID.randomUUID().toString()); // Müvəqqəti ID
+        final String priceText = etAmount.getText().toString().trim();
+        final double price;
+        try {
+            price = Double.parseDouble(priceText);
+        } catch (NumberFormatException e) {
+            return; // Əgər qiymət parse olunmursa, funksiyadan çıx
+        }
+
+        final int quantity;
+        try {
+            quantity = Integer.parseInt(etQuantity.getText().toString());
+        } catch (NumberFormatException e) {
+            return;
+        }
+
+        final double kg;
+        try {
+            kg = Double.parseDouble(etKg.getText().toString());
+        } catch (NumberFormatException e) {
+            return;
+        }
+
+        final double liter;
+        try {
+            liter = Double.parseDouble(etLiter.getText().toString());
+        } catch (NumberFormatException e) {
+            return;
+        }
+
+        // DEBUG - Qiyməti yoxla
+        Log.d(TAG, "=== MƏHSUL ƏLAVƏ EDİLİR ===");
+        Log.d(TAG, "Məhsul adı: " + name);
+        Log.d(TAG, "Qiymət (rəqəm): " + price);
+
+        // Yeni məhsul obyekti yarat
+        final ProductItem newProduct = new ProductItem();
+        newProduct.setId(UUID.randomUUID().toString());
         newProduct.setName(name);
         newProduct.setPrice(price);
         newProduct.setQuantity(quantity);
@@ -628,38 +662,28 @@ public class AddDataActivity extends AppCompatActivity {
         newProduct.setLiter(liter);
         newProduct.setUserId(userId);
         newProduct.setCreatedAt(new Timestamp(new Date()));
+        newProduct.setSelected(true);
 
-        // OCR-dan gələn məlumatlar varsa əlavə et
-        if (note.contains("OCR") || note.contains("🏪")) {
-            // Mağaza adını tapmağa çalış
-            String storeName = extractStoreNameFromNote();
-            if (!storeName.isEmpty()) {
-                newProduct.setStoreName(storeName);
-            }
-            newProduct.setReceiptId(UUID.randomUUID().toString());
-        }
+        Log.d(TAG, "Məhsul yaradıldı - price: " + newProduct.getPrice());
 
-        // Listə əlavə et
-        productListAdapter.addProduct(newProduct);
-        tempProductList.add(newProduct);
+        // Listə əlavə et - FINAL dəyişənlər istifadə olunur
+        runOnUiThread(() -> {
+            productListAdapter.addProduct(newProduct);
+            tempProductList.add(newProduct);
 
-        // Inputları təmizlə
-        clearProductInputs();
+            updateSelectedProductsInfo();
+            clearProductInputs();
 
-        // UI yenilə
-        updateSelectedProductsInfo();
+            // FINAL price dəyişəni istifadə olunur
+            Snackbar.make(cardProduct,
+                    "✅ " + name + " listə əlavə edildi (" + price + " AZN)",
+                    Snackbar.LENGTH_SHORT).show();
 
-        // Animasiya və mesaj
-        Snackbar.make(cardProduct, "✅ Məhsul listə əlavə edildi", Snackbar.LENGTH_SHORT).show();
-
-        // Preview-i gizlət (artıq listdə göstərilir)
-        cardPreview.setVisibility(View.GONE);
-
-        // Klaviaturanı bağla
-        hideKeyboard();
+            cardPreview.setVisibility(View.GONE);
+            hideKeyboard();
+        });
     }
 
-    // Məhsul inputlarını yoxla
     private boolean validateProductInput() {
         String name = etProductName.getText().toString().trim();
         if (TextUtils.isEmpty(name)) {
@@ -668,15 +692,39 @@ public class AddDataActivity extends AppCompatActivity {
             return false;
         }
 
-        double price = getDoubleFromEditText(etAmount);
-        if (price <= 0) {
+        // Qiyməti yoxla
+        String priceText = etAmount.getText().toString().trim();
+        if (TextUtils.isEmpty(priceText)) {
             etAmount.setError("Məbləğ daxil edin");
             etAmount.requestFocus();
             return false;
         }
 
-        int quantity = Integer.parseInt(etQuantity.getText().toString());
-        if (quantity <= 0 && getDoubleFromEditText(etKg) <= 0 && getDoubleFromEditText(etLiter) <= 0) {
+        double price = 0;
+        try {
+            price = Double.parseDouble(priceText);
+        } catch (NumberFormatException e) {
+            etAmount.setError("Düzgün məbləğ daxil edin");
+            etAmount.requestFocus();
+            return false;
+        }
+
+        if (price <= 0) {
+            etAmount.setError("Məbləğ 0-dan böyük olmalıdır");
+            etAmount.requestFocus();
+            return false;
+        }
+
+        // Miqdar, kiloqram və ya litr yoxlaması
+        String quantityText = etQuantity.getText().toString();
+        String kgText = etKg.getText().toString();
+        String literText = etLiter.getText().toString();
+
+        boolean hasQuantity = !TextUtils.isEmpty(quantityText) && !quantityText.equals("0");
+        boolean hasKg = !TextUtils.isEmpty(kgText) && !kgText.equals("0");
+        boolean hasLiter = !TextUtils.isEmpty(literText) && !literText.equals("0");
+
+        if (!hasQuantity && !hasKg && !hasLiter) {
             Snackbar.make(cardProduct, "Miqdar, kiloqram və ya litr daxil edin", Snackbar.LENGTH_SHORT).show();
             return false;
         }
@@ -684,28 +732,43 @@ public class AddDataActivity extends AppCompatActivity {
         return true;
     }
 
-    // Seçilmiş məhsul məlumatlarını yenilə
     private void updateSelectedProductsInfo() {
         int selectedCount = productListAdapter.getSelectedCount();
         double totalAmount = productListAdapter.getSelectedTotalAmount();
 
+        // DEBUG - seçilmiş məhsulların cəmini yoxla
+        Log.d(TAG, "Seçilmiş məhsul sayı: " + selectedCount);
+        Log.d(TAG, "Seçilmiş ümumi məbləğ: " + totalAmount);
+
+        // Seçilmiş məhsulları siyahıya al və hər birinin qiymətini yoxla
+        List<ProductItem> selected = productListAdapter.getSelectedProducts();
+        for (ProductItem p : selected) {
+            Log.d(TAG, "  - " + p.getName() + ": " + p.getPrice() + " AZN x " +
+                    (p.getQuantity() > 0 ? p.getQuantity() + " ədəd" :
+                            p.getKg() > 0 ? p.getKg() + " kq" : p.getLiter() + " L") +
+                    " = " + p.getTotalAmount() + " AZN");
+        }
+
         tvSelectedCount.setText(selectedCount + " məhsul seçilib");
         tvTotalSelectedAmount.setText("Seçilmiş ümumi: " + currencyFormat.format(totalAmount));
 
-        // Əgər heç bir məhsul seçilməyibsə, Save düyməsini deaktiv et
+        // Save düyməsini aktiv/deaktiv et
         btnSave.setEnabled(selectedCount > 0 && isCategoryValid);
     }
 
-    // Inputları təmizlə
     private void clearProductInputs() {
         etProductName.setText("");
         etAmount.setText("");
         etQuantity.setText("1");
         etKg.setText("0");
         etLiter.setText("0");
+
+        // Spinner-i default vəziyyətə qaytar
+        if (spinnerProducts != null) {
+            spinnerProducts.setSelection(0);
+        }
     }
 
-    // Note-dan mağaza adını çıxar
     // Note-dan mağaza adını çıxar
     private String extractStoreNameFromNote() {
         if (note == null || note.isEmpty()) return "";
@@ -776,47 +839,34 @@ public class AddDataActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1001) {
-            if (resultCode == RESULT_OK && data != null) {
-                // OCR-dan gələn məlumatları al
-                String storeName = data.getStringExtra("store_name");
-                String date = data.getStringExtra("date");
-                String time = data.getStringExtra("time");
-                double totalAmount = data.getDoubleExtra("total_amount", 0);
-                String docId = data.getStringExtra("doc_id");
-                String fiscalCode = data.getStringExtra("fiscal_code");
+        if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
+            Log.d(TAG, "🎯 OCR tamamlandı, məlumatlar alındı");
 
-                // Məhsul list'lərini al
-                ArrayList<String> productNames = data.getStringArrayListExtra("product_names");
-                ArrayList<String> productPrices = data.getStringArrayListExtra("product_prices");
-                ArrayList<String> productQuantities = data.getStringArrayListExtra("product_quantities");
-                ArrayList<String> productUnits = data.getStringArrayListExtra("product_units");
+            // OCR-dan gələn məlumatları al
+            String storeName = data.getStringExtra("store_name");
+            String date = data.getStringExtra("date");
+            String time = data.getStringExtra("time");
+            double totalAmount = data.getDoubleExtra("total_amount", 0);
+            String docId = data.getStringExtra("doc_id");
+            String fiscalCode = data.getStringExtra("fiscal_code");
 
-                Log.d(TAG, "📱 OCR məlumatları alındı:");
-                Log.d(TAG, "🏪 Mağaza: " + storeName);
-                Log.d(TAG, "📦 Məhsul sayı: " + (productNames != null ? productNames.size() : 0));
+            ArrayList<String> productNames = data.getStringArrayListExtra("product_names");
+            ArrayList<String> productPrices = data.getStringArrayListExtra("product_prices");
+            ArrayList<String> productQuantities = data.getStringArrayListExtra("product_quantities");
+            ArrayList<String> productUnits = data.getStringArrayListExtra("product_units");
 
-                // Məlumatları göstər
-                if (productNames != null && !productNames.isEmpty()) {
-                    showOCRData(storeName, date, time, totalAmount, docId, fiscalCode,
-                            productNames, productPrices, productQuantities, productUnits);
-
-                    Toast.makeText(this,
-                            "✅ " + productNames.size() + " məhsul OCR-dan gəldi",
-                            Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(this, "⚠️ OCR-dan məhsul gəlmədi", Toast.LENGTH_SHORT).show();
-                }
-            } else if (resultCode == RESULT_CANCELED) {
-                // İstifadəçi ləğv edib
-                Toast.makeText(this, "OCR əməliyyatı ləğv edildi", Toast.LENGTH_SHORT).show();
+            // Məlumatları göstər
+            if (productNames != null && !productNames.isEmpty()) {
+                showOCRData(storeName, date, time, totalAmount, docId, fiscalCode,
+                        productNames, productPrices, productQuantities, productUnits);
+            } else {
+                Toast.makeText(this, "⚠️ OCR-dan məhsul gəlmədi", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
 
 
-    // OCR məlumatlarını göstər
     private void showOCRData(String storeName, String date, String time, double totalAmount,
                              String docId, String fiscalCode,
                              ArrayList<String> productNames,
@@ -865,6 +915,8 @@ public class AddDataActivity extends AppCompatActivity {
         }
     }
 
+
+
     // Məhsulları birləşdirmə dialoqu
     private void showProductMergeDialog(String storeName, String date, String time,
                                         double totalAmount, String docId, String fiscalCode,
@@ -908,7 +960,6 @@ public class AddDataActivity extends AppCompatActivity {
                 .show();
     }
 
-    // OCR-dan gələn məhsulları listə əlavə et
     private void addOCRProductsToList(ArrayList<String> productNames,
                                       ArrayList<String> productPrices,
                                       ArrayList<String> productQuantities,
@@ -916,111 +967,212 @@ public class AddDataActivity extends AppCompatActivity {
                                       String storeName, String docId, String fiscalCode,
                                       StringBuilder noteBuilder) {
 
+        Log.d(TAG, "=== OCR MƏLUMATLARI ƏLAVƏ EDİLİR ===");
+        Log.d(TAG, "Store: " + storeName);
+        Log.d(TAG, "Products count: " + (productNames != null ? productNames.size() : 0));
+
         int addedCount = 0;
+        int errorCount = 0;
 
-        // Hər bir məhsulu listə əlavə et
+        if (productNames == null || productNames.isEmpty()) {
+            Log.e(TAG, "OCR-dan məhsul gəlmədi!");
+            Toast.makeText(this, "OCR-dan məhsul məlumatı gəlmədi", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         for (int i = 0; i < productNames.size(); i++) {
-            String name = productNames.get(i);
-            if (name == null || name.trim().isEmpty()) continue;
-
-            double price = 0;
-            double quantity = 1;
-            String unit = "ədəd";
-
             try {
+                String name = productNames.get(i);
+                if (name == null || name.trim().isEmpty()) {
+                    Log.w(TAG, "Məhsul " + i + " adı boşdur, keçilir");
+                    errorCount++;
+                    continue;
+                }
+                name = name.trim();
+
+                double price = 0;
                 if (productPrices != null && i < productPrices.size()) {
-                    price = Double.parseDouble(productPrices.get(i).replace(",", "."));
+                    String priceStr = productPrices.get(i);
+                    Log.d(TAG, "Raw price string [" + i + "]: '" + priceStr + "'");
+
+                    if (priceStr != null && !priceStr.trim().isEmpty()) {
+                        priceStr = priceStr.trim()
+                                .replace("AZN", "")
+                                .replace("₼", "")
+                                .replace(" ", "")
+                                .replace(",", ".");
+
+                        StringBuilder cleanPrice = new StringBuilder();
+                        for (char c : priceStr.toCharArray()) {
+                            if (Character.isDigit(c) || c == '.') {
+                                cleanPrice.append(c);
+                            }
+                        }
+                        priceStr = cleanPrice.toString();
+
+                        try {
+                            if (!priceStr.isEmpty()) {
+                                price = Double.parseDouble(priceStr);
+                            }
+                        } catch (NumberFormatException e) {
+                            Log.e(TAG, "Price parse error: " + e.getMessage() + " for string: '" + priceStr + "'");
+                        }
+                    }
                 }
+
+                double quantity = 1;
                 if (productQuantities != null && i < productQuantities.size()) {
-                    quantity = Double.parseDouble(productQuantities.get(i).replace(",", "."));
+                    String qtyStr = productQuantities.get(i);
+                    if (qtyStr != null && !qtyStr.trim().isEmpty()) {
+                        qtyStr = qtyStr.trim().replace(",", ".");
+                        try {
+                            quantity = Double.parseDouble(qtyStr);
+                        } catch (NumberFormatException e) {
+                            Log.e(TAG, "Quantity parse error: " + e.getMessage());
+                        }
+                    }
                 }
+
+                String unit = "ədəd";
                 if (productUnits != null && i < productUnits.size()) {
                     unit = productUnits.get(i);
+                    if (unit == null || unit.trim().isEmpty()) {
+                        unit = "ədəd";
+                    }
+                    unit = unit.trim().toLowerCase();
                 }
-            } catch (NumberFormatException e) {
-                Log.e(TAG, "Parse error: " + e.getMessage());
-                continue;
-            }
 
-            // Yeni məhsul yarat
-            ProductItem product = new ProductItem();
-            product.setId(UUID.randomUUID().toString());
-            product.setName(name);
-            product.setPrice(price);
-            product.setStoreName(storeName);
-            product.setReceiptId(docId);
-            product.setFiscalCode(fiscalCode);
-            product.setUserId(userId);
-            product.setCreatedAt(new Timestamp(new Date()));
-            product.setSelected(true); // Avtomatik seç
+                Log.d(TAG, "Məhsul " + i + ": " + name +
+                        ", qiymət: " + price +
+                        ", miqdar: " + quantity +
+                        ", vahid: " + unit);
 
-            // Unit-ə görə quantity təyin et
-            if (unit.equalsIgnoreCase("kg") || unit.equalsIgnoreCase("kq")) {
-                product.setKg(quantity);
-                product.setQuantity(0);
-                product.setLiter(0);
-            } else if (unit.equalsIgnoreCase("l") || unit.equalsIgnoreCase("litr")) {
-                product.setLiter(quantity);
-                product.setQuantity(0);
-                product.setKg(0);
-            } else {
-                product.setQuantity((int) Math.round(quantity));
-                product.setKg(0);
-                product.setLiter(0);
-            }
+                if (price <= 0) {
+                    Log.w(TAG, "Məhsul " + name + " üçün qiymət 0 və ya mənfidir!");
+                }
 
-            // Listə əlavə et
-            productListAdapter.addProduct(product);
-            tempProductList.add(product);
-            addedCount++;
+                // Yeni məhsul yarat
+                ProductItem product = new ProductItem();
+                product.setId(UUID.randomUUID().toString());
+                product.setName(name);
+                product.setPrice(price);
+                product.setStoreName(storeName);
+                product.setReceiptId(docId);
+                product.setFiscalCode(fiscalCode);
+                product.setUserId(userId);
+                product.setCreatedAt(new Timestamp(new Date()));
+                product.setSelected(true);
 
-            // Note-a əlavə et
-            double productTotal;
-            if (product.getKg() > 0) {
-                productTotal = product.getKg() * price;
-                noteBuilder.append(String.format("• %s - %.3f kq x %.2f AZN = %.2f AZN\n",
-                        name, product.getKg(), price, productTotal));
-            } else if (product.getLiter() > 0) {
-                productTotal = product.getLiter() * price;
-                noteBuilder.append(String.format("• %s - %.3f L x %.2f AZN = %.2f AZN\n",
-                        name, product.getLiter(), price, productTotal));
-            } else {
-                productTotal = product.getQuantity() * price;
-                noteBuilder.append(String.format("• %s - %d ədəd x %.2f AZN = %.2f AZN\n",
-                        name, product.getQuantity(), price, productTotal));
+                if (unit.contains("kg") || unit.contains("kq") || unit.contains("kilo") || quantity != Math.floor(quantity)) {
+                    product.setKg(quantity);
+                    product.setQuantity(0);
+                    product.setLiter(0);
+                } else if (unit.contains("l") || unit.contains("litr") || unit.contains("lt")) {
+                    product.setLiter(quantity);
+                    product.setQuantity(0);
+                    product.setKg(0);
+                } else {
+                    product.setQuantity((int) Math.round(quantity));
+                    product.setKg(0);
+                    product.setLiter(0);
+                }
+
+                // FINAL DƏYİŞƏN YARAT
+                final ProductItem finalProduct = copyProduct(product);
+
+                // Listə əlavə et (UI thread-də)
+                runOnUiThread(() -> {
+                    productListAdapter.addProduct(finalProduct);
+                    tempProductList.add(finalProduct);
+                });
+
+                double productTotal = product.getTotalAmount();
+                if (product.getKg() > 0) {
+                    noteBuilder.append(String.format(Locale.getDefault(),
+                            "• %s - %.3f kq x %.2f AZN = %.2f AZN\n",
+                            name, product.getKg(), price, productTotal));
+                } else if (product.getLiter() > 0) {
+                    noteBuilder.append(String.format(Locale.getDefault(),
+                            "• %s - %.3f L x %.2f AZN = %.2f AZN\n",
+                            name, product.getLiter(), price, productTotal));
+                } else {
+                    noteBuilder.append(String.format(Locale.getDefault(),
+                            "• %s - %d ədəd x %.2f AZN = %.2f AZN\n",
+                            name, product.getQuantity(), price, productTotal));
+                }
+
+                addedCount++;
+
+            } catch (Exception e) {
+                Log.e(TAG, "Məhsul " + i + " əlavə edilərkən xəta: " + e.getMessage());
+                e.printStackTrace();
+                errorCount++;
             }
         }
 
-        // Note-u yenilə
-        String noteText = noteBuilder.toString().trim();
-        if (!noteText.isEmpty()) {
-            // Əgər əvvəlki note varsa, altına əlavə et
-            String currentNote = etNote.getText().toString();
-            if (currentNote.isEmpty()) {
-                etNote.setText(noteText);
-                note = noteText;
+        Log.d(TAG, "=== OCR ƏLAVƏ ETMƏ NƏTİCƏLƏRİ ===");
+        Log.d(TAG, "Əlavə edildi: " + addedCount);
+        Log.d(TAG, "Xəta: " + errorCount);
+        Log.d(TAG, "Cəmi məhsul: " + productNames.size());
+
+        final String finalNoteText = noteBuilder.toString().trim();
+        final int finalAddedCount = addedCount;
+        final int finalErrorCount = errorCount;
+
+        runOnUiThread(() -> {
+            if (!finalNoteText.isEmpty()) {
+                String currentNote = etNote.getText().toString();
+                if (currentNote.isEmpty()) {
+                    etNote.setText(finalNoteText);
+                    note = finalNoteText;
+                } else {
+                    etNote.setText(currentNote + "\n\n" + finalNoteText);
+                    note = currentNote + "\n\n" + finalNoteText;
+                }
+            }
+
+            updateSelectedProductsInfo();
+
+            String message;
+            if (finalErrorCount == 0) {
+                message = String.format("✅ %d məhsul OCR-dan listə əlavə edildi", finalAddedCount);
             } else {
-                etNote.setText(currentNote + "\n\n" + noteText);
-                note = currentNote + "\n\n" + noteText;
+                message = String.format("⚠️ %d məhsul əlavə edildi, %d xəta", finalAddedCount, finalErrorCount);
             }
-        }
+            Toast.makeText(AddDataActivity.this, message, Toast.LENGTH_LONG).show();
 
-        // UI yenilə
-        updateSelectedProductsInfo();
+            hideKeyboard();
 
-        // Uğur mesajı
-        String message = String.format("✅ %d məhsul OCR-dan listə əlavə edildi", addedCount);
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            new Handler().postDelayed(() -> {
+                if (mainScrollView != null && cardProduct != null) {
+                    mainScrollView.smoothScrollTo(0, cardProduct.getTop());
+                }
+            }, 300);
+        });
+    }
 
-        // Klaviaturanı bağla
-        hideKeyboard();
-
-        // Məhsul listinə scroll et
-        new Handler().postDelayed(() -> {
-            if (mainScrollView != null) {
-                mainScrollView.smoothScrollTo(0, cardProduct.getTop());
-            }
-        }, 300);
+    // Product-i kopyalamaq üçün köməkçi metod
+    private ProductItem copyProduct(ProductItem original) {
+        ProductItem copy = new ProductItem();
+        copy.setId(original.getId());
+        copy.setName(original.getName());
+        copy.setCategory(original.getCategory());
+        copy.setPrice(original.getPrice());
+        copy.setKg(original.getKg());
+        copy.setLiter(original.getLiter());
+        copy.setQuantity(original.getQuantity());
+        copy.setUserId(original.getUserId());
+        copy.setCreatedAt(original.getCreatedAt());
+        copy.setSelected(original.isSelected());
+        copy.setReceiptId(original.getReceiptId());
+        copy.setStoreName(original.getStoreName());
+        copy.setPurchaseDate(original.getPurchaseDate());
+        copy.setTotalAmount(original.getTotalAmount());
+        copy.setTaxAmount(original.getTaxAmount());
+        copy.setTaxFree(original.isTaxFree());
+        copy.setFiscalCode(original.getFiscalCode());
+        copy.setBarcode(original.getBarcode());
+        return copy;
     }
 
     private void loadLocationsFromFirebase() {
@@ -1454,13 +1606,17 @@ public class AddDataActivity extends AppCompatActivity {
         progressIndicator.setVisibility(showProgress ? View.VISIBLE : View.GONE);
     }
 
-
-    // Köməkçi metodlar
     private double getDoubleFromEditText(TextInputEditText editText) {
-        String text = editText.getText().toString();
+        String text = editText.getText().toString().trim();
+        if (text.isEmpty()) {
+            return 0;
+        }
         try {
-            return text.isEmpty() ? 0 : Double.parseDouble(text);
+            // Vergülü nöqtəyə çevir (azərbaycan klaviaturası üçün)
+            text = text.replace(',', '.');
+            return Double.parseDouble(text);
         } catch (NumberFormatException e) {
+            Log.e(TAG, "Parse error: " + text);
             return 0;
         }
     }

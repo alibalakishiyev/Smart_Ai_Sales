@@ -109,6 +109,18 @@
         <item name="cornerSize">20dp</item>
     </style>
 
+    <style name="FullScreenDialogTheme" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="android:windowMinWidthMinor">100%</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.6</item>
+    </style>
+
     <!-- Progress Indicator Style - LinearProgressIndicator üçün -->
     <style name="Widget.Material3.LinearProgressIndicator" parent="Widget.MaterialComponents.LinearProgressIndicator">
         <item name="indicatorColor">@color/purple_500</item>

@@ -225,12 +225,12 @@
                             android:layout_height="wrap_content"
                             android:text="Analitik"
                             android:textColor="@color/white_80"
-                            android:textSize="10sp"/>
+                            android:textSize="12sp"/>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnDashboard"
                             android:layout_width="match_parent"
-                            android:layout_height="28dp"
+                            android:layout_height="33dp"
                             android:layout_marginTop="8dp"
                             android:text="Keçid"
                             android:textAllCaps="false"
@@ -290,11 +290,11 @@
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnAddData"
                             android:layout_width="match_parent"
-                            android:layout_height="28dp"
+                            android:layout_height="33dp"
                             android:layout_marginTop="8dp"
                             android:text="Əlavə et"
                             android:textAllCaps="false"
-                            android:textSize="10sp"
+                            android:textSize="12sp"
                             android:backgroundTint="@color/white"
                             android:textColor="@color/income_green"
                             style="@style/Widget.MaterialComponents.Button"/>
@@ -344,12 +344,12 @@
                             android:layout_height="wrap_content"
                             android:text="Analiz"
                             android:textColor="@color/white_80"
-                            android:textSize="10sp"/>
+                            android:textSize="12sp"/>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnReports"
                             android:layout_width="match_parent"
-                            android:layout_height="28dp"
+                            android:layout_height="33dp"
                             android:layout_marginTop="8dp"
                             android:text="Bax"
                             android:textAllCaps="false"
@@ -404,12 +404,12 @@
                             android:layout_height="wrap_content"
                             android:text="AI skan"
                             android:textColor="@color/white_80"
-                            android:textSize="10sp"/>
+                            android:textSize="12sp"/>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnReceiptScanner"
                             android:layout_width="match_parent"
-                            android:layout_height="28dp"
+                            android:layout_height="33dp"
                             android:layout_marginTop="8dp"
                             android:text="Skan et"
                             android:textAllCaps="false"
@@ -465,12 +465,12 @@
                             android:layout_height="wrap_content"
                             android:text="Tənzimləmə"
                             android:textColor="@color/white_80"
-                            android:textSize="10sp"/>
+                            android:textSize="12sp"/>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnSettings"
                             android:layout_width="match_parent"
-                            android:layout_height="28dp"
+                            android:layout_height="33dp"
                             android:layout_marginTop="8dp"
                             android:text="Daxil ol"
                             android:textAllCaps="false"

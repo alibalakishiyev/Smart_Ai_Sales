@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_dark">
+
+    <!-- Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/card_dark"
+        app:title="E-Kassa"
+        app:titleTextColor="@color/text_primary"
+        app:navigationIcon="@drawable/ic_close"
+        app:navigationContentDescription="Bağla"
+        app:titleCentered="true">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Fiskal kod"
+            android:textColor="@color/purple_500"
+            android:textSize="14sp" />
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <!-- Progress -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="4dp">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:progressTint="@color/purple_500"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- WebView -->
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- Preview Container -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/previewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        app:cardBackgroundColor="@color/card_dark"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="8dp"
+        android:visibility="gone"
+        android:layout_marginTop="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Yüklənmiş şəkil"
+                android:textColor="@color/purple_500"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <ImageView
+                android:id="@+id/ivReceiptPreview"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:scaleType="centerCrop"
+                android:background="@color/card_light"
+                android:padding="4dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="@color/card_dark">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClose"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Bağla"
+            android:textColor="@color/text_primary"
+            app:strokeColor="@color/purple_500"
+            app:cornerRadius="12dp"
+            android:layout_marginEnd="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDownload"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Şəkli yüklə"
+            android:textColor="@color/white"
+            app:icon="@drawable/ic_download"
+            app:iconGravity="textStart"
+            android:backgroundTint="@color/purple_500"
+            app:cornerRadius="12dp"
+            android:layout_marginStart="8dp"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSave"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Yadda saxla"
+            android:textColor="@color/white"
+            app:icon="@drawable/ic_save"
+            app:iconGravity="textStart"
+            android:backgroundTint="@color/success"
+            app:cornerRadius="12dp"
+            android:layout_marginStart="8dp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- Download Progress -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone"
+        android:id="@+id/downloadProgress">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/loading_background"
+            android:padding="24dp">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                app:indicatorColor="@color/purple_500"
+                app:indicatorSize="56dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Şəkil yüklənir..."
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp" />
+        </LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>

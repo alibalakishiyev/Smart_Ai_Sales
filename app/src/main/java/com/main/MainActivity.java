@@ -73,7 +73,6 @@ public class MainActivity extends BaseActivity {
     // UI Elements
     private MaterialCardView cardDashboard, cardAddData, cardReports, cardSettings, cardReceiptScanner; // <-- ƏLAVƏ
     private MaterialButton btnDashboard, btnAddData, btnReports, btnSettings, btnReceiptScanner; // <-- ƏLAVƏ
-    private ImageView imgDashboard, imgAddData, imgReports, imgSettings, imgReceiptScanner; // <-- ƏLAVƏ
     private TextView tvWelcome, tvQuote, tvVersion;
     private LottieAnimationView animationView;
     private ViewPager2 viewPagerFeatures;
@@ -178,12 +177,6 @@ public class MainActivity extends BaseActivity {
         btnSettings = findViewById(R.id.btnSettings);
         btnReceiptScanner = findViewById(R.id.btnReceiptScanner); // <-- ƏLAVƏ
 
-        // Images
-        imgDashboard = findViewById(R.id.imgDashboard);
-        imgAddData = findViewById(R.id.imgAddData);
-        imgReports = findViewById(R.id.imgReports);
-        imgSettings = findViewById(R.id.imgSettings);
-        imgReceiptScanner = findViewById(R.id.imgReceiptScanner); // <-- ƏLAVƏ
 
         // Text
         tvWelcome = findViewById(R.id.tvWelcome);

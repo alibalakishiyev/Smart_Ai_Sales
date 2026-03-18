@@ -23,10 +23,16 @@ import java.util.List;
 
 /**
  * Təkmilləşdirilmiş OCR Helper - SUPER GÜCLÜ VERSİYA
+ * Balaca və böyük qəbzləri oxumaq üçün optimallaşdırılıb
  */
 public class RealOCRHelper {
     private static final String TAG = "RealOCRHelper";
     private TextRecognizer textRecognizer;
+
+    // Height-ə görə threshold-lar
+    private static final int HEIGHT_SMALL = 1300;  // 1235px olanlar
+    private static final int HEIGHT_MEDIUM = 1500; // 1500px olanlar
+    private static final int HEIGHT_LARGE = 2000;  // 1903px olanlar
 
     public static class TextBlock {
         public String text;
@@ -76,8 +82,48 @@ public class RealOCRHelper {
             return;
         }
 
+        // Height-ə görə böyütmə faktorunu təyin et
+        float scaleFactor;
+        String imageType;
+        int height = bitmap.getHeight();
+        int width = bitmap.getWidth();
+
+        if (height < HEIGHT_SMALL) {
+            scaleFactor = 1.5f; // 350x1235
+            imageType = "BALACA (height<1400)";
+        } else if (height < HEIGHT_MEDIUM) {
+            scaleFactor = 1.3f; // 350x1500
+            imageType = "ORTA (1400-1800)";
+        } else if (height < HEIGHT_LARGE) {
+            scaleFactor = 1.5f; // 350x1903
+            imageType = "UZUN (1800-2000)";
+        } else {
+            scaleFactor = 1.5f; // 2000px+
+            imageType = "COX UZUN (height>2000)";
+        }
+
+        Log.d(TAG, "Şəkil tipi: " + imageType + ", ölçü: " + width + "x" + height +
+                ", faktor: " + scaleFactor + "x");
+
+        Bitmap scaledBitmap = scaleBitmap(bitmap, scaleFactor);
+        Log.d(TAG, "Böyüdülmüş: " + scaledBitmap.getWidth() + "x" + scaledBitmap.getHeight());
+
         // 1. CƏHD: Güclü preprocessing ilə
-        tryWithPreprocessing(bitmap, callback, 0);
+        tryWithPreprocessing(scaledBitmap, callback, 0);
+    }
+
+    /**
+     * Sadə böyütmə metodu
+     */
+    private Bitmap scaleBitmap(Bitmap original, float scaleFactor) {
+        try {
+            int newWidth = (int) (original.getWidth() * scaleFactor);
+            int newHeight = (int) (original.getHeight() * scaleFactor);
+            return Bitmap.createScaledBitmap(original, newWidth, newHeight, true);
+        } catch (Exception e) {
+            Log.e(TAG, "Böyütmə xətası: " + e.getMessage());
+            return original;
+        }
     }
 
     private void tryWithPreprocessing(Bitmap bitmap, OCRCallback callback, int attempt) {
@@ -141,8 +187,13 @@ public class RealOCRHelper {
 
                     Log.d(TAG, "Cəhd " + attempt + ": " + textBlocks.size() + " blok tapıldı");
 
-                    // Əgər kifayət qədər blok tapıldısa (10+), uğurlu say
-                    if (textBlocks.size() >= 10) {
+                    // Şəkil ölçüsünə görə tələb olunan blok sayı
+                    int requiredBlocks = 5;
+                    if (original.getHeight() < HEIGHT_SMALL) {
+                        requiredBlocks = 3; // Balaca şəkillər üçün 3 blok kifayətdir
+                    }
+
+                    if (textBlocks.size() >= requiredBlocks) {
                         if (variant != original) {
                             variant.recycle();
                         }
@@ -209,20 +260,25 @@ public class RealOCRHelper {
         try {
             // 1. Şəkili böyüt (əsas)
             Bitmap scaledBitmap;
-            int targetSize = 1200; // Daha böyük hədəf
 
-            if (original.getWidth() < targetSize || original.getHeight() < targetSize) {
-                float scale = Math.max(
-                        (float) targetSize / original.getWidth(),
-                        (float) targetSize / original.getHeight()
-                );
-                int newWidth = (int) (original.getWidth() * scale);
-                int newHeight = (int) (original.getHeight() * scale);
-                scaledBitmap = Bitmap.createScaledBitmap(original, newWidth, newHeight, true);
-                Log.d(TAG, "Method " + method + ": Scaled to " + newWidth + "x" + newHeight);
+            // Height-ə görə böyütmə faktorunu təyin et
+            int height = original.getHeight();
+            float scaleFactor;
+
+            if (height < HEIGHT_SMALL) {
+                scaleFactor = 1.5f;
+            } else if (height < HEIGHT_MEDIUM) {
+                scaleFactor = 1.3f;
+            } else if (height < HEIGHT_LARGE) {
+                scaleFactor = 1.2f;
             } else {
-                scaledBitmap = Bitmap.createBitmap(original);
+                scaleFactor = 1.0f;
             }
+
+            int newWidth = (int) (original.getWidth() * scaleFactor);
+            int newHeight = (int) (original.getHeight() * scaleFactor);
+            scaledBitmap = Bitmap.createScaledBitmap(original, newWidth, newHeight, true);
+            Log.d(TAG, "Method " + method + ": Scaled to " + newWidth + "x" + newHeight + " (faktor: " + scaleFactor + "x)");
 
             // 2. Metoda görə preprocessing
             Bitmap processed = Bitmap.createBitmap(scaledBitmap.getWidth(), scaledBitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -239,16 +295,16 @@ public class RealOCRHelper {
                 int gray = (r + g + b) / 3;
 
                 switch (method) {
-                    case 0: // Method 0: Orijinal (sizin kodunuz)
+                    case 0: // Method 0: Orijinal
                         processed = scaledBitmap;
                         continue;
 
                     case 1: // Method 1: Ağ-qara + yüksək kontrast
                         // Kontrast artır
                         if (gray < 128) {
-                            gray = (int) (gray * 2.7); // Qaraları daha qara
+                            gray = (int) (gray * 0.7); // Qaraları daha qara
                         } else {
-                            gray = (int) (gray * 2.7); // Ağları daha ağ
+                            gray = (int) (gray * 1.3); // Ağları daha ağ
                         }
                         gray = Math.min(255, Math.max(0, gray));
                         break;
@@ -257,9 +313,9 @@ public class RealOCRHelper {
                         gray = 255 - gray;
                         // Kontrast artır
                         if (gray < 128) {
-                            gray = (int) (gray * 2.7);
+                            gray = (int) (gray * 0.7);
                         } else {
-                            gray = (int) (gray * 2.7);
+                            gray = (int) (gray * 1.3);
                         }
                         gray = Math.min(255, Math.max(0, gray));
                         break;
@@ -299,7 +355,7 @@ public class RealOCRHelper {
     }
 
     /**
-     * Şəkili fayldan yüklə
+     * Şəkili fayldan yüklə və orientasiyanı düzəlt
      */
     public static Bitmap loadBitmap(String path) {
         try {
@@ -309,7 +365,7 @@ public class RealOCRHelper {
 
             if (bitmap == null) return null;
 
-            // EXIF məlumatlarını oxu
+            // EXIF məlumatlarını oxu və orientasiyanı düzəlt
             ExifInterface exif = new ExifInterface(path);
             int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
 
@@ -317,29 +373,6 @@ public class RealOCRHelper {
 
         } catch (Exception e) {
             Log.e(TAG, "Error loading bitmap: " + e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Şəkili fayldan yüklə və orientasiyanı düzəlt
-     */
-    public static Bitmap loadAndCorrectOrientation(String path) {
-        try {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeFile(path, options);
-
-            if (bitmap == null) return null;
-
-            // EXIF məlumatlarını oxu
-            ExifInterface exif = new ExifInterface(path);
-            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-
-            return rotateBitmap(bitmap, orientation);
-
-        } catch (IOException e) {
-            Log.e(TAG, "Şəkil yüklənərkən xəta: " + e.getMessage());
             return null;
         }
     }

@@ -34,6 +34,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.widget.NestedScrollView;
 
+import com.data.AddDataActivity;
 import com.data.ProductItem;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
@@ -42,6 +43,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 import com.google.zxing.BinaryBitmap;
@@ -50,6 +52,7 @@ import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
 import com.smart_ai_sales.R;
+import com.utils.ReceiptWebViewDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,6 +65,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -212,7 +216,66 @@ public class ReceiptScannerActivity extends AppCompatActivity {
         btnManualSearch.setOnClickListener(v -> {
             String manualDocId = etManualDocId.getText().toString().trim();
             if (!manualDocId.isEmpty()) {
-                fetchReceiptFromEKassa(manualDocId);
+                String browserUrl = E_KASSA_BASE_URL + manualDocId;
+
+                ReceiptWebViewDialog dialog = ReceiptWebViewDialog.newInstance(browserUrl, manualDocId);
+
+                // DİQQƏT: metod adı "setOnReceiptDownloadedListener" (sonda "ed" var)
+                dialog.setOnReceiptDownloadedListener(new ReceiptWebViewDialog.OnReceiptDownloadedListener() {
+                    @Override
+                    public void onReceiptDownloaded(String filePath, String docId) {
+                        Log.d(TAG, "Listener çağırıldı! filePath: " + filePath + ", docId: " + docId);
+
+                        // UI thread-də işlə
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Bitmap bitmap = null;
+
+                                    // Fayl mövcuddur?
+                                    File imageFile = new File(filePath);
+                                    if (imageFile.exists()) {
+                                        Log.d(TAG, "Fayl mövcuddur: " + imageFile.length() + " bayt");
+
+                                        // Şəkili yüklə
+                                        bitmap = BitmapFactory.decodeFile(filePath);
+
+                                        if (bitmap != null) {
+                                            Log.d(TAG, "Bitmap yaradıldı: " + bitmap.getWidth() + "x" + bitmap.getHeight());
+
+                                            // Şəkili göstər - BURASI VACİB!
+                                            displayImage(bitmap);
+
+                                            // OCR-ə başla
+                                            Toast.makeText(ReceiptScannerActivity.this,
+                                                    "Şəkil yükləndi, OCR edilir...", Toast.LENGTH_LONG).show();
+
+                                            // Bir az gözlə və OCR et
+                                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    performOCR();
+                                                }
+                                            }, 1000);
+                                        } else {
+                                            Log.e(TAG, "Bitmap yaradıla bilmədi!");
+                                            Toast.makeText(ReceiptScannerActivity.this,
+                                                    "Şəkil yükləndi ama göstərilə bilmədi", Toast.LENGTH_SHORT).show();
+                                        }
+                                    } else {
+                                        Log.e(TAG, "Fayl mövcud deyil: " + filePath);
+                                    }
+                                } catch (Exception e) {
+                                    Log.e(TAG, "Listener xətası", e);
+                                }
+                            }
+                        });
+                    }
+                });
+
+                dialog.show(getSupportFragmentManager(), "ReceiptWebViewDialog");
+
             } else {
                 Toast.makeText(this, "Fiskal kod daxil edin", Toast.LENGTH_SHORT).show();
             }
@@ -362,12 +425,20 @@ public class ReceiptScannerActivity extends AppCompatActivity {
         }
     }
 
+
     private void displayImage(Bitmap bitmap) {
+        Log.d(TAG, "displayImage çağırıldı, bitmap = " + (bitmap != null ? "var" : "yox"));
+
         if (bitmap != null) {
             ivReceiptImage.setImageBitmap(bitmap);
             tvNoImageText.setVisibility(View.GONE);
+            currentBitmap = bitmap;  // Əgər currentBitmap variable varsa
             btnScan.setEnabled(true);
             btnScan.setAlpha(1f);
+
+            Log.d(TAG, "Şəkil göstərildi");
+        } else {
+            Log.e(TAG, "displayImage: bitmap null!");
         }
     }
 
@@ -583,6 +654,7 @@ public class ReceiptScannerActivity extends AppCompatActivity {
     }
 
     private void performOCR() {
+        Log.d(TAG, "performOCR() çağırıldı, currentBitmap = " + (currentBitmap != null ? "var" : "yox"));
         if (currentBitmap == null) {
             Toast.makeText(this, "Şəkil yoxdur", Toast.LENGTH_SHORT).show();
             return;
@@ -1011,7 +1083,6 @@ public class ReceiptScannerActivity extends AppCompatActivity {
     }
 
 
-    // ReceiptScannerActivity-də saveDataAndReturn() metodu
     private void saveDataAndReturn() {
         try {
             Log.d(TAG, "saveDataAndReturn çağırıldı");
