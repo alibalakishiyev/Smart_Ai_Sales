@@ -7,9 +7,16 @@
     <color name="purple_500_alpha">#206200EE</color>
     <color name="scanner_purple">#6200EE</color>
 
-    <!-- Teal rənglər -->
-    <color name="teal_200">#03DAC5</color>
-    <color name="teal_700">#018786</color>
+    <!-- Existing colors -->
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+
+
+    <!-- ⭐ NEW COLORS - ƏLAVƏ ET -->
+    <color name="purple_900">#4A148C</color>
+    <color name="purple_800">#6A1B9A</color>
+    <color name="black_20">#33000000</color>
+    <color name="white_40">#66FFFFFF</color>
 
     <!-- Gradient rənglər -->
     <color name="gradient_start">#6200EE</color>
@@ -68,5 +75,51 @@
 
     <color name="green">#FF4CAF50</color>
     <color name="blue">#FF2196F3</color>
+
+    <color name="error_red">#FF4444</color>
+    <color name="green_500">#4CAF50</color>
+    <color name="hint_gray">#8A8A8A</color>
+    <color name="card_background">#2A2A2A</color>
+    <color name="expense_alpha">#1AEF4444</color>
+
+    <!-- Screen & Toolbar -->
+    <color name="screen_background">#F5F5F5</color>
+    <color name="toolbar_bg">#FFFFFF</color>
+    <color name="toolbar_title">#1A1A1A</color>
+
+    <!-- Search bar -->
+    <color name="search_bg">#F2F2F2</color>
+    <color name="search_stroke">#E0E0E0</color>
+    <color name="search_icon_tint">#888888</color>
+
+    <!-- Tabs -->
+    <color name="tab_indicator">#E53935</color>
+    <color name="tab_selected_text">#E53935</color>
+    <color name="tab_unselected_text">#757575</color>
+
+    <!-- Cards -->
+    <color name="card_stroke">#E8E8E8</color>
+
+    <color name="ai_purple">#9C27B0</color>
+    <color name="white_90">#E6FFFFFF</color>
+
+    <!-- Prices -->
+    <color name="price_sale">#E53935</color>
+    <color name="price_original">#9E9E9E</color>
+    <color name="savings_text">#43A047</color>
+
+    <!-- Chips -->
+    <color name="chip_text">#FFFFFF</color>
+    <color name="chip_bg">#E53935</color>
+
+    <!-- Accent / loading -->
+    <color name="accent">#E53935</color>
+
+    <!-- Chip selector states (used as ColorStateList in Java) -->
+    <color name="chip_checked_bg">#E53935</color>
+    <color name="chip_unchecked_bg">#F5F5F5</color>
+    <color name="chip_checked_text">#FFFFFF</color>
+    <color name="chip_unchecked_text">#555555</color>
+
 
 </resources>

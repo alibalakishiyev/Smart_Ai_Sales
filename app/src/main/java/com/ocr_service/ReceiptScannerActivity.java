@@ -160,10 +160,12 @@ public class ReceiptScannerActivity extends AppCompatActivity {
         etTime = findViewById(R.id.etTime);
         mainScrollView = findViewById(R.id.nestedScrollView);
 
-        // Toolbar
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
+        // ⭐ BUNUN ƏVƏZİNƏ Back düyməsini təyin edin:
+        ImageView btnBack = findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> onBackPressed());
+        }
 
         cardResults.setVisibility(View.GONE);
         cardQrInfo.setVisibility(View.GONE);
@@ -190,8 +192,8 @@ public class ReceiptScannerActivity extends AppCompatActivity {
         fabCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               Intent intent = new Intent(ReceiptScannerActivity.this, RealTimeQrScanner.class);
-               startActivity(intent);
+                Intent intent = new Intent(ReceiptScannerActivity.this, RealTimeQrScanner.class);
+                startActivity(intent);
             }
         });
 
@@ -572,6 +574,7 @@ public class ReceiptScannerActivity extends AppCompatActivity {
                     progressIndicator.setVisibility(View.GONE);
                     progressBar.setVisibility(View.GONE);
                     tvLoading.setVisibility(View.GONE);
+                    qrDocId = docId;
                     tvQrStatus.setText("⚠️ Məlumat tapılmadı");
                     performOCR();
                 });
@@ -595,6 +598,11 @@ public class ReceiptScannerActivity extends AppCompatActivity {
 
             storeName = json.optString("sellerName", "Mağaza adı tapılmadı");
             fiscalCode = json.optString("fiscalCode", "");
+
+            String docIdFromJson = json.optString("docId", "");
+            if (!docIdFromJson.isEmpty() && qrDocId.isEmpty()) {
+                qrDocId = docIdFromJson;
+            }
 
             String dateStr = json.optString("date", "");
             if (!dateStr.isEmpty()) {
@@ -1107,9 +1115,49 @@ public class ReceiptScannerActivity extends AppCompatActivity {
             Intent resultIntent = new Intent();
 
             // UI-dan məlumatları topla
-            storeName = etStoreName.getText().toString();
-            receiptDate = etDate.getText().toString();
-            receiptTime = etTime.getText().toString();
+            storeName = etStoreName.getText().toString().trim();
+            receiptDate = etDate.getText().toString().trim();
+            receiptTime = etTime.getText().toString().trim();
+
+            // ⭐ FISKAL KOD - bu çox vacibdir!
+            String fiscalCodeValue = fiscalCode;
+            if (fiscalCodeValue == null || fiscalCodeValue.isEmpty()) {
+                // Manual olaraq daxil edilmiş fiskal kodu yoxla
+                String manualDocId = etManualDocId.getText().toString().trim();
+                if (!manualDocId.isEmpty()) {
+                    fiscalCodeValue = manualDocId;
+                }
+            }
+
+            // ⭐ QƏBZ ID - əgər boşdursa, fiskal kodu istifadə et
+            String receiptIdValue = qrDocId;
+            if ((receiptIdValue == null || receiptIdValue.isEmpty()) && fiscalCodeValue != null && !fiscalCodeValue.isEmpty()) {
+                receiptIdValue = fiscalCodeValue;
+            }
+            if (receiptIdValue == null) receiptIdValue = "";
+
+            // ⭐ TARİX - əgər boşdursa, bugünkü tarixi istifadə et
+            String dateValue = receiptDate;
+            if (dateValue == null || dateValue.isEmpty()) {
+                SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy", new Locale("az"));
+                dateValue = sdf.format(new Date());
+            }
+
+            // ⭐ SAAT - əgər boşdursa, indiki saatı istifadə et
+            String timeValue = receiptTime;
+            if (timeValue == null || timeValue.isEmpty()) {
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", new Locale("az"));
+                timeValue = sdf.format(new Date());
+            }
+
+            Log.d(TAG, "═══════════════════════════════════════");
+            Log.d(TAG, "📦 OCR NƏTİCƏLƏRİ GÖNDƏRİLİR:");
+            Log.d(TAG, "   🏪 Mağaza: " + storeName);
+            Log.d(TAG, "   📅 Tarix: " + dateValue);
+            Log.d(TAG, "   ⏰ Saat: " + timeValue);
+            Log.d(TAG, "   🔢 Fiskal kod: " + fiscalCodeValue);
+            Log.d(TAG, "   🧾 Qəbz ID: " + receiptIdValue);
+            Log.d(TAG, "═══════════════════════════════════════");
 
             // Məhsulları topla
             ArrayList<String> productNames = new ArrayList<>();
@@ -1127,21 +1175,45 @@ public class ReceiptScannerActivity extends AppCompatActivity {
                 String name = etProductName.getText().toString().trim();
                 if (name.isEmpty()) continue;
 
+                String quantity = etQuantity.getText().toString().trim();
+                if (quantity.isEmpty()) quantity = "1";
+
+                String price = etPrice.getText().toString().trim();
+                if (price.isEmpty()) price = "0";
+
+                // Vahid tipini təyin et (ədəd, kq, L)
+                String unit = "ədəd";
+                try {
+                    double qty = Double.parseDouble(quantity);
+                    if (name.toLowerCase().contains("kg") || name.toLowerCase().contains("kq")) {
+                        unit = "kq";
+                    } else if (name.toLowerCase().contains("litr") || name.toLowerCase().contains("l")) {
+                        unit = "L";
+                    } else if (qty != Math.floor(qty)) {
+                        unit = "kq";
+                    }
+                } catch (NumberFormatException e) {
+                    unit = "ədəd";
+                }
+
                 productNames.add(name);
-                productPrices.add(etPrice.getText().toString());
-                productQuantities.add(etQuantity.getText().toString());
-                productUnits.add("ədəd");
+                productPrices.add(price);
+                productQuantities.add(quantity);
+                productUnits.add(unit);
+
+                Log.d(TAG, "   Məhsul " + (i+1) + ": " + name + " | " + quantity + " " + unit + " | " + price + " AZN");
             }
 
+            Log.d(TAG, "═══════════════════════════════════════");
             Log.d(TAG, "Toplanan məhsullar: " + productNames.size());
 
-            // Intent-ə əlavə et
+            // Intent-ə ƏSAS MƏLUMATLARI əlavə et
             resultIntent.putExtra("store_name", storeName);
-            resultIntent.putExtra("date", receiptDate);
-            resultIntent.putExtra("time", receiptTime);
+            resultIntent.putExtra("date", dateValue);           // ⭐ TAM TARİX
+            resultIntent.putExtra("time", timeValue);           // ⭐ TAM SAAT
             resultIntent.putExtra("total_amount", totalAmount);
-            resultIntent.putExtra("doc_id", qrDocId);
-            resultIntent.putExtra("fiscal_code", fiscalCode);
+            resultIntent.putExtra("doc_id", receiptIdValue);    // ⭐ QƏBZ ID
+            resultIntent.putExtra("fiscal_code", fiscalCodeValue); // ⭐ FİSKAL KOD
 
             resultIntent.putStringArrayListExtra("product_names", productNames);
             resultIntent.putStringArrayListExtra("product_prices", productPrices);
@@ -1151,7 +1223,7 @@ public class ReceiptScannerActivity extends AppCompatActivity {
             // Nəticəni qaytar
             setResult(RESULT_OK, resultIntent);
 
-            Log.d(TAG, "Məlumatlar qaytarılır: " + productNames.size() + " məhsul");
+            Log.d(TAG, "✅ Məlumatlar uğurla qaytarıldı!");
 
             // ƏSAS: finish() çağır - bu avtomatik olaraq əvvəlki activity-yə qayıdır
             finish();
@@ -1160,7 +1232,7 @@ public class ReceiptScannerActivity extends AppCompatActivity {
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 
         } catch (Exception e) {
-            Log.e(TAG, "Save xətası: " + e.getMessage());
+            Log.e(TAG, "Save xətası: " + e.getMessage(), e);
             setResult(RESULT_CANCELED);
             finish();
         }

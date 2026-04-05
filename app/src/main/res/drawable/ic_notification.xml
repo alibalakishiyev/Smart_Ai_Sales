@@ -1,0 +1,43 @@
+<!-- res/drawable/ic_notification.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Pul simvolu (💰) üçün background -->
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2z"/>
+
+    <!-- Dollar işarəsi ($) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,7 L12,7c-0.55,0 -1,0.45 -1,1v1.5c0,0.55 0.45,1 1,1h0c0.55,0 1,-0.45 1,-1L13,8C13,7.45 12.55,7 12,7z"/>
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,13.5 L12,13.5c-0.55,0 -1,0.45 -1,1L11,16c0,0.55 0.45,1 1,1h0c0.55,0 1,-0.45 1,-1v-1.5C13,13.95 12.55,13.5 12,13.5z"/>
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M15.5,8.5h-2.8c-0.4,0 -0.7,0.3 -0.7,0.7s0.3,0.7 0.7,0.7h1.3c0.7,0 1.2,0.5 1.2,1.2c0,0.6 -0.4,1.1 -0.9,1.2l-3.3,0.6c-0.7,0.1 -1.2,0.7 -1.2,1.4c0,0.8 0.7,1.5 1.5,1.5h2.8c0.4,0 0.7,-0.3 0.7,-0.7s-0.3,-0.7 -0.7,-0.7h-1.3c-0.7,0 -1.2,-0.5 -1.2,-1.2c0,-0.6 0.4,-1.1 0.9,-1.2l3.3,-0.6c0.7,-0.1 1.2,-0.7 1.2,-1.4C16.5,9.2 15.8,8.5 15.5,8.5z"/>
+
+    <!-- Analiz simvolu (📊) üçün kiçik çubuqlar -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M18,15 L18,18 L6,18 L6,15 L8,15 L8,16 L16,16 L16,15z"/>
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M9,11 L11,11 L11,15 L9,15z"/>
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,9 L14,9 L14,15 L12,15z"/>
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M15,6 L17,6 L17,15 L15,15z"/>
+
+</vector>

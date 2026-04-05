@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+    item_add_product.xml
+    "Məhsul əlavə et" düyməsi — products container-ın son elementi
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="40dp"
     android:orientation="horizontal"
     android:gravity="center"
-    android:padding="16dp">
+    android:layout_marginTop="4dp">
 
     <TextView
         android:id="@+id/tvAddProduct"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="+ Yeni məhsul əlavə et"
-        android:textColor="@color/purple_500"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:padding="12dp"
-        android:background="?selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="+ Məhsul əlavə et"
+        android:textColor="#3A3852"
+        android:textSize="12sp"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:background="@drawable/shape_add_product_bg" />
+
 </LinearLayout>

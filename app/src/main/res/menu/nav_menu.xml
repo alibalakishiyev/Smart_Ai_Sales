@@ -3,29 +3,21 @@
     <item
         android:id="@+id/nav_dashboard"
         android:icon="@drawable/ic_dashboard"
-        android:title="Ana Səhifə"/>
+        android:title="@string/nav_dashboard"/>
     <item
         android:id="@+id/nav_sales"
         android:icon="@drawable/ic_sales"
-        android:title="Satışlar"/>
-    <item
-        android:id="@+id/nav_expenses"
-        android:icon="@drawable/ic_expenses"
-        android:title="Xərclər"/>
-    <item
-        android:id="@+id/nav_customers"
-        android:icon="@drawable/ic_customers"
-        android:title="Müştərilər"/>
+        android:title="@string/nav_sales_analysis"/>
     <item
         android:id="@+id/nav_reports"
         android:icon="@drawable/ic_reports"
-        android:title="Hesabatlar"/>
+        android:title="@string/nav_reports"/>
     <item
         android:id="@+id/nav_settings"
         android:icon="@drawable/ic_settings"
-        android:title="Parametrlər"/>
+        android:title="@string/nav_settings"/>
     <item
         android:id="@+id/nav_logout"
         android:icon="@drawable/ic_logout"
-        android:title="Çıxış"/>
+        android:title="@string/nav_logout"/>
 </menu>

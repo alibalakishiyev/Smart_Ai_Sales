@@ -20,14 +20,13 @@
         <ImageView
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:src="@drawable/ic_ai"
-            android:tint="@color/purple_500"
+            android:src="@drawable/jibim_bckg_nano"
             android:alpha="0.9"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Smart AI Sales"
+            android:text="Jibim"
             android:textColor="@color/white"
             android:textSize="32sp"
             android:textStyle="bold"

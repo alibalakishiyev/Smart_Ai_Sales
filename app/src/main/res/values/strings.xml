@@ -1,3 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SmartAiSales</string>
+    <string name="app_name">Jibim</string>
+    <string name="app_name_short">Jibim</string>
+
+
+    <!-- Common -->
+    <string name="welcome">Welcome</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="loading">Loading...</string>
+    <string name="refresh">Refresh</string>
+    <string name="add">Add</string>
+    <string name="logout">Logout</string>
+    <string name="settings">Settings</string>
+    <string name="language">Language</string>
+    <string name="language_changed">Language changed</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="version">Version</string>
+    <string name="about">About</string>
+    <string name="profile">Profile</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="add_salary">Add Salary</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard">Dashboard</string>
+    <string name="current_balance">Current Balance</string>
+    <string name="monthly_salary">Monthly Salary</string>
+    <string name="monthly_expense">Monthly Expense</string>
+    <string name="today">Today</string>
+    <string name="this_week">This Week</string>
+    <string name="this_month">This Month</string>
+    <string name="income">Income</string>
+    <string name="expense">Expense</string>
+    <string name="net">Net</string>
+    <string name="income_vs_expense_trend">Income vs Expense Trend</string>
+    <string name="last_30_days">Last 30 days</string>
+    <string name="expense_categories">Expense Categories</string>
+    <string name="financial_health">Financial Health</string>
+    <string name="savings_rate">Savings rate</string>
+    <string name="expense_ratio">Expense ratio</string>
+    <string name="status">Status</string>
+    <string name="ai_prediction">AI Prediction</string>
+    <string name="tomorrow_estimate">Tomorrow\'s estimate</string>
+    <string name="prediction_accuracy">Prediction accuracy</string>
+    <string name="ai_analysis">AI Analysis</string>
+    <string name="click_for_details">Click for details →</string>
+    <string name="all_transactions">All Transactions</string>
+    <string name="view_recent_transactions">View recent transactions</string>
+    <string name="insufficient_data">Insufficient data</string>
+    <string name="excellent">Excellent</string>
+    <string name="good">Good</string>
+    <string name="average">Average</string>
+    <string name="poor">Poor</string>
+    <string name="analyzing">Analyzing...</string>
+
+    <!-- Days -->
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+
+    <!-- Navigation Drawer -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_reports">Reports</string>
+    <string name="nav_sales_analysis">Sales Analysis</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_logout">Logout</string>
+
+    <!-- Greeting -->
+    <string name="hello">Hello,</string>
+    <string name="guest">Guest</string>
+
+    <!-- AI Analysis Dialog -->
+    <string name="ai_analysis_title">🤖 AI Analysis</string>
+    <string name="total_statistics">📊 Total Statistics</string>
+    <string name="total_income">Total Income</string>
+    <string name="total_expense">Total Expense</string>
+    <string name="net_profit">Net Profit</string>
+    <string name="monthly_salary_label">Monthly Salary:</string>
+    <string name="category_analysis_title">📋 Category Analysis</string>
+    <string name="recommendations_title">💡 Recommendations</string>
+    <string name="financial_health_title">🏥 Financial Health</string>
+    <string name="close">Close</string>
+    <string name="insufficient_salary_data">Enter salary data</string>
+
+    <!-- Onboarding -->
+    <string name="skip">Skip</string>
+    <string name="next">Next</string>
+    <string name="get_started">Get Started</string>
+    <string name="onboarding_title_1">Track Sales</string>
+    <string name="onboarding_desc_1">Track your daily, weekly and monthly sales in real-time</string>
+    <string name="onboarding_title_2">AI Analysis</string>
+    <string name="onboarding_desc_2">Artificial intelligence analyzes your sales and gives recommendations</string>
+    <string name="onboarding_title_3">Forecasting</string>
+    <string name="onboarding_desc_3">Predict future sales trends</string>
+    <string name="onboarding_title_4">Secure with Firebase</string>
+    <string name="onboarding_desc_4">All your data is stored securely in Firebase cloud</string>
+
+
+    <!-- Add Data Activity -->
+    <string name="add_data_title">Add Data</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="day">Day</string>
+    <string name="transaction_type">Transaction Type</string>
+    <string name="category">Category</string>
+    <string name="products">Products</string>
+    <string name="select_product">Select product...</string>
+    <string name="no_products">No products</string>
+    <string name="add_new_product">Add New Product</string>
+    <string name="product_name">Product name</string>
+    <string name="price">Price</string>
+    <string name="quantity">Quantity</string>
+    <string name="liter">Liter</string>
+    <string name="kilogram">Kilogram</string>
+    <string name="add_to_list">Add to List</string>
+    <string name="product_list">Product List</string>
+    <string name="selected_count">selected</string>
+    <string name="total_selected">Selected total</string>
+    <string name="location">Location</string>
+    <string name="get_location">Get Location</string>
+    <string name="new_location">New location</string>
+    <string name="add_location">Add Location</string>
+    <string name="note_optional">Note (optional)</string>
+    <string name="additional_note">Additional note</string>
+    <string name="preview">Preview</string>
+    <string name="type">Type</string>
+    <string name="total">Total</string>
+    <string name="scan">Scan</string>
+    <string name="online">Online</string>
+    <string name="offline_mode">Offline mode</string>
+    <string name="offline_data_saved">Offline: Data will be saved locally</string>
+    <string name="location_not_loaded">Location not loaded</string>
+    <string name="getting_location">Getting location...</string>
+    <string name="location_permission_required">Location permission required</string>
+    <string name="camera_permission_required">Camera permission required for receipt scanning</string>
+
+    <!-- Categories -->
+    <string name="category_grocery">Grocery</string>
+    <string name="category_transport">Transport</string>
+    <string name="category_rent">Rent</string>
+    <string name="category_utilities">Utilities</string>
+    <string name="category_entertainment">Entertainment</string>
+    <string name="category_health">Health</string>
+    <string name="category_education">Education</string>
+    <string name="category_clothing">Clothing</string>
+    <string name="category_technology">Technology</string>
+    <string name="category_restaurant">Restaurant</string>
+    <string name="category_travel">Travel</string>
+    <string name="category_other">Other</string>
+    <string name="category_salary">Salary</string>
+    <string name="category_bonus">Bonus</string>
+    <string name="category_investment">Investment</string>
+    <string name="category_sale">Sale</string>
+    <string name="category_gift">Gift</string>
+    <string name="category_freelance">Freelance</string>
+    <string name="category_business">Business</string>
+
+
+    <string name="tab_all">All</string>
+    <string name="best_price_label">Best price</string>
+    <string name="search_hint">Search products…</string>
+    <string name="loading_text">Loading discounts…</string>
+    <string name="no_products_found">No products found</string>
+    <string name="product_image_desc">Product image</string>
+
+
 </resources>

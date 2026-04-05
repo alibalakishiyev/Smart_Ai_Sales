@@ -1,0 +1,2388 @@
+{
+  "products": [
+    {
+      "id": 8584123613489,
+      "title": "SİYƏZƏN D.T TƏZƏ FİLE AÇIQ KQ",
+      "handle": "siyezen-teze-file-aciq-kg",
+      "body_html": "",
+      "published_at": "2025-01-06T10:53:10+04:00",
+      "created_at": "2023-06-30T13:48:53+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "SIYEZEN",
+      "product_type": "",
+      "tags": [
+        "1 KG",
+        "1000.000",
+        "250 gr",
+        "9999",
+        "[\"4101\"",
+        "Ağ Ət",
+        "bestproduct-18082023",
+        "BEYAZ ETLER",
+        "GR",
+        "KG",
+        "SIYEZEN",
+        "TAVUK GOĞUS",
+        "TEZE ET MEHSULLARI",
+        "TEZE TOYUQ ETI",
+        "Təzə Toyuq",
+        "Ət Toyuq Balıq"
+      ],
+      "variants": [
+        {
+          "id": 45769526837553,
+          "title": "1 KG",
+          "option1": "1 KG",
+          "option2": null,
+          "option3": null,
+          "sku": "30125802-1000",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "7.49",
+          "grams": 0,
+          "compare_at_price": "8.79",
+          "position": 1,
+          "product_id": 8584123613489,
+          "created_at": "2023-06-30T13:48:54+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        },
+        {
+          "id": 45769526870321,
+          "title": "250 gr",
+          "option1": "250 gr",
+          "option2": null,
+          "option3": null,
+          "sku": "30125802-250",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.87",
+          "grams": 0,
+          "compare_at_price": "2.20",
+          "position": 2,
+          "product_id": 8584123613489,
+          "created_at": "2023-06-30T13:48:54+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 47989521285425,
+          "created_at": "2025-01-06T13:33:20+04:00",
+          "position": 1,
+          "updated_at": "2025-01-06T13:33:20+04:00",
+          "product_id": 8584123613489,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/98b514e78a7eb3d82323968ccc908758.jpg?v=1736156000",
+          "width": 1000,
+          "height": 1000
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "1 KG",
+            "250 gr"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8596670644529,
+      "title": "SUN SALFET 150 Lİ MAXI",
+      "handle": "sun-salfet-150-li-maxi",
+      "body_html": "",
+      "published_at": "2024-05-15T07:00:25+04:00",
+      "created_at": "2023-07-02T14:26:00+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "SUN",
+      "product_type": "",
+      "tags": [
+        "1",
+        "11",
+        "150000",
+        "214",
+        "37",
+        "455",
+        "466",
+        "5",
+        "744",
+        "75",
+        "863",
+        "9",
+        "[\"4101\"",
+        "ADT",
+        "bestproduct-18082023",
+        "Deterjan Təmizlik",
+        "DIGER TEMIZLIK MALLARI",
+        "KAGIZ SALFETI",
+        "Mətbəx Kağızları",
+        "SUN",
+        "TEMIZLIK KAGITLARI",
+        "Təmizlik Kağızları"
+      ],
+      "variants": [
+        {
+          "id": 45823153897777,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "30183520",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "0.99",
+          "grams": 0,
+          "compare_at_price": "1.10",
+          "position": 1,
+          "product_id": 8596670644529,
+          "created_at": "2023-07-02T14:26:00+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 50451930677553,
+          "created_at": "2025-06-05T13:19:52+04:00",
+          "position": 1,
+          "updated_at": "2025-06-05T13:19:52+04:00",
+          "product_id": 8596670644529,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/4a12986960142008e82e6a264b180db5.jpg?v=1749115192",
+          "width": 1000,
+          "height": 1000
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8613539840305,
+      "title": "MƏRCAN TƏZƏ TOYUQ PAKET KQ",
+      "handle": "mərcan-təzə-toyuq-paket-kq",
+      "body_html": "",
+      "published_at": "2025-01-06T11:02:57+04:00",
+      "created_at": "2023-07-05T01:16:40+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "MERCAN",
+      "product_type": "",
+      "tags": [
+        "Ağ Ət",
+        "bestproduct-18082023",
+        "bestseller",
+        "BEYAZ ETLER",
+        "GR",
+        "KG",
+        "MERCAN",
+        "TEZE ET MEHSULLARI",
+        "TEZE TOYUQ",
+        "TEZE TOYUQ ETI",
+        "Təzə Toyuq",
+        "Ət Toyuq Balıq"
+      ],
+      "variants": [
+        {
+          "id": 45896012366129,
+          "title": "1 KG",
+          "option1": "1 KG",
+          "option2": null,
+          "option3": null,
+          "sku": "30107836-1000",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "6.70",
+          "grams": 0,
+          "compare_at_price": "7.25",
+          "position": 1,
+          "product_id": 8613539840305,
+          "created_at": "2023-07-05T01:16:40+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        },
+        {
+          "id": 45896012398897,
+          "title": "250 gr",
+          "option1": "250 gr",
+          "option2": null,
+          "option3": null,
+          "sku": "30107836-250",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.68",
+          "grams": 0,
+          "compare_at_price": "1.81",
+          "position": 2,
+          "product_id": 8613539840305,
+          "created_at": "2023-07-05T01:16:40+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 47987590496561,
+          "created_at": "2025-01-06T11:03:08+04:00",
+          "position": 1,
+          "updated_at": "2025-01-06T11:03:08+04:00",
+          "product_id": 8613539840305,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/b4a747abc2a48762beff344302619a79.webp?v=1736146988",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "1 KG",
+            "250 gr"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8616869200177,
+      "title": "MƏRCAN TƏZƏ TOYUQ FİLE KQ",
+      "handle": "mərcan-təzə-toyuq-fi̇le-kq",
+      "body_html": "",
+      "published_at": "2025-01-06T10:50:26+04:00",
+      "created_at": "2023-07-05T11:46:02+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "MERCAN",
+      "product_type": "",
+      "tags": [
+        "Ağ Ət",
+        "BEYAZ ETLER",
+        "GR",
+        "KG",
+        "MERCAN",
+        "TAVUK GOĞUS",
+        "TEZE ET MEHSULLARI",
+        "TEZE TOYUQ ETI",
+        "Təzə Toyuq",
+        "Ət Toyuq Balıq"
+      ],
+      "variants": [
+        {
+          "id": 45910762520881,
+          "title": "1 KG",
+          "option1": "1 KG",
+          "option2": null,
+          "option3": null,
+          "sku": "30149338-1000",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "8.99",
+          "grams": 0,
+          "compare_at_price": "9.95",
+          "position": 1,
+          "product_id": 8616869200177,
+          "created_at": "2023-07-05T11:46:02+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        },
+        {
+          "id": 45910762553649,
+          "title": "250 gr",
+          "option1": "250 gr",
+          "option2": null,
+          "option3": null,
+          "sku": "30149338-250",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "2.25",
+          "grams": 0,
+          "compare_at_price": "2.49",
+          "position": 2,
+          "product_id": 8616869200177,
+          "created_at": "2023-07-05T11:46:02+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 47987473285425,
+          "created_at": "2025-01-06T10:51:13+04:00",
+          "position": 1,
+          "updated_at": "2025-01-06T10:51:13+04:00",
+          "product_id": 8616869200177,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/ad3e3dd6af6f217f66f4b596bdb5dbb4.webp?v=1736146273",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "1 KG",
+            "250 gr"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8577139114289,
+      "title": "PORTAGAL ITXAL KG",
+      "handle": "portagal-itxal-kg",
+      "body_html": "",
+      "published_at": "2023-06-29T10:13:17+04:00",
+      "created_at": "2023-06-29T10:13:17+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "MEYVE-TEREVEZ",
+      "product_type": "",
+      "tags": [
+        "1 KG",
+        "1000.000",
+        "250 gr",
+        "9999",
+        "[\"4101\"",
+        "GR",
+        "KG",
+        "MEYVE-TEREVEZ",
+        "MEYVELER",
+        "Meyvə",
+        "Meyvə Tərəvəz",
+        "PORTAGAL",
+        "SITRUS MEYVELERI",
+        "Sitrus Meyvələri"
+      ],
+      "variants": [
+        {
+          "id": 45738428727601,
+          "title": "1 KG",
+          "option1": "1 KG",
+          "option2": null,
+          "option3": null,
+          "sku": "30093526-1000",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.99",
+          "grams": 0,
+          "compare_at_price": "3.49",
+          "position": 1,
+          "product_id": 8577139114289,
+          "created_at": "2023-06-29T10:13:17+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        },
+        {
+          "id": 45738428760369,
+          "title": "250 gr",
+          "option1": "250 gr",
+          "option2": null,
+          "option3": null,
+          "sku": "30093526-250",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "0.50",
+          "grams": 0,
+          "compare_at_price": "0.87",
+          "position": 2,
+          "product_id": 8577139114289,
+          "created_at": "2023-06-29T10:13:17+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42550175891761,
+          "created_at": "2023-09-02T07:07:51+04:00",
+          "position": 1,
+          "updated_at": "2023-09-02T07:07:51+04:00",
+          "product_id": 8577139114289,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/30093526.png?v=1693624071",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "1 KG",
+            "250 gr"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8641144488241,
+      "title": "POMİDOR",
+      "handle": "pomi-dor",
+      "body_html": "",
+      "published_at": "2025-10-10T17:23:38+04:00",
+      "created_at": "2023-07-11T15:24:42+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "MEYVE-TEREVEZ",
+      "product_type": "",
+      "tags": [
+        "GR",
+        "KG",
+        "MEYVE-TEREVEZ",
+        "Meyvə Tərəvəz",
+        "MOVSUM TEREVEZLERI",
+        "Mövsüm Tərəvəzləri",
+        "POMIDOR",
+        "TEREVEZLER",
+        "Tərəvəz"
+      ],
+      "variants": [
+        {
+          "id": 46021416157489,
+          "title": "1 KG",
+          "option1": "1 KG",
+          "option2": null,
+          "option3": null,
+          "sku": "30036085-1000",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "4.49",
+          "grams": 0,
+          "compare_at_price": "5.99",
+          "position": 1,
+          "product_id": 8641144488241,
+          "created_at": "2023-07-11T15:24:42+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        },
+        {
+          "id": 46021416190257,
+          "title": "250 gr",
+          "option1": "250 gr",
+          "option2": null,
+          "option3": null,
+          "sku": "30036085-250",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.12",
+          "grams": 0,
+          "compare_at_price": "1.50",
+          "position": 2,
+          "product_id": 8641144488241,
+          "created_at": "2023-07-11T15:24:42+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 53709534331185,
+          "created_at": "2025-10-10T17:24:15+04:00",
+          "position": 1,
+          "updated_at": "2025-10-10T17:24:15+04:00",
+          "product_id": 8641144488241,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/63a37f5601290ca66ac2e234d2a3f5c8.webp?v=1760102655",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "1 KG",
+            "250 gr"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8570570539313,
+      "title": "AYSBERQ KQ",
+      "handle": "salat-atom-kg",
+      "body_html": "",
+      "published_at": "2023-06-28T12:16:44+04:00",
+      "created_at": "2023-06-28T12:16:44+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "MEYVE-TEREVEZ",
+      "product_type": "",
+      "tags": [
+        "1 KG",
+        "1000.000",
+        "250 gr",
+        "9999",
+        "[\"4101\"",
+        "GOYERTI KAHI YARPAQ",
+        "GR",
+        "Göyərti Kahı Yarpaq",
+        "KAHI",
+        "KG",
+        "MEYVE-TEREVEZ",
+        "Meyvə Tərəvəz",
+        "TEREVEZLER"
+      ],
+      "variants": [
+        {
+          "id": 45707758469425,
+          "title": "1 KG",
+          "option1": "1 KG",
+          "option2": null,
+          "option3": null,
+          "sku": "30036068-1000",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "2.29",
+          "grams": 0,
+          "compare_at_price": "2.79",
+          "position": 1,
+          "product_id": 8570570539313,
+          "created_at": "2023-06-28T12:16:44+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        },
+        {
+          "id": 45707758502193,
+          "title": "250 gr",
+          "option1": "250 gr",
+          "option2": null,
+          "option3": null,
+          "sku": "30036068-250",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "0.57",
+          "grams": 0,
+          "compare_at_price": "0.70",
+          "position": 2,
+          "product_id": 8570570539313,
+          "created_at": "2023-06-28T12:16:44+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42557740417329,
+          "created_at": "2023-09-03T14:57:48+04:00",
+          "position": 1,
+          "updated_at": "2023-09-03T14:57:48+04:00",
+          "product_id": 8570570539313,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/30036068_83de831f-35c7-45a3-afc9-4cb5500dc5ee.jpg?v=1693738668",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "1 KG",
+            "250 gr"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8570789101873,
+      "title": "BADIMCAN YUMRU KQ",
+      "handle": "badimcan-yumru-kq",
+      "body_html": "",
+      "published_at": "2023-06-28T14:20:02+04:00",
+      "created_at": "2023-06-28T14:20:02+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "MEYVE-TEREVEZ",
+      "product_type": "",
+      "tags": [
+        "1 KG",
+        "1000.000",
+        "250 gr",
+        "9999",
+        "[\"4101\"",
+        "BADIMCAN",
+        "bestproduct-18082023",
+        "GR",
+        "KG",
+        "MEYVE-TEREVEZ",
+        "Meyvə Tərəvəz",
+        "MOVSUM TEREVEZLERI",
+        "Mövsüm Tərəvəzləri",
+        "TEREVEZLER",
+        "Tərəvəz"
+      ],
+      "variants": [
+        {
+          "id": 45708216336689,
+          "title": "1 KG",
+          "option1": "1 KG",
+          "option2": null,
+          "option3": null,
+          "sku": "30050869-1000",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.99",
+          "grams": 0,
+          "compare_at_price": "3.29",
+          "position": 1,
+          "product_id": 8570789101873,
+          "created_at": "2023-06-28T14:20:03+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        },
+        {
+          "id": 45708216369457,
+          "title": "250 gr",
+          "option1": "250 gr",
+          "option2": null,
+          "option3": null,
+          "sku": "30050869-250",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "0.50",
+          "grams": 0,
+          "compare_at_price": "0.82",
+          "position": 2,
+          "product_id": 8570789101873,
+          "created_at": "2023-06-28T14:20:03+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42520878711089,
+          "created_at": "2023-08-29T15:16:12+04:00",
+          "position": 1,
+          "updated_at": "2023-08-29T15:16:12+04:00",
+          "product_id": 8570789101873,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/30050869.jpg?v=1693307772",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "1 KG",
+            "250 gr"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8584138162481,
+      "title": "SİYƏZƏN D.T TƏZƏ YAŞIL PAKET KQ",
+      "handle": "si̇yezen-teze-toyuq-yasil-paket-kq",
+      "body_html": "Gündəlik protein, vitamin, mineral, enerji və yağ ehtiyaclarınızı qarşılayır. Toyuq əti daha az yağ ehtiva etdiyi və zülalla zəngin olduğu üçün ürək-damar xəstəlikləri riskini azaldır. Toyuq ətində olan sink optimal immun funksiyalarınızı qorumağa kömək edir.",
+      "published_at": "2025-05-01T15:04:11+04:00",
+      "created_at": "2023-06-30T13:58:06+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "SIYEZEN",
+      "product_type": "",
+      "tags": [
+        "1 KG",
+        "1000.000",
+        "250 gr",
+        "9999",
+        "[\"4101\"",
+        "Ağ Ət",
+        "bestseller",
+        "BEYAZ ETLER",
+        "GR",
+        "KG",
+        "SIYEZEN",
+        "TEZE ET MEHSULLARI",
+        "TEZE TOYUQ",
+        "TEZE TOYUQ ETI",
+        "Təzə Toyuq",
+        "Ət Toyuq Balıq"
+      ],
+      "variants": [
+        {
+          "id": 45769578250545,
+          "title": "1 KG",
+          "option1": "1 KG",
+          "option2": null,
+          "option3": null,
+          "sku": "30126548-1000",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "5.29",
+          "grams": 0,
+          "compare_at_price": "6.39",
+          "position": 1,
+          "product_id": 8584138162481,
+          "created_at": "2023-06-30T13:58:06+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        },
+        {
+          "id": 45769578283313,
+          "title": "250 gr",
+          "option1": "250 gr",
+          "option2": null,
+          "option3": null,
+          "sku": "30126548-250",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.32",
+          "grams": 0,
+          "compare_at_price": "1.60",
+          "position": 2,
+          "product_id": 8584138162481,
+          "created_at": "2023-06-30T13:58:06+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 49512600600881,
+          "created_at": "2025-05-01T15:05:03+04:00",
+          "position": 1,
+          "updated_at": "2025-05-01T15:05:03+04:00",
+          "product_id": 8584138162481,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/07586faac76777e91d272f3296018b9e.webp?v=1746097503",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "1 KG",
+            "250 gr"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8570565558577,
+      "title": "AVOKADO KQ",
+      "handle": "avakado-kq",
+      "body_html": "",
+      "published_at": "2025-02-13T10:53:37+04:00",
+      "created_at": "2023-06-28T12:12:28+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "MEYVE-TEREVEZ",
+      "product_type": "",
+      "tags": [
+        "1 KG",
+        "1000.000",
+        "250 gr",
+        "9999",
+        "[\"4102\"",
+        "AVAKADO",
+        "EQZOTIK TEREVEZLER",
+        "Eqzotik Tərəvəzlər",
+        "GR",
+        "KG",
+        "MEYVE-TEREVEZ",
+        "Meyvə Tərəvəz",
+        "TEREVEZLER",
+        "Tərəvəz"
+      ],
+      "variants": [
+        {
+          "id": 45707750572337,
+          "title": "1 KG",
+          "option1": "1 KG",
+          "option2": null,
+          "option3": null,
+          "sku": "30036035-1000",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "9.99",
+          "grams": 0,
+          "compare_at_price": "13.49",
+          "position": 1,
+          "product_id": 8570565558577,
+          "created_at": "2023-06-28T12:12:28+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        },
+        {
+          "id": 45707750605105,
+          "title": "250 gr",
+          "option1": "250 gr",
+          "option2": null,
+          "option3": null,
+          "sku": "30036035-250",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "2.50",
+          "grams": 0,
+          "compare_at_price": "3.37",
+          "position": 2,
+          "product_id": 8570565558577,
+          "created_at": "2023-06-28T12:12:28+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 48499105530161,
+          "created_at": "2025-02-13T10:53:22+04:00",
+          "position": 1,
+          "updated_at": "2025-02-13T10:53:22+04:00",
+          "product_id": 8570565558577,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/d639d3989a9c10bafdc4853911a31743.webp?v=1739429602",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "1 KG",
+            "250 gr"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8565441855793,
+      "title": "AZƏRSÜD KƏND QATIĞI 1 KQ",
+      "handle": "azersud-kend-qatigi-1-kq",
+      "body_html": "",
+      "published_at": "2024-05-15T05:34:05+04:00",
+      "created_at": "2023-06-27T11:47:46+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "AZERSUD",
+      "product_type": "",
+      "tags": [
+        "\"4102\"",
+        "\"4124\"]",
+        "\"4133\"",
+        "\"4165\"",
+        "0",
+        "1000",
+        "13",
+        "14",
+        "22",
+        "32",
+        "37",
+        "[\"4101\"",
+        "ADT",
+        "AZERSUD",
+        "bestproduct-18082023",
+        "GR",
+        "KEND QATIGI",
+        "Kənd Qatığı",
+        "Qatıq",
+        "SUD MEHSULLARI-YUMURTA-ZEYTUN",
+        "Süd Səhər Yeməyi",
+        "YOGURT"
+      ],
+      "variants": [
+        {
+          "id": 45685909356849,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "10001488",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "2.99",
+          "grams": 0,
+          "compare_at_price": "3.79",
+          "position": 1,
+          "product_id": 8565441855793,
+          "created_at": "2023-06-27T11:47:46+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 45638970245425,
+          "created_at": "2024-06-27T14:07:08+04:00",
+          "position": 1,
+          "updated_at": "2024-06-27T14:07:08+04:00",
+          "product_id": 8565441855793,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/b92530ea2fc0fc1b83aeb5cb0ab9f0e9.jpg?v=1719482828",
+          "width": 1000,
+          "height": 1000
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8595973865777,
+      "title": "GULUM XİYAR TURŞUSU 700 Q",
+      "handle": "gulum-xiyar-tursusu-700-q",
+      "body_html": "",
+      "published_at": "2023-07-02T12:03:25+04:00",
+      "created_at": "2023-07-02T12:03:25+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "GULUM",
+      "product_type": "",
+      "tags": [
+        "1",
+        "159",
+        "16",
+        "258",
+        "38",
+        "576",
+        "58",
+        "6",
+        "700",
+        "[\"4101\"",
+        "ADT",
+        "GR",
+        "GULUM",
+        "KONSERV",
+        "Konserva",
+        "TURSULAR",
+        "Təməl Qida",
+        "XIYAR TURSULARI"
+      ],
+      "variants": [
+        {
+          "id": 45820400009521,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "30173073",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.99",
+          "grams": 0,
+          "compare_at_price": "2.29",
+          "position": 1,
+          "product_id": 8595973865777,
+          "created_at": "2023-07-02T12:03:25+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42511930458417,
+          "created_at": "2023-08-28T12:15:35+04:00",
+          "position": 1,
+          "updated_at": "2023-08-28T12:15:35+04:00",
+          "product_id": 8595973865777,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/30173073.png?v=1693210535",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8616369094961,
+      "title": "SİRAB SU 1.5 L QAZLI",
+      "handle": "sirab-su-1-5-l-qazli",
+      "body_html": " Hidorkarbonatlı, natrium-kalsiumlu su. Günəş görməyən, sərin yerdə +5°C - +20°C temperaturda saxlanmalı. Yararlılıq müddəti 12 ay. İstehsal və son istifadə tarixi butulkanın üzərindədir. İstehsalçı: Babək \"SİRAB\" ASC. Ünvan: Azərbaycan Respublikası Naxçıvan Muxtar Respublikası Babək rayonu Sirab kəndi. www.sirab.com e-mail: info@sirab.com.Kimyəvi tərkibi: (mg/dm³) , Na*+ K*&lt; 100-350 ,Ca2+ &lt; 200-400, Mg2+ &lt; 100, CI &lt; 10-150, SO2 &lt; 150-300, HCO &lt; 1000-2000 ,Ümumi minerallığı - 1,5-3,3 g/dm³ .Mineral duzların çöküntüsü mümkündür.TEL: (+994 36) 541 81 13 (+994 12) 404 32 38;--ISO 22000: 2018, ISO 9001: 2015",
+      "published_at": "2023-07-05T10:22:07+04:00",
+      "created_at": "2023-07-05T10:22:07+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "SIRAB",
+      "product_type": "",
+      "tags": [
+        "ADT",
+        "bestproduct-18082023",
+        "ICECEKLER",
+        "İçkilər",
+        "ML",
+        "QAZLI ICECEKLER",
+        "Qazlı İçkilər",
+        "SADE QAZLI SULAR PET",
+        "SIRAB",
+        "SIVI ICECEKLER"
+      ],
+      "variants": [
+        {
+          "id": 45908916240689,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "30010625",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.09",
+          "grams": 0,
+          "compare_at_price": "1.25",
+          "position": 1,
+          "product_id": 8616369094961,
+          "created_at": "2023-07-05T10:22:07+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42562337636657,
+          "created_at": "2023-09-04T09:38:26+04:00",
+          "position": 1,
+          "updated_at": "2023-09-04T09:38:26+04:00",
+          "product_id": 8616369094961,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/30010625.jpg?v=1693805906",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8587068440881,
+      "title": "SUN BAKERY BATON ÇÖRƏYİ ADİ",
+      "handle": "sun-bakery-adi̇-baton-corəyi̇",
+      "body_html": " Tərkib:Buğda unu,duz,emulqator, şəkər,su,maya,günəbaxan yağı.Qida/Enerji dəyəri(100q):54.57 kkal,Zülal:6.6 q,Yağ:0.7 q,K-hid:5.48 q.TŞ AZ 1504054821.004-2022 əsasən +18(±5)ᵒC-də saxlayın.Allergenlər:buğda unu.GMO yoxdur.İstehsalçı:Mamam Chocolate and Bakery MMC,Bakı ş,Nərimanov r, Z.Bünyadov p-i Ev:69B,Müştəri xidmətləri:120",
+      "published_at": "2023-07-01T00:16:49+04:00",
+      "created_at": "2023-07-01T00:16:49+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "SUN BAKERY",
+      "product_type": "",
+      "tags": [
+        "26",
+        "271",
+        "37",
+        "38",
+        "50",
+        "95",
+        "[\"4101\"",
+        "ADT",
+        "bestproduct-18082023",
+        "EKMEKLER",
+        "Firin Pastane",
+        "GR",
+        "NORMAL COREKLER",
+        "Normal Çörək",
+        "SUN BAKERY",
+        "UN MEMULATLARI",
+        "Çörəklər"
+      ],
+      "variants": [
+        {
+          "id": 45780727988529,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "30157267",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "0.59",
+          "grams": 0,
+          "compare_at_price": "0.79",
+          "position": 1,
+          "product_id": 8587068440881,
+          "created_at": "2023-07-01T00:16:49+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 51376737812785,
+          "created_at": "2025-07-02T17:39:15+04:00",
+          "position": 1,
+          "updated_at": "2025-07-02T17:39:15+04:00",
+          "product_id": 8587068440881,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/211362eb8fafd56bc81f5b0cbfe05268.jpg?v=1751463555",
+          "width": 1000,
+          "height": 1000
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8570779861297,
+      "title": "GÖZƏL TƏBİƏT CHERRY POMİDOR KQ",
+      "handle": "gozəl-təbi̇ət-cherry-pomi̇dor-kq",
+      "body_html": "",
+      "published_at": "2024-02-21T00:18:05+04:00",
+      "created_at": "2023-06-28T14:13:54+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "MEYVE-TEREVEZ",
+      "product_type": "",
+      "tags": [
+        "1 KG",
+        "1000.000",
+        "250 gr",
+        "[\"4165\"]",
+        "GR",
+        "KG",
+        "MEYVE-TEREVEZ",
+        "Meyvə Tərəvəz",
+        "MOVSUM TEREVEZLERI",
+        "Mövsüm Tərəvəzləri",
+        "POMIDOR",
+        "TEREVEZLER",
+        "Tərəvəz"
+      ],
+      "variants": [
+        {
+          "id": 45708196839729,
+          "title": "1 KG",
+          "option1": "1 KG",
+          "option2": null,
+          "option3": null,
+          "sku": "30049527-1000",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "6.99",
+          "grams": 0,
+          "compare_at_price": "12.49",
+          "position": 1,
+          "product_id": 8570779861297,
+          "created_at": "2023-06-28T14:13:55+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        },
+        {
+          "id": 45708196872497,
+          "title": "250 gr",
+          "option1": "250 gr",
+          "option2": null,
+          "option3": null,
+          "sku": "30049527-250",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.75",
+          "grams": 0,
+          "compare_at_price": "3.12",
+          "position": 2,
+          "product_id": 8570779861297,
+          "created_at": "2023-06-28T14:13:55+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42562415952177,
+          "created_at": "2023-09-04T10:07:02+04:00",
+          "position": 1,
+          "updated_at": "2023-09-04T10:07:02+04:00",
+          "product_id": 8570779861297,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/30049527.jpg?v=1693807622",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "1 KG",
+            "250 gr"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8567085072689,
+      "title": "BONDUELLE ŞİRİN QARĞIDALI 212 Q TNK",
+      "handle": "bonduelle-sirin-qargidali-212-q-tnk",
+      "body_html": "",
+      "published_at": "2024-05-15T05:57:39+04:00",
+      "created_at": "2023-06-27T21:13:28+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "BONDUELLE",
+      "product_type": "",
+      "tags": [
+        "\"4102\"",
+        "\"4124\"]",
+        "\"4133\"",
+        "\"4165\"",
+        "0",
+        "10",
+        "212",
+        "36",
+        "48",
+        "58",
+        "6",
+        "69",
+        "73",
+        "8",
+        "99",
+        "[\"4101\"",
+        "ADT",
+        "bestproduct-18082023",
+        "BONDUELLE",
+        "GR",
+        "KONSERV",
+        "Konserva",
+        "KONSERVE",
+        "Konservlər",
+        "MISIR  KONSERVELERI",
+        "Təməl Qida"
+      ],
+      "variants": [
+        {
+          "id": 45693101080881,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "30011151",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "2.69",
+          "grams": 0,
+          "compare_at_price": "3.25",
+          "position": 1,
+          "product_id": 8567085072689,
+          "created_at": "2023-06-27T21:13:28+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 50432476905777,
+          "created_at": "2025-06-04T16:37:51+04:00",
+          "position": 1,
+          "updated_at": "2025-06-04T16:37:51+04:00",
+          "product_id": 8567085072689,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/4d24e4f9444ff9be24e3008efc4cc187.jpg?v=1749040671",
+          "width": 1000,
+          "height": 1000
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8585117663537,
+      "title": "SİYƏZƏN D.T TƏZƏ BUD BUTULKA AÇIQ KQ",
+      "handle": "siyezen-teze-toyuq-bud-aciq-kg",
+      "body_html": "",
+      "published_at": "2025-01-06T11:00:22+04:00",
+      "created_at": "2023-06-30T18:06:08+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "SIYEZEN",
+      "product_type": "",
+      "tags": [
+        "1 KG",
+        "1000.000",
+        "250 gr",
+        "9999",
+        "[\"4101\"",
+        "Ağ Ət",
+        "BEYAZ ETLER",
+        "GR",
+        "KG",
+        "SIYEZEN",
+        "TAVUK BUT",
+        "TEZE ET MEHSULLARI",
+        "TEZE TOYUQ ETI",
+        "Təzə Toyuq",
+        "Ət Toyuq Balıq"
+      ],
+      "variants": [
+        {
+          "id": 45773580665137,
+          "title": "1 KG",
+          "option1": "1 KG",
+          "option2": null,
+          "option3": null,
+          "sku": "30152123-1000",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "5.09",
+          "grams": 0,
+          "compare_at_price": "5.99",
+          "position": 1,
+          "product_id": 8585117663537,
+          "created_at": "2023-06-30T18:06:08+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        },
+        {
+          "id": 45773580697905,
+          "title": "250 gr",
+          "option1": "250 gr",
+          "option2": null,
+          "option3": null,
+          "sku": "30152123-250",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.27",
+          "grams": 0,
+          "compare_at_price": "1.50",
+          "position": 2,
+          "product_id": 8585117663537,
+          "created_at": "2023-06-30T18:06:08+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 50433495761201,
+          "created_at": "2025-06-04T17:31:49+04:00",
+          "position": 1,
+          "updated_at": "2025-06-04T17:31:49+04:00",
+          "product_id": 8585117663537,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/9ef5e60779d42ce1adac0ad26e0f1de3.jpg?v=1749043909",
+          "width": 1000,
+          "height": 1000
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "1 KG",
+            "250 gr"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8615373504817,
+      "title": "FREKEN BOK QAB SÜNGƏR 5 LI KOMFORT",
+      "handle": "freken-bok-qab-sunger-5-li-komfort",
+      "body_html": "",
+      "published_at": "2023-07-05T07:50:17+04:00",
+      "created_at": "2023-07-05T07:50:17+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "FREKEN BOK",
+      "product_type": "",
+      "tags": [
+        "ADT",
+        "Deterjan Təmizlik",
+        "DIGER TEMIZLIK MALLARI",
+        "EV TEMIZLIK GERECLER",
+        "FREKEN BOK",
+        "Sungər Sim Top",
+        "TEMIZLIK SUNGER BULA",
+        "Təmizlik Əşyaları"
+      ],
+      "variants": [
+        {
+          "id": 45903208644913,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "30134192",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.99",
+          "grams": 0,
+          "compare_at_price": "2.55",
+          "position": 1,
+          "product_id": 8615373504817,
+          "created_at": "2023-07-05T07:50:17+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42562893840689,
+          "created_at": "2023-09-04T11:48:34+04:00",
+          "position": 1,
+          "updated_at": "2023-09-04T11:48:34+04:00",
+          "product_id": 8615373504817,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/30134192_c23e3b5b-4ec4-4ccf-abc8-b716f4afa8de.jpg?v=1693813714",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8564549779761,
+      "title": "SUN SALFET 80 Lİ QU 29X30 SM",
+      "handle": "sun-salfet-80-li-qu-29x30-sm",
+      "body_html": "",
+      "published_at": "2024-05-15T05:45:00+04:00",
+      "created_at": "2023-06-27T02:40:49+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "SUN",
+      "product_type": "",
+      "tags": [
+        "\"4102\"",
+        "\"4124\"]",
+        "\"4133\"",
+        "\"4165\"",
+        "0",
+        "10",
+        "114",
+        "15",
+        "187",
+        "35",
+        "357",
+        "5",
+        "510",
+        "80000",
+        "923",
+        "[\"4101\"",
+        "ADT",
+        "Deterjan Təmizlik",
+        "DIGER TEMIZLIK MALLARI",
+        "KAGIZ SALFETI",
+        "Mətbəx Kağızları",
+        "SUN",
+        "TEMIZLIK KAGITLARI",
+        "Təmizlik Kağızları"
+      ],
+      "variants": [
+        {
+          "id": 45683157303601,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "10000759",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "0.99",
+          "grams": 0,
+          "compare_at_price": "1.15",
+          "position": 1,
+          "product_id": 8564549779761,
+          "created_at": "2023-06-27T02:40:50+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 50453292646705,
+          "created_at": "2025-06-05T16:46:41+04:00",
+          "position": 1,
+          "updated_at": "2025-06-05T16:46:41+04:00",
+          "product_id": 8564549779761,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/6792a40712682bcead2c579257a10e1f.jpg?v=1749127601",
+          "width": 1000,
+          "height": 1000
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8570598064433,
+      "title": "BOL ƏT DANA ƏTI SÜMÜKLÜ KQ",
+      "handle": "bol-ət-dana-əti-sumuklu-kq",
+      "body_html": "",
+      "published_at": "2023-06-28T12:29:26+04:00",
+      "created_at": "2023-06-28T12:29:26+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "TEZE ET",
+      "product_type": "",
+      "tags": [
+        "1000.000",
+        "12200",
+        "[\"4101\"]",
+        "DANA ETI",
+        "DANA TAZE KOMPLE",
+        "Dana Əti",
+        "GR",
+        "KG",
+        "KIRMIZI ETLER",
+        "Qırmızı Ət",
+        "TEZE ET",
+        "TEZE ET MEHSULLARI",
+        "Ət Toyuq Balıq"
+      ],
+      "variants": [
+        {
+          "id": 45707798577457,
+          "title": "1 KG",
+          "option1": "1 KG",
+          "option2": null,
+          "option3": null,
+          "sku": "30036726-1000",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "15.48",
+          "grams": 0,
+          "compare_at_price": "16.98",
+          "position": 1,
+          "product_id": 8570598064433,
+          "created_at": "2023-06-28T12:29:26+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        },
+        {
+          "id": 46742826320177,
+          "title": "500 gr",
+          "option1": "500 gr",
+          "option2": null,
+          "option3": null,
+          "sku": "30036726-500",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "7.74",
+          "grams": 0,
+          "compare_at_price": "8.49",
+          "position": 2,
+          "product_id": 8570598064433,
+          "created_at": "2023-08-16T20:03:15+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 46197313962289,
+          "created_at": "2024-08-13T15:30:31+04:00",
+          "position": 1,
+          "updated_at": "2024-08-13T15:30:31+04:00",
+          "product_id": 8570598064433,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/e3ee38302f96c3712595ec2732d687f9.jpg?v=1723548631",
+          "width": 1000,
+          "height": 1000
+        },
+        {
+          "id": 46197313634609,
+          "created_at": "2024-08-13T15:30:28+04:00",
+          "position": 2,
+          "updated_at": "2024-08-13T15:30:28+04:00",
+          "product_id": 8570598064433,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/3f978ca9004efa163089dc3877b93233.jpg?v=1723548628",
+          "width": 400,
+          "height": 400
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "1 KG",
+            "500 gr"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 10002749030705,
+      "title": "AURA TUALET KAĞIZI 3 QAT 16+16 HƏDİYYƏLİ",
+      "handle": "aura-tualet-kagizi-3-qat-16-16-hedi̇yyeli̇",
+      "body_html": "",
+      "published_at": "2024-10-11T13:24:38+04:00",
+      "created_at": "2024-09-17T06:59:13+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "Bazarstore",
+      "product_type": "",
+      "tags": [
+        "0",
+        "32",
+        "ADT",
+        "AURA",
+        "DIGER TEMIZLIK MALLARI",
+        "TEMIZLIK KAGITLARI",
+        "TUALET KAGIZI"
+      ],
+      "variants": [
+        {
+          "id": 50009550750001,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "30196604",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "15.99",
+          "grams": 0,
+          "compare_at_price": "16.99",
+          "position": 1,
+          "product_id": 10002749030705,
+          "created_at": "2024-09-17T06:59:14+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 47989508538673,
+          "created_at": "2025-01-06T13:32:05+04:00",
+          "position": 1,
+          "updated_at": "2025-01-06T13:32:05+04:00",
+          "product_id": 10002749030705,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/2381250c258281dc2d3b17a3ffde04a1.jpg?v=1736155925",
+          "width": 1000,
+          "height": 1000
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8592793436465,
+      "title": "FAİRY PLATINUM QABYUYAN MAYE 750ML LİMON",
+      "handle": "fairy-platinum-qabyuyan-maye-750ml-limon",
+      "body_html": "",
+      "published_at": "2023-07-01T23:20:38+04:00",
+      "created_at": "2023-07-01T23:20:38+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "FAIRY",
+      "product_type": "",
+      "tags": [
+        "1",
+        "115",
+        "210",
+        "23",
+        "277",
+        "278",
+        "433",
+        "449",
+        "7",
+        "750",
+        "9",
+        "[\"4101\"",
+        "ADT",
+        "BULASIK YIKAYICILARI",
+        "DETERJAN",
+        "Deterjan Təmizlik",
+        "FAIRY",
+        "ML",
+        "Qabyuma Məhsulları",
+        "Qabyuyan Maye",
+        "SIVI DETERJAN"
+      ],
+      "variants": [
+        {
+          "id": 45807150694705,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "30162728",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "7.19",
+          "grams": 0,
+          "compare_at_price": "8.59",
+          "position": 1,
+          "product_id": 8592793436465,
+          "created_at": "2023-07-01T23:20:38+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42563326542129,
+          "created_at": "2023-09-04T12:55:20+04:00",
+          "position": 1,
+          "updated_at": "2023-09-04T12:55:20+04:00",
+          "product_id": 8592793436465,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/30162728_8a7845e5-5013-47eb-ac94-f4dc299cda80.jpg?v=1693817720",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8583011533105,
+      "title": "YEDOY DOYUMLUQ TƏNDİR LAVAŞI",
+      "handle": "yedoy-doyumluq-tendir-lavasi",
+      "body_html": "",
+      "published_at": "2023-06-30T10:00:03+04:00",
+      "created_at": "2023-06-30T10:00:03+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "YEDOY",
+      "product_type": "",
+      "tags": [
+        "1000",
+        "22",
+        "28",
+        "40",
+        "59",
+        "89",
+        "[\"4101\"",
+        "ADT",
+        "Bişmələr",
+        "Firin Pastane",
+        "PASTANE FIRIN",
+        "UN MEMULATLARI",
+        "Un Məmulatları",
+        "YEDOY",
+        "YUFKA-MANTI"
+      ],
+      "variants": [
+        {
+          "id": 45765211521329,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "30119049",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.69",
+          "grams": 0,
+          "compare_at_price": "2.00",
+          "position": 1,
+          "product_id": 8583011533105,
+          "created_at": "2023-06-30T10:00:03+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42557830857009,
+          "created_at": "2023-09-03T15:24:03+04:00",
+          "position": 1,
+          "updated_at": "2023-09-03T15:24:03+04:00",
+          "product_id": 8583011533105,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/30119049.jpg?v=1693740243",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8567820812593,
+      "title": "ANANAS ƏDƏD",
+      "handle": "ananas-eded",
+      "body_html": "",
+      "published_at": "2023-06-28T02:12:00+04:00",
+      "created_at": "2023-06-28T02:12:00+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "MEYVE-TEREVEZ",
+      "product_type": "",
+      "tags": [
+        "1000",
+        "3",
+        "4",
+        "5",
+        "7",
+        "[\"4101\"",
+        "ADT",
+        "ANANAS",
+        "EQZOTIK MEYVELER",
+        "Eqzotik Meyvələr",
+        "MEYVE-TEREVEZ",
+        "MEYVELER",
+        "Meyvə",
+        "Meyvə Tərəvəz"
+      ],
+      "variants": [
+        {
+          "id": 45695876628785,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "30015546",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "4.99",
+          "grams": 0,
+          "compare_at_price": "6.99",
+          "position": 1,
+          "product_id": 8567820812593,
+          "created_at": "2023-06-28T02:12:00+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42544151396657,
+          "created_at": "2023-09-01T11:41:15+04:00",
+          "position": 1,
+          "updated_at": "2023-09-01T11:41:15+04:00",
+          "product_id": 8567820812593,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/30015546.jpg?v=1693554075",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8565842084145,
+      "title": "GÜLÜM YAŞIL NOXUD 700 Q",
+      "handle": "gulum-yasil-noxud-700-q",
+      "body_html": " Tərkibi: yaşıl noxud,pasterizə edilmiş su,duz,şəkər tozu,turşuluq tənzimləyicisi:limon turşusu.  GMO-suz.İstehsal və son istifadə tarixi qapağın üzərindədir. 0°-25°C temperaturda və havanın nisbi rütubətinin 75%-dən çox olmadığı şəraitdə saxlayın.Günəş şüalarından qoruyun.Qapağı şişmiş məhsulları almayın.100 qram məhsulun qida dəyəri:karbohidrat-12q, zülal-4q; enerji dəyəri-294kJ/70kkal. Xalis çəki:700q,süzmə çəki:455q.İstehsalçı adı və ünvanı: \"Qafqaz Konserv Zavodu\"MMC Biləsuvar istehsal sahəsi,Azərbaycan Respublikası,Biləsuvar rayonu, Bəhramtəpə yolu 45-ci km,Arazbarı kəndi.",
+      "published_at": "2023-06-27T15:04:35+04:00",
+      "created_at": "2023-06-27T15:04:35+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "GULUM",
+      "product_type": "",
+      "tags": [
+        "\"4102\"",
+        "\"4124\"]",
+        "\"4165\"",
+        "0",
+        "218",
+        "59",
+        "7",
+        "700",
+        "79",
+        "[\"4101\"",
+        "ADT",
+        "BEZELYE  KONSERVELER",
+        "GR",
+        "GULUM",
+        "KONSERV",
+        "Konserva",
+        "KONSERVE",
+        "Konservlər",
+        "Təməl Qida"
+      ],
+      "variants": [
+        {
+          "id": 45688263213361,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "10003276",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "2.29",
+          "grams": 0,
+          "compare_at_price": "2.79",
+          "position": 1,
+          "product_id": 8565842084145,
+          "created_at": "2023-06-27T15:04:36+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 46634522870065,
+          "created_at": "2024-09-20T09:51:01+04:00",
+          "position": 1,
+          "updated_at": "2024-09-20T09:51:01+04:00",
+          "product_id": 8565842084145,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/files/861e37fd64cf1afd237b5dd8ffe0e9f0.jpg?v=1726811461",
+          "width": 1000,
+          "height": 1000
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8617178628401,
+      "title": "AZƏRSÜD QAYMAQ 200 Q 26%",
+      "handle": "azersud-qaymaq-200-q-26",
+      "body_html": "",
+      "published_at": "2023-07-05T12:27:22+04:00",
+      "created_at": "2023-07-05T12:27:22+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "AZERSUD",
+      "product_type": "",
+      "tags": [
+        "ADT",
+        "AZERSUD",
+        "GR",
+        "GUNLUK SUT-SUT URUNLERI",
+        "KAYMAK",
+        "Qaymaq",
+        "QAYMAQ TETRAPAK",
+        "SUD MEHSULLARI-YUMURTA-ZEYTUN",
+        "Süd Məhsulları",
+        "Süd Səhər Yeməyi"
+      ],
+      "variants": [
+        {
+          "id": 45911935484209,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "10001896",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.99",
+          "grams": 0,
+          "compare_at_price": "2.70",
+          "position": 1,
+          "product_id": 8617178628401,
+          "created_at": "2023-07-05T12:27:22+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42528228901169,
+          "created_at": "2023-08-30T10:11:33+04:00",
+          "position": 1,
+          "updated_at": "2023-08-30T10:11:33+04:00",
+          "product_id": 8617178628401,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/10001896_99031494-3b4d-467c-be37-16342be4ff5e.jpg?v=1693375893",
+          "width": 400,
+          "height": 400
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8582610616625,
+      "title": "LIFE QAB SÜNGƏRİ 5 Lİ STANDART",
+      "handle": "life-qab-sungeri-5-li-standart",
+      "body_html": "",
+      "published_at": "2023-06-30T08:32:58+04:00",
+      "created_at": "2023-06-30T08:32:58+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "LIFE",
+      "product_type": "",
+      "tags": [
+        "16",
+        "17",
+        "18",
+        "37",
+        "5",
+        "5000",
+        "59",
+        "6",
+        "83",
+        "9",
+        "936",
+        "[\"4101\"",
+        "ADT",
+        "Deterjan Təmizlik",
+        "DIGER TEMIZLIK MALLARI",
+        "EV TEMIZLIK GERECLER",
+        "LIFE",
+        "Sungər Sim Top",
+        "TEMIZLIK SUNGER BULA",
+        "Təmizlik Əşyaları"
+      ],
+      "variants": [
+        {
+          "id": 45763795976497,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "30110521",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.00",
+          "grams": 0,
+          "compare_at_price": "1.69",
+          "position": 1,
+          "product_id": 8582610616625,
+          "created_at": "2023-06-30T08:32:59+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42550189654321,
+          "created_at": "2023-09-02T07:14:00+04:00",
+          "position": 1,
+          "updated_at": "2023-09-02T07:14:00+04:00",
+          "product_id": 8582610616625,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/30110521.jpg?v=1693624440",
+          "width": 400,
+          "height": 400
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8585973268785,
+      "title": "PATRON GÜNƏBAXAN TUMU QARA 110 Q 4D",
+      "handle": "patron-gunebaxan-tumu-qara-110-q-4d",
+      "body_html": "",
+      "published_at": "2023-06-30T20:31:16+04:00",
+      "created_at": "2023-06-30T20:31:16+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "PATRON",
+      "product_type": "",
+      "tags": [
+        "110",
+        "128",
+        "66",
+        "69",
+        "84",
+        "90",
+        "[\"4101\"",
+        "ADT",
+        "Atistirmalik",
+        "AYCEKIRDEK",
+        "bestproduct-18082023",
+        "CEREZ",
+        "GR",
+        "Günəbaxan Tumu",
+        "KURUYEMIS",
+        "MAKRO CEREZ",
+        "PATRON",
+        "Çərəzlər"
+      ],
+      "variants": [
+        {
+          "id": 45776302866737,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "30153810",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "0.85",
+          "grams": 0,
+          "compare_at_price": "1.19",
+          "position": 1,
+          "product_id": 8585973268785,
+          "created_at": "2023-06-30T20:31:16+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42557882237233,
+          "created_at": "2023-09-03T15:45:35+04:00",
+          "position": 1,
+          "updated_at": "2023-09-03T15:45:35+04:00",
+          "product_id": 8585973268785,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/30153810.jpg?v=1693741535",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8641020985649,
+      "title": "BADAMLI SU 1.5 L QAZLI",
+      "handle": "badamli-su-1-5-l-qazli",
+      "body_html": "",
+      "published_at": "2023-07-11T14:50:54+04:00",
+      "created_at": "2023-07-11T14:50:54+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "BADAMLI",
+      "product_type": "",
+      "tags": [
+        "ADT",
+        "BADAMLI",
+        "ICECEKLER",
+        "İçkilər",
+        "ML",
+        "QAZLI ICECEKLER",
+        "Qazlı İçkilər",
+        "SADE QAZLI SULAR PET",
+        "SIVI ICECEKLER"
+      ],
+      "variants": [
+        {
+          "id": 46020205150513,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "30009535",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "1.15",
+          "grams": 0,
+          "compare_at_price": "1.25",
+          "position": 1,
+          "product_id": 8641020985649,
+          "created_at": "2023-07-11T14:50:54+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42571237261617,
+          "created_at": "2023-09-05T10:11:43+04:00",
+          "position": 1,
+          "updated_at": "2023-09-05T10:11:43+04:00",
+          "product_id": 8641020985649,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/30009535_77309422-fe87-4bac-a4bf-d983c332d022.png?v=1693894303",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8593327849777,
+      "title": "TACH TƏMİZLİK BEZİ 25X30 RULON",
+      "handle": "tach-temizlik-bezi-25x30-rulon",
+      "body_html": "",
+      "published_at": "2023-07-02T01:38:22+04:00",
+      "created_at": "2023-07-02T01:38:22+04:00",
+      "updated_at": "2026-04-05T00:44:11+04:00",
+      "vendor": "TITIZ",
+      "product_type": "",
+      "tags": [
+        "11",
+        "12",
+        "15000",
+        "5",
+        "6",
+        "[\"4101\"",
+        "ADT",
+        "Deterjan Təmizlik",
+        "DIGER TEMIZLIK MALLARI",
+        "EV TEMIZLIK GERECLER",
+        "TEMIZLIK BEZI",
+        "TITIZ",
+        "Təmizlik Əşyaları"
+      ],
+      "variants": [
+        {
+          "id": 45809432756529,
+          "title": "ədəd",
+          "option1": "ədəd",
+          "option2": null,
+          "option3": null,
+          "sku": "30163077",
+          "requires_shipping": true,
+          "taxable": true,
+          "featured_image": null,
+          "available": true,
+          "price": "2.29",
+          "grams": 0,
+          "compare_at_price": "4.09",
+          "position": 1,
+          "product_id": 8593327849777,
+          "created_at": "2023-07-02T01:38:23+04:00",
+          "updated_at": "2026-04-05T00:44:11+04:00"
+        }
+      ],
+      "images": [
+        {
+          "id": 42526162944305,
+          "created_at": "2023-08-30T03:48:02+04:00",
+          "position": 1,
+          "updated_at": "2023-08-30T03:48:02+04:00",
+          "product_id": 8593327849777,
+          "variant_ids": [],
+          "src": "https://cdn.shopify.com/s/files/1/0748/2395/8833/products/30163077_cd5c9cd6-d0fc-4e2f-bb51-38dce4fe0e34.png?v=1693352882",
+          "width": 800,
+          "height": 800
+        }
+      ],
+      "options": [
+        {
+          "name": "Title",
+          "position": 1,
+          "values": [
+            "ədəd"
+          ]
+        }
+      ]
+    }
+  ]
+}

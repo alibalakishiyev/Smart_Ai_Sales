@@ -1,9 +1,7 @@
 package com.utils;
 
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,17 +16,17 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.BuildConfig;
 import com.google.firebase.auth.FirebaseAuth;
-import com.main.MainActivity;
 import com.smart_ai_sales.R;
 
 import java.util.Calendar;
 
 public class SettingsActivity extends BaseActivity {
 
-    private CardView cardTheme, cardAbout, cardProfile, cardResetPassword, cardLogout, cardAddSalary;
+    private CardView cardTheme, cardAbout, cardProfile, cardResetPassword, cardLogout, cardAddSalary, cardLanguage;
     private SwitchMaterial switchDarkMode;
-    private TextView tvVersion;
+    private TextView tvVersion, tvCurrentLanguage;
     private FirebaseAuth mAuth;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +34,13 @@ public class SettingsActivity extends BaseActivity {
         setContentView(R.layout.activity_settings);
 
         mAuth = FirebaseAuth.getInstance();
+        sharedPreferences = getSharedPreferences("settings", MODE_PRIVATE);
 
         initViews();
         setupClickListeners();
         setVersion();
         setupSalaryReminder();
+        updateCurrentLanguageDisplay(); // Cari dili göstər
     }
 
     private void initViews() {
@@ -50,25 +50,21 @@ public class SettingsActivity extends BaseActivity {
         cardResetPassword = findViewById(R.id.cardResetPassword);
         cardLogout = findViewById(R.id.cardLogout);
         cardAddSalary = findViewById(R.id.cardAddSalary);
+        cardLanguage = findViewById(R.id.cardLanguage);
         switchDarkMode = findViewById(R.id.switchDarkMode);
         tvVersion = findViewById(R.id.tvVersion);
+        tvCurrentLanguage = findViewById(R.id.tvCurrentLanguage);
 
         // Switch-in vəziyyətini təyin et
-        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        boolean isDarkMode = prefs.getBoolean("dark_mode", true);
+        boolean isDarkMode = sharedPreferences.getBoolean("dark_mode", true);
         switchDarkMode.setChecked(isDarkMode);
     }
 
     private void setupClickListeners() {
         // Theme dəyişmə
         switchDarkMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            changeTheme(isChecked);  // BaseActivity-dəki metodu çağır
+            changeTheme(isChecked);
         });
-
-        cardTheme.setOnClickListener(v -> {
-            switchDarkMode.setChecked(!switchDarkMode.isChecked());
-        });
-
 
         cardTheme.setOnClickListener(v -> {
             switchDarkMode.setChecked(!switchDarkMode.isChecked());
@@ -78,6 +74,11 @@ public class SettingsActivity extends BaseActivity {
             Intent intent = new Intent(SettingsActivity.this, AddSalaryActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        });
+
+        // Dil seçimi - DİALOQ ilə
+        cardLanguage.setOnClickListener(v -> {
+            showLanguageDialog();
         });
 
         cardAbout.setOnClickListener(v -> {
@@ -95,6 +96,68 @@ public class SettingsActivity extends BaseActivity {
         cardLogout.setOnClickListener(v -> {
             showLogoutConfirmation();
         });
+    }
+
+    private void updateCurrentLanguageDisplay() {
+        String currentLang = getCurrentLanguage();
+        String languageName = "";
+
+        switch (currentLang) {
+            case "az":
+                languageName = "Azərbaycan";
+                break;
+            case "en":
+                languageName = "English";
+                break;
+            case "ru":
+                languageName = "Русский";
+                break;
+            default:
+                languageName = "Azərbaycan";
+                break;
+        }
+
+        if (tvCurrentLanguage != null) {
+            tvCurrentLanguage.setText(languageName);
+        }
+    }
+
+    private void showLanguageDialog() {
+        String[] languages = {"Azərbaycan", "English", "Русский"};
+        String[] languageCodes = {"az", "en", "ru"};
+
+        String currentLang = getCurrentLanguage();
+        int checkedItem = 0;
+
+        switch (currentLang) {
+            case "az":
+                checkedItem = 0;
+                break;
+            case "en":
+                checkedItem = 1;
+                break;
+            case "ru":
+                checkedItem = 2;
+                break;
+        }
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.language)
+                .setSingleChoiceItems(languages, checkedItem, (dialog, which) -> {
+                    String newLang = languageCodes[which];
+
+                    if (!newLang.equals(currentLang)) {
+                        // Dili dəyiş - bu recreate çağıracaq
+                        setLocale(newLang);
+
+                        // Toast mesajı
+                        Toast.makeText(SettingsActivity.this,
+                                R.string.language_changed, Toast.LENGTH_SHORT).show();
+                    }
+                    dialog.dismiss();
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .show();
     }
 
     private void setVersion() {
@@ -184,5 +247,12 @@ public class SettingsActivity extends BaseActivity {
 
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY * 30, pendingIntent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Hər dəfə activity görünəndə cari dili yenilə
+        updateCurrentLanguageDisplay();
     }
 }

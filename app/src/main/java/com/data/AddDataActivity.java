@@ -18,6 +18,7 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,6 +46,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.DiscountMarket.service.PriceComparisonService;
 import com.airbnb.lottie.LottieAnimationView;
 import com.data.list.ProductListAdapter;
 import com.data.location.LocationItem;
@@ -100,7 +102,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class AddDataActivity extends AppCompatActivity {
@@ -307,6 +309,52 @@ public class AddDataActivity extends AppCompatActivity {
         loadInterstitialAd();
         showInterstitialAd();
 
+        if (getIntent() != null && getIntent().getBooleanExtra("from_ocr", false)) {
+            // Bir az gözlə ki, view-lər hazır olsun
+            new Handler().postDelayed(() -> {
+                handleOCRDataFromIntent();
+            }, 500);
+        }
+
+    }
+
+    private void handleOCRDataFromIntent() {
+        Intent intent = getIntent();
+
+        String storeName = intent.getStringExtra("store_name");
+        String date = intent.getStringExtra("date");
+        String time = intent.getStringExtra("time");
+        double totalAmount = intent.getDoubleExtra("total_amount", 0);
+        String docId = intent.getStringExtra("doc_id");
+        String fiscalCode = intent.getStringExtra("fiscal_code");
+
+        ArrayList<String> productNames = intent.getStringArrayListExtra("product_names");
+        ArrayList<String> productPrices = intent.getStringArrayListExtra("product_prices");
+        ArrayList<String> productQuantities = intent.getStringArrayListExtra("product_quantities");
+        ArrayList<String> productUnits = intent.getStringArrayListExtra("product_units");
+
+        Log.d(TAG, "📱 OCR məlumatları intent-dən alındı");
+
+        // Tarix və saatı yenilə
+        if (date != null && !date.isEmpty() && !date.equals("Mağaza adı tapılmadı")) {
+            tvCurrentDate.setText(date);
+        }
+        if (time != null && !time.isEmpty()) {
+            tvCurrentTime.setText(time);
+        }
+
+        // Məhsulları listə əlavə et
+        if (productNames != null && !productNames.isEmpty()) {
+            if (productListAdapter.getItemCount() > 0) {
+                showProductMergeDialog(storeName, date, time, totalAmount, docId, fiscalCode,
+                        productNames, productPrices, productQuantities, productUnits);
+            } else {
+                addOCRProductsToList(productNames, productPrices, productQuantities,
+                        productUnits, storeName, docId, fiscalCode);
+            }
+        } else {
+            Toast.makeText(this, "⚠️ OCR-dan məhsul gəlmədi", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void initializeLocalDatabase() {
@@ -882,18 +930,6 @@ public class AddDataActivity extends AppCompatActivity {
             tvCurrentTime.setText(time);
         }
 
-        // Note yarat
-        StringBuilder noteBuilder = new StringBuilder();
-
-        // Mağaza adı
-        if (storeName != null && !storeName.isEmpty() && !storeName.equals("Mağaza adı tapılmadı")) {
-            noteBuilder.append("🏪 ").append(storeName);
-            if (docId != null && !docId.isEmpty()) {
-                noteBuilder.append(" (№").append(docId).append(")");
-            }
-            noteBuilder.append("\n");
-        }
-
         // Əgər məhsul varsa
         if (productNames != null && !productNames.isEmpty()) {
 
@@ -901,14 +937,13 @@ public class AddDataActivity extends AppCompatActivity {
             boolean shouldClear = productListAdapter.getItemCount() > 0;
 
             if (shouldClear) {
-                // Dialog göstər
+                // Dialog göstər - StringBuilder parametri YOXDUR!
                 showProductMergeDialog(storeName, date, time, totalAmount, docId, fiscalCode,
-                        productNames, productPrices, productQuantities,
-                        productUnits, noteBuilder);
+                        productNames, productPrices, productQuantities, productUnits); // <-- StringBuilder YOX
             } else {
-                // List boşdursa birbaşa əlavə et
+                // List boşdursa birbaşa əlavə et - StringBuilder parametri YOXDUR!
                 addOCRProductsToList(productNames, productPrices, productQuantities,
-                        productUnits, storeName, docId, fiscalCode, noteBuilder);
+                        productUnits, storeName, docId, fiscalCode); // <-- StringBuilder YOX
             }
         } else {
             Toast.makeText(this, "⚠️ OCR-dan məhsul məlumatı gəlmədi", Toast.LENGTH_SHORT).show();
@@ -917,14 +952,12 @@ public class AddDataActivity extends AppCompatActivity {
 
 
 
-    // Məhsulları birləşdirmə dialoqu
     private void showProductMergeDialog(String storeName, String date, String time,
                                         double totalAmount, String docId, String fiscalCode,
                                         ArrayList<String> productNames,
                                         ArrayList<String> productPrices,
                                         ArrayList<String> productQuantities,
-                                        ArrayList<String> productUnits,
-                                        StringBuilder noteBuilder) {
+                                        ArrayList<String> productUnits) {  // StringBuilder yox!
 
         int existingCount = productListAdapter.getItemCount();
         int newCount = productNames.size();
@@ -935,26 +968,14 @@ public class AddDataActivity extends AppCompatActivity {
                         "Mövcud listdə %d məhsul var.\nOCR-dan %d yeni məhsul gəldi.\n\nNecə əlavə etmək istəyirsiniz?",
                         existingCount, newCount))
                 .setPositiveButton("Listə əlavə et", (dialog, which) -> {
-                    // Mövcud listə əlavə et
                     addOCRProductsToList(productNames, productPrices, productQuantities,
-                            productUnits, storeName, docId, fiscalCode, noteBuilder);
-
-                    // Məlumat mesajı
-                    Snackbar.make(cardProduct,
-                            String.format("%d məhsul listə əlavə edildi", newCount),
-                            Snackbar.LENGTH_LONG).show();
+                            productUnits, storeName, docId, fiscalCode);
                 })
                 .setNegativeButton("Listi təmizlə", (dialog, which) -> {
-                    // Listi təmizlə və yenisini əlavə et
                     productListAdapter.clearProducts();
                     tempProductList.clear();
-
                     addOCRProductsToList(productNames, productPrices, productQuantities,
-                            productUnits, storeName, docId, fiscalCode, noteBuilder);
-
-                    Snackbar.make(cardProduct,
-                            "List təmizləndi və yeni məhsullar əlavə edildi",
-                            Snackbar.LENGTH_LONG).show();
+                            productUnits, storeName, docId, fiscalCode);
                 })
                 .setNeutralButton("Ləğv et", null)
                 .show();
@@ -964,15 +985,12 @@ public class AddDataActivity extends AppCompatActivity {
                                       ArrayList<String> productPrices,
                                       ArrayList<String> productQuantities,
                                       ArrayList<String> productUnits,
-                                      String storeName, String docId, String fiscalCode,
-                                      StringBuilder noteBuilder) {
+                                      String storeName, String docId, String fiscalCode) {
 
-        Log.d(TAG, "=== OCR MƏLUMATLARI ƏLAVƏ EDİLİR ===");
+        Log.d(TAG, "=== OCR MƏHSULLARI LİSTƏ ƏLAVƏ EDİLİR ===");
         Log.d(TAG, "Store: " + storeName);
-        Log.d(TAG, "Products count: " + (productNames != null ? productNames.size() : 0));
-
-        int addedCount = 0;
-        int errorCount = 0;
+        Log.d(TAG, "Receipt ID: " + docId);
+        Log.d(TAG, "Fiscal Code: " + fiscalCode);
 
         if (productNames == null || productNames.isEmpty()) {
             Log.e(TAG, "OCR-dan məhsul gəlmədi!");
@@ -980,12 +998,38 @@ public class AddDataActivity extends AppCompatActivity {
             return;
         }
 
+        // OCR-dan gələn ÜMUMİ tarix (əgər varsa)
+        Timestamp purchaseDate = null;
+        String ocrDate = getIntent().getStringExtra("date");
+        if (ocrDate != null && !ocrDate.isEmpty() && !ocrDate.equals("Mağaza adı tapılmadı")) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", new Locale("az"));
+                Date date = sdf.parse(ocrDate);
+                purchaseDate = new Timestamp(date);
+                Log.d(TAG, "📅 OCR Tarix: " + ocrDate + " -> " + purchaseDate);
+            } catch (Exception e) {
+                Log.e(TAG, "Date parse error: " + e.getMessage());
+            }
+        }
+
+        // ⭐ AtomicInteger istifadə edək (lambda üçün)
+        AtomicInteger addedCount = new AtomicInteger(0);
+        AtomicInteger errorCount = new AtomicInteger(0);
+
+        StringBuilder noteBuilder = new StringBuilder();
+        if (storeName != null && !storeName.isEmpty() && !storeName.equals("Mağaza adı tapılmadı")) {
+            noteBuilder.append("🏪 ").append(storeName);
+            if (docId != null && !docId.isEmpty()) {
+                noteBuilder.append(" (№").append(docId).append(")");
+            }
+            noteBuilder.append("\n");
+        }
+
         for (int i = 0; i < productNames.size(); i++) {
             try {
                 String name = productNames.get(i);
                 if (name == null || name.trim().isEmpty()) {
-                    Log.w(TAG, "Məhsul " + i + " adı boşdur, keçilir");
-                    errorCount++;
+                    errorCount.incrementAndGet();
                     continue;
                 }
                 name = name.trim();
@@ -993,15 +1037,12 @@ public class AddDataActivity extends AppCompatActivity {
                 double price = 0;
                 if (productPrices != null && i < productPrices.size()) {
                     String priceStr = productPrices.get(i);
-                    Log.d(TAG, "Raw price string [" + i + "]: '" + priceStr + "'");
-
                     if (priceStr != null && !priceStr.trim().isEmpty()) {
                         priceStr = priceStr.trim()
                                 .replace("AZN", "")
                                 .replace("₼", "")
                                 .replace(" ", "")
                                 .replace(",", ".");
-
                         StringBuilder cleanPrice = new StringBuilder();
                         for (char c : priceStr.toCharArray()) {
                             if (Character.isDigit(c) || c == '.') {
@@ -1009,13 +1050,12 @@ public class AddDataActivity extends AppCompatActivity {
                             }
                         }
                         priceStr = cleanPrice.toString();
-
                         try {
                             if (!priceStr.isEmpty()) {
                                 price = Double.parseDouble(priceStr);
                             }
                         } catch (NumberFormatException e) {
-                            Log.e(TAG, "Price parse error: " + e.getMessage() + " for string: '" + priceStr + "'");
+                            Log.e(TAG, "Price parse error: " + e.getMessage());
                         }
                     }
                 }
@@ -1036,29 +1076,30 @@ public class AddDataActivity extends AppCompatActivity {
                 String unit = "ədəd";
                 if (productUnits != null && i < productUnits.size()) {
                     unit = productUnits.get(i);
-                    if (unit == null || unit.trim().isEmpty()) {
-                        unit = "ədəd";
-                    }
+                    if (unit == null || unit.trim().isEmpty()) unit = "ədəd";
                     unit = unit.trim().toLowerCase();
                 }
 
-                Log.d(TAG, "Məhsul " + i + ": " + name +
-                        ", qiymət: " + price +
-                        ", miqdar: " + quantity +
-                        ", vahid: " + unit);
+                Log.d(TAG, "Məhsul " + i + ": " + name + ", qiymət: " + price + ", miqdar: " + quantity + ", vahid: " + unit);
 
                 if (price <= 0) {
                     Log.w(TAG, "Məhsul " + name + " üçün qiymət 0 və ya mənfidir!");
                 }
 
-                // Yeni məhsul yarat
                 ProductItem product = new ProductItem();
                 product.setId(UUID.randomUUID().toString());
                 product.setName(name);
                 product.setPrice(price);
+
+                // HƏR MƏHSULUN ÖZ MƏLUMATLARI
                 product.setStoreName(storeName);
                 product.setReceiptId(docId);
                 product.setFiscalCode(fiscalCode);
+                product.setPurchaseDate(purchaseDate != null ? purchaseDate.toDate() : null);
+                product.setBarcode(null);
+                product.setTaxAmount(0);
+                product.setTaxFree(false);
+
                 product.setUserId(userId);
                 product.setCreatedAt(new Timestamp(new Date()));
                 product.setSelected(true);
@@ -1077,10 +1118,8 @@ public class AddDataActivity extends AppCompatActivity {
                     product.setLiter(0);
                 }
 
-                // FINAL DƏYİŞƏN YARAT
-                final ProductItem finalProduct = copyProduct(product);
+                final ProductItem finalProduct = ProductItem.copyProduct(product);
 
-                // Listə əlavə et (UI thread-də)
                 runOnUiThread(() -> {
                     productListAdapter.addProduct(finalProduct);
                     tempProductList.add(finalProduct);
@@ -1101,23 +1140,19 @@ public class AddDataActivity extends AppCompatActivity {
                             name, product.getQuantity(), price, productTotal));
                 }
 
-                addedCount++;
+                addedCount.incrementAndGet();
 
             } catch (Exception e) {
                 Log.e(TAG, "Məhsul " + i + " əlavə edilərkən xəta: " + e.getMessage());
-                e.printStackTrace();
-                errorCount++;
+                errorCount.incrementAndGet();
             }
         }
 
-        Log.d(TAG, "=== OCR ƏLAVƏ ETMƏ NƏTİCƏLƏRİ ===");
-        Log.d(TAG, "Əlavə edildi: " + addedCount);
-        Log.d(TAG, "Xəta: " + errorCount);
-        Log.d(TAG, "Cəmi məhsul: " + productNames.size());
-
         final String finalNoteText = noteBuilder.toString().trim();
-        final int finalAddedCount = addedCount;
-        final int finalErrorCount = errorCount;
+
+        // ⭐ final dəyişənlər yaradırıq (AtomicInteger-dən dəyərləri alırıq)
+        final int finalAddedCount = addedCount.get();
+        final int finalErrorCount = errorCount.get();
 
         runOnUiThread(() -> {
             if (!finalNoteText.isEmpty()) {
@@ -1130,24 +1165,13 @@ public class AddDataActivity extends AppCompatActivity {
                     note = currentNote + "\n\n" + finalNoteText;
                 }
             }
-
             updateSelectedProductsInfo();
 
-            String message;
-            if (finalErrorCount == 0) {
-                message = String.format("✅ %d məhsul OCR-dan listə əlavə edildi", finalAddedCount);
-            } else {
-                message = String.format("⚠️ %d məhsul əlavə edildi, %d xəta", finalAddedCount, finalErrorCount);
+            String message = String.format("✅ %d məhsul OCR-dan listə əlavə edildi", finalAddedCount);
+            if (finalErrorCount > 0) {
+                message += String.format(" (%d xəta)", finalErrorCount);
             }
             Toast.makeText(AddDataActivity.this, message, Toast.LENGTH_LONG).show();
-
-            hideKeyboard();
-
-            new Handler().postDelayed(() -> {
-                if (mainScrollView != null && cardProduct != null) {
-                    mainScrollView.smoothScrollTo(0, cardProduct.getTop());
-                }
-            }, 300);
         });
     }
 
@@ -1234,55 +1258,7 @@ public class AddDataActivity extends AppCompatActivity {
                 });
     }
 
-    private void saveLocationToLocalDB(String name, String address, double lat, double lng) {
-        try {
-            ContentValues values = new ContentValues();
-            values.put("userId", userId);
-            values.put("address", address);
-            values.put("latitude", lat);
-            values.put("longitude", lng);
-            values.put("lastUsed", System.currentTimeMillis());
-            values.put("useCount", 1);
 
-            localDB.insert(LOCATIONS_TABLE, null, values);
-            Log.d(TAG, "Location saved to local DB: " + address);
-        } catch (Exception e) {
-            Log.e(TAG, "Error saving to local DB: " + e.getMessage());
-        }
-    }
-
-    private void saveLocationsToLocalDB(List<LocationItem> locations) {
-        for (LocationItem item : locations) {
-            ContentValues values = new ContentValues();
-            values.put("id", item.getId());
-            values.put("userId", item.getUserId());
-            values.put("name", item.getName());
-            values.put("address", item.getAddress());
-            values.put("latitude", item.getLatitude());
-            values.put("longitude", item.getLongitude());
-            values.put("useCount", item.getUseCount());
-            values.put("lastUsed", item.getLastUsed() != null ? item.getLastUsed().toDate().getTime() : System.currentTimeMillis());
-            values.put("synced", 1);
-
-            localDB.insertWithOnConflict(LOCATIONS_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        }
-    }
-
-    private void updateLocationSpinner() {
-        savedLocations.clear();
-        savedLocations.add("🆕 Yeni konum al");
-
-        for (LocationItem item : firebaseLocations) {
-            String display = item.getName() != null && !item.getName().isEmpty()
-                    ? item.getName() + " - " + item.getAddress()
-                    : item.getAddress();
-            savedLocations.add(display);
-        }
-
-        locationAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, savedLocations);
-        locationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerSavedLocations.setAdapter(locationAdapter);
-    }
 
     private void setupTextWatchers() {
         etProductName.addTextChangedListener(new SimpleTextWatcher() {
@@ -1350,7 +1326,7 @@ public class AddDataActivity extends AppCompatActivity {
     }
 
     private void updateCategorySpinner() {
-        String[] categories = transactionType.equals("expense") ? expenseCategories : incomeCategories;
+        String[] categories = transactionType.equals("expense") ? getExpenseCategories() : getIncomeCategories();
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories) {
             @NonNull
@@ -1392,6 +1368,38 @@ public class AddDataActivity extends AppCompatActivity {
             selectedCategory = categories[0];
             isCategoryValid = true;
         }
+    }
+
+    // Əvvəlki hardcoded array-ləri SİLİN və bunları əlavə edin:
+
+    private String[] getExpenseCategories() {
+        return new String[]{
+                getString(R.string.category_grocery),
+                getString(R.string.category_transport),
+                getString(R.string.category_rent),
+                getString(R.string.category_utilities),
+                getString(R.string.category_entertainment),
+                getString(R.string.category_health),
+                getString(R.string.category_education),
+                getString(R.string.category_clothing),
+                getString(R.string.category_technology),
+                getString(R.string.category_restaurant),
+                getString(R.string.category_travel),
+                getString(R.string.category_other)
+        };
+    }
+
+    private String[] getIncomeCategories() {
+        return new String[]{
+                getString(R.string.category_salary),
+                getString(R.string.category_bonus),
+                getString(R.string.category_investment),
+                getString(R.string.category_sale),
+                getString(R.string.category_gift),
+                getString(R.string.category_freelance),
+                getString(R.string.category_business),
+                getString(R.string.category_other)
+        };
     }
 
     private void loadSavedLocations() {
@@ -1490,6 +1498,64 @@ public class AddDataActivity extends AppCompatActivity {
                 return;
             }
         }
+    }
+
+    // AddDataActivity.java - OCR məlumatları əlavə edildikdən SONRA
+
+    private void checkPriceInBazarStore(ProductItem product) {
+        PriceComparisonService comparisonService = new PriceComparisonService(this);
+
+        // Sadəcə bu məhsul üçün yoxlama
+        comparisonService.comparePrices(new PriceComparisonService.ComparisonCallback() {
+            @Override
+            public void onComparisonComplete(List<PriceComparisonService.ComparisonResult> results) {
+                for (PriceComparisonService.ComparisonResult r : results) {
+                    if (r.getLocalProduct().getName().equalsIgnoreCase(product.getName())) {
+                        // Bu məhsul BazarStore-da ucuzdur!
+                        showBazarStoreSuggestion(r);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                Log.e(TAG, "BazarStore yoxlaması xətası: " + error);
+            }
+
+            @Override
+            public void onProgress(String message) {
+                // İsteğe bağlı
+            }
+        });
+    }
+
+    private void showBazarStoreSuggestion(PriceComparisonService.ComparisonResult result) {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("🛍️ BazarStore-da UCUZ!")
+                .setIcon(R.drawable.ic_discount)
+                .setMessage(String.format(
+                        "✅ %s məhsulu BazarStore-da DAHA UCUZDUR!\n\n" +
+                                "📍 Sizin qiymət: ₼%.2f\n" +
+                                "🏪 BazarStore: ₼%.2f\n" +
+                                "💰 Qənaət: ₼%.2f (%.0f%%)\n\n" +
+                                "Endirimli linkə keçmək istəyirsiniz?",
+                        result.getLocalProduct().getName(),
+                        result.getLocalPrice(),
+                        result.getBazarPrice(),
+                        result.getSavings(),
+                        result.getSavingsPercent()))
+                .setPositiveButton("BazarStore-a keç", (dialog, which) -> {
+                    if (result.getBazarProduct().getProductUrl() != null) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW,
+                                Uri.parse(result.getBazarProduct().getProductUrl()));
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(this, "Link tapılmadı", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Sonra", null)
+                .show();
     }
 
     private void loadCurrentBalance() {
@@ -1854,7 +1920,6 @@ public class AddDataActivity extends AppCompatActivity {
         syncHandler.post(syncRunnable);
     }
 
-    // AddDataActivity-də saveTransaction() metodu - YENİLƏNİB
 
     private void saveTransaction() {
         // Kateqoriya yoxla
@@ -1876,7 +1941,6 @@ public class AddDataActivity extends AppCompatActivity {
 
     // List-dəki məhsulları Firebase-ə yadda saxla
     private void saveProductListToFirebase() {
-        // Seçilmiş məhsulları al
         List<ProductItem> selectedProducts = productListAdapter.getSelectedProducts();
 
         if (selectedProducts.isEmpty()) {
@@ -1884,7 +1948,6 @@ public class AddDataActivity extends AppCompatActivity {
             return;
         }
 
-        // Kateqoriya yoxla
         if (selectedCategory == null || selectedCategory.isEmpty()) {
             Snackbar.make(cardCategory, "Zəhmət olmasa kateqoriya seçin", Snackbar.LENGTH_SHORT).show();
             return;
@@ -1896,55 +1959,76 @@ public class AddDataActivity extends AppCompatActivity {
 
         showLoading(true);
 
-        Log.d(TAG, "=== BULK TRANSACTION STARTED ===");
-        Log.d(TAG, "Selected products: " + selectedProducts.size());
-        Log.d(TAG, "Total amount: " + totalAmount);
-        Log.d(TAG, "Category: " + selectedCategory);
-        Log.d(TAG, "Group ID: " + transactionGroupId);
-
-        // Firestore batch yaradaq
         WriteBatch batch = db.batch();
 
-        // Hər bir seçilmiş məhsul üçün transaction yarat
         for (ProductItem product : selectedProducts) {
             String transactionId = UUID.randomUUID().toString();
-            double productTotal;
-
-            if (product.getKg() > 0) {
-                productTotal = product.getKg() * product.getPrice();
-            } else if (product.getLiter() > 0) {
-                productTotal = product.getLiter() * product.getPrice();
-            } else {
-                productTotal = product.getPrice() * product.getQuantity();
-            }
+            double productTotal = product.getTotalAmount();
 
             Map<String, Object> transaction = new HashMap<>();
+
+            // === 1. ƏSAS MƏLUMATLAR ===
             transaction.put("transactionId", transactionId);
             transaction.put("groupId", transactionGroupId);
             transaction.put("userId", userId);
             transaction.put("type", transactionType);
             transaction.put("category", selectedCategory);
+            transaction.put("note", note != null ? note : "");
+
+            // === 2. MƏHSUL MƏLUMATLARI ===
             transaction.put("productName", product.getName());
+            transaction.put("amount", product.getPrice());        // Hər məhsulun öz qiyməti
+            transaction.put("productTotal", productTotal);       // Hər məhsulun öz cəmi
+            transaction.put("groupTotalAmount", totalAmount);    // Qrupun ümumi cəmi
+
+            // === 3. VAHİD MƏLUMATLARI (hər məhsulun özü) ===
             transaction.put("kg", product.getKg());
             transaction.put("liter", product.getLiter());
-            transaction.put("amount", product.getPrice());
             transaction.put("quantity", product.getQuantity());
-            transaction.put("productTotal", productTotal);
-            transaction.put("groupTotalAmount", totalAmount);
-            transaction.put("note", note);
+
+            // === 4. ⭐ OCR MƏLUMATLARI - HƏR MƏHSULUN ÖZÜNÜN MƏLUMATLARI ===
+            // Burada hər məhsulun öz receiptId, fiscalCode, barcode, storeName, purchaseDate olmalıdır
+            transaction.put("receiptId", product.getReceiptId() != null && !product.getReceiptId().isEmpty()
+                    ? product.getReceiptId() : "");
+            transaction.put("storeName", product.getStoreName() != null && !product.getStoreName().isEmpty()
+                    ? product.getStoreName() : "");
+            transaction.put("fiscalCode", product.getFiscalCode() != null && !product.getFiscalCode().isEmpty()
+                    ? product.getFiscalCode() : "");
+            transaction.put("barcode", product.getBarcode() != null && !product.getBarcode().isEmpty()
+                    ? product.getBarcode() : "");
+
+            // === 5. ⭐ VERGİ MƏLUMATLARI (hər məhsulun özü) ===
+            transaction.put("taxAmount", product.getTaxAmount());
+            transaction.put("isTaxFree", product.isTaxFree());
+
+            // === 6. ⭐ ALIŞ TARİXİ (hər məhsulun öz qəbz tarixi) ===
+            if (product.getPurchaseDate() != null) {
+                transaction.put("purchaseDate", new Timestamp(product.getPurchaseDate()));
+            } else {
+                transaction.put("purchaseDate", null);
+            }
+
+            // === 7. TARİX VƏ SAAT ===
             transaction.put("dateString", dateFormat.format(new Date()));
             transaction.put("timeString", timeFormat.format(new Date()));
             transaction.put("timestamp", FieldValue.serverTimestamp());
-            transaction.put("location", address);
+
+            // === 8. KONUM MƏLUMATLARI ===
+            transaction.put("location", address != null ? address : "");
             transaction.put("latitude", latitude);
             transaction.put("longitude", longitude);
+
+            // === 9. BALANS MƏLUMATLARI ===
             transaction.put("balanceBefore", currentBalance);
             transaction.put("balanceAfter", newBalance);
+
+            // === 10. BULK MƏLUMATLARI ===
             transaction.put("productCount", selectedProducts.size());
             transaction.put("isBulkTransaction", true);
 
             DocumentReference transactionRef = db.collection("transactions").document();
             batch.set(transactionRef, transaction);
+
         }
 
         // User balansını yenilə
@@ -1957,32 +2041,22 @@ public class AddDataActivity extends AppCompatActivity {
 
         batch.update(userRef, userUpdates);
 
-        // Batch-i icra et
         batch.commit()
                 .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "✅ Batch transaction successful! New balance: " + newBalance);
-
+                    Log.d(TAG, "✅ Batch transaction successful!");
                     runOnUiThread(() -> {
                         showLoading(false);
                         currentBalance = newBalance;
                         previousBalance = currentBalance;
                         updateBalanceDisplay();
-
-                        // Məhsulları Firebase-ə əlavə et (əgər yoxdursa)
                         saveNewProductsToFirebase(selectedProducts);
-
-                        // Uğur mesajı
                         showSuccessDialog(selectedProducts.size(), totalAmount, newBalance, transactionGroupId);
                     });
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "❌ Batch transaction failed: " + e.getMessage());
-                    e.printStackTrace();
-
                     runOnUiThread(() -> {
                         showLoading(false);
-
-                        // Offline rejimdə lokalda saxla
                         if (!isNetworkAvailable()) {
                             saveProductsOffline(selectedProducts, totalAmount, newBalance, transactionGroupId);
                         } else {

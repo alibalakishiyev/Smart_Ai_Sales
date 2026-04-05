@@ -21,7 +21,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/card_dark"
             app:titleTextColor="@color/text_primary"
-            app:title="Cibim.AI"
+            app:title="@string/app_name_short"
             app:navigationIcon="@drawable/ic_menu">
 
             <LinearLayout
@@ -31,7 +31,6 @@
                 android:gravity="center_vertical"
                 android:layout_gravity="end">
 
-                <!-- Model Status -->
                 <ImageView
                     android:id="@+id/ivModelStatus"
                     android:layout_width="12dp"
@@ -43,7 +42,7 @@
                     android:id="@+id/tvModelStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="AI Aktiv"
+                    android:text="@string/ai_prediction"
                     android:textSize="12sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginEnd="16dp"/>
@@ -95,7 +94,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Salam,"
+                                android:text="@string/hello"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="14sp"/>
 
@@ -103,7 +102,7 @@
                                 android:id="@+id/tvUserName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="İstifadəçi"
+                                android:text="@string/guest"
                                 android:textColor="@color/text_primary"
                                 android:textSize="24sp"
                                 android:textStyle="bold"
@@ -131,7 +130,7 @@
                                 android:id="@+id/tvDayOfWeek"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Çərşənbə axşamı"
+                                android:text="@string/monday"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp"
                                 android:layout_marginTop="8dp"/>
@@ -158,7 +157,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Cari Balans"
+                            android:text="@string/current_balance"
                             android:textColor="@color/white_80"
                             android:textSize="14sp"/>
 
@@ -184,7 +183,6 @@
                             android:columnCount="2"
                             android:rowCount="2">
 
-                            <!-- Aylıq Maaş -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -197,7 +195,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Aylıq Maaş"
+                                    android:text="@string/monthly_salary"
                                     android:textColor="@color/white_60"
                                     android:textSize="12sp"/>
 
@@ -212,7 +210,6 @@
                                     android:layout_marginTop="2dp"/>
                             </LinearLayout>
 
-                            <!-- Aylıq Xərc -->
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -225,12 +222,12 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Aylıq Xərc"
+                                    android:text="@string/monthly_expense"
                                     android:textColor="@color/white_60"
                                     android:textSize="12sp"/>
 
                                 <TextView
-                                    android:id="@+id/tvMonthlyExpense"
+                                    android:id="@+id/tvMonthlyExpense2"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="₼0.00"
@@ -247,7 +244,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="📊 Maliyyə Göstəriciləri"
+                    android:text="@string/financial_health"
                     android:textColor="@color/text_primary"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -271,7 +268,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="📅 Bugün"
+                            android:text="@string/today"
                             android:textColor="@color/purple_500"
                             android:textSize="16sp"
                             android:textStyle="bold"
@@ -293,7 +290,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Gəlir"
+                                    android:text="@string/income"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp"/>
 
@@ -317,7 +314,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Xərc"
+                                    android:text="@string/expense"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp"/>
 
@@ -341,7 +338,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Net"
+                                    android:text="@string/net"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp"/>
 
@@ -376,7 +373,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="📆 Bu Həftə"
+                            android:text="@string/this_week"
                             android:textColor="@color/purple_500"
                             android:textSize="16sp"
                             android:textStyle="bold"
@@ -398,7 +395,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Gəlir"
+                                    android:text="@string/income"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp"/>
 
@@ -422,7 +419,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Xərc"
+                                    android:text="@string/expense"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp"/>
 
@@ -446,7 +443,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Net"
+                                    android:text="@string/net"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp"/>
 
@@ -481,7 +478,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="📊 Bu Ay"
+                            android:text="@string/this_month"
                             android:textColor="@color/purple_500"
                             android:textSize="16sp"
                             android:textStyle="bold"
@@ -503,7 +500,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Gəlir"
+                                    android:text="@string/income"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp"/>
 
@@ -527,7 +524,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Xərc"
+                                    android:text="@string/expense"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp"/>
 
@@ -551,7 +548,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Net"
+                                    android:text="@string/net"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp"/>
 
@@ -594,7 +591,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Gəlir vs Xərc Trendi"
+                                android:text="@string/income_vs_expense_trend"
                                 android:textColor="@color/text_primary"
                                 android:textSize="18sp"
                                 android:textStyle="bold"/>
@@ -602,7 +599,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Son 30 gün"
+                                android:text="@string/last_30_days"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp"
                                 android:background="@drawable/chip_background"
@@ -635,13 +632,12 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="📊 Xərc Kateqoriyaları"
+                            android:text="@string/expense_categories"
                             android:textColor="@color/purple_500"
                             android:textSize="18sp"
                             android:textStyle="bold"
                             android:layout_marginBottom="16dp"/>
 
-                        <!-- Kateqoriya 1 -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -654,7 +650,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Kateqoriya"
+                                android:text="@string/expense"
                                 android:textColor="@color/text_primary"
                                 android:textSize="14sp"/>
 
@@ -679,7 +675,6 @@
                                 android:background="@drawable/percent_background"/>
                         </LinearLayout>
 
-                        <!-- Kateqoriya 2 -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -692,7 +687,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Kateqoriya"
+                                android:text="@string/expense"
                                 android:textColor="@color/text_primary"
                                 android:textSize="14sp"/>
 
@@ -717,7 +712,6 @@
                                 android:background="@drawable/percent_background"/>
                         </LinearLayout>
 
-                        <!-- Kateqoriya 3 -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -730,7 +724,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Kateqoriya"
+                                android:text="@string/expense"
                                 android:textColor="@color/text_primary"
                                 android:textSize="14sp"/>
 
@@ -775,7 +769,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="💪 Maliyyə Sağlamlığı"
+                            android:text="@string/financial_health"
                             android:textColor="@color/purple_500"
                             android:textSize="18sp"
                             android:textStyle="bold"
@@ -791,7 +785,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Qənaət dərəcəsi:"
+                                android:text="@string/savings_rate"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="14sp"/>
 
@@ -814,7 +808,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Xərc nisbəti:"
+                                android:text="@string/expense_ratio"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="14sp"/>
 
@@ -838,7 +832,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Vəziyyət:"
+                                android:text="@string/status"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="14sp"/>
 
@@ -846,7 +840,7 @@
                                 android:id="@+id/tvFinancialHealth"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Məlumat az"
+                                android:text="@string/insufficient_data"
                                 android:textColor="@color/warning"
                                 android:textSize="16sp"
                                 android:textStyle="bold"/>
@@ -874,7 +868,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="🔮 AI Proqnoz"
+                            android:text="@string/ai_prediction"
                             android:textColor="@color/purple_500"
                             android:textSize="18sp"
                             android:textStyle="bold"/>
@@ -882,7 +876,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Sabah üçün təxmin"
+                            android:text="@string/tomorrow_estimate"
                             android:textColor="@color/text_secondary"
                             android:textSize="14sp"
                             android:layout_marginBottom="16dp"/>
@@ -904,7 +898,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Gəlir"
+                                    android:text="@string/income"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp"/>
 
@@ -928,7 +922,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Xərc"
+                                    android:text="@string/expense"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp"/>
 
@@ -952,7 +946,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Net"
+                                    android:text="@string/net"
                                     android:textColor="@color/text_secondary"
                                     android:textSize="12sp"/>
 
@@ -979,7 +973,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="Proqnoz dəqiqliyi"
+                                android:text="@string/prediction_accuracy"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="13sp"/>
 
@@ -1022,7 +1016,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="🤖 AI Analiz"
+                                android:text="@string/ai_analysis"
                                 android:textColor="@color/purple_500"
                                 android:textSize="18sp"
                                 android:textStyle="bold"/>
@@ -1038,7 +1032,7 @@
                                 android:id="@+id/tvAiInsights"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Analiz edilir..."
+                                android:text="@string/analyzing"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="14sp"
                                 android:lineSpacingExtra="4dp"
@@ -1048,7 +1042,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Ətraflı analiz üçün klikləyin →"
+                            android:text="@string/click_for_details"
                             android:textColor="@color/purple_500"
                             android:textSize="12sp"
                             android:gravity="end"
@@ -1094,7 +1088,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Bütün Əməliyyatlar"
+                                android:text="@string/all_transactions"
                                 android:textColor="@color/text_primary"
                                 android:textSize="16sp"
                                 android:textStyle="bold"/>
@@ -1102,7 +1096,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Son əməliyyatları gör"
+                                android:text="@string/view_recent_transactions"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="12sp"/>
                         </LinearLayout>
@@ -1124,7 +1118,6 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="16dp">
 
-                    <!-- Məlumat Əlavə Et -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cardAddData"
                         android:layout_width="0dp"
@@ -1156,14 +1149,13 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Əlavə Et"
+                                android:text="@string/add"
                                 android:textColor="@color/white"
                                 android:textSize="13sp"
                                 android:textStyle="bold"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <!-- Yenilə -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/btnRefresh"
                         android:layout_width="0dp"
@@ -1195,13 +1187,14 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Yenilə"
+                                android:text="@string/refresh"
                                 android:textColor="@color/text_primary"
                                 android:textSize="13sp"
                                 android:textStyle="bold"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/linearLayout2"
                     android:layout_width="match_parent"

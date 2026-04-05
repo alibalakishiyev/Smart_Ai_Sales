@@ -5,10 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -33,9 +31,7 @@ public class OnboardingActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Temanı yüklə
-        loadTheme();
-
+        // BaseActivity artıq dili və temanı idarə edir
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
 
@@ -44,17 +40,15 @@ public class OnboardingActivity extends BaseActivity {
         setupViewPager();
         setupTabLayout();
         setupClickListeners();
+
+        // Cari dilə uyğun olaraq mətnləri yenilə
+        updateTexts();
     }
 
-    private void loadTheme() {
-        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        boolean isDarkMode = prefs.getBoolean("dark_mode", true);
-
-        if (isDarkMode) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }
+    private void updateTexts() {
+        tvSkip.setText(getString(R.string.skip));
+        btnNext.setText(getString(R.string.next));
+        btnGetStarted.setText(getString(R.string.get_started));
     }
 
     private void initViews() {
@@ -69,26 +63,26 @@ public class OnboardingActivity extends BaseActivity {
         onboardingItems = new ArrayList<>();
 
         onboardingItems.add(new OnboardingItem(
-                "Satışları İzlə",
-                "Günlük, həftəlik və aylıq satışlarınızı real-time izləyin",
+                getString(R.string.onboarding_title_1),
+                getString(R.string.onboarding_desc_1),
                 R.drawable.ic_sales
         ));
 
         onboardingItems.add(new OnboardingItem(
-                "AI Analiz",
-                "Süni intellekt satışlarınızı analiz edib tövsiyələr verir",
+                getString(R.string.onboarding_title_2),
+                getString(R.string.onboarding_desc_2),
                 R.drawable.ic_ai
         ));
 
         onboardingItems.add(new OnboardingItem(
-                "Proqnozlaşdırma",
-                "Gələcək satış trendlərini proqnozlaşdırın",
+                getString(R.string.onboarding_title_3),
+                getString(R.string.onboarding_desc_3),
                 R.drawable.ic_chart
         ));
 
         onboardingItems.add(new OnboardingItem(
-                "Firebase ilə Təhlükəsiz",
-                "Bütün məlumatlarınız Firebase buludunda təhlükəsiz saxlanılır",
+                getString(R.string.onboarding_title_4),
+                getString(R.string.onboarding_desc_4),
                 R.drawable.ic_firebase
         ));
     }
@@ -105,29 +99,20 @@ public class OnboardingActivity extends BaseActivity {
     }
 
     private void setupClickListeners() {
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (viewPager.getCurrentItem() < onboardingItems.size() - 1) {
-                    viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
-                }
+        btnNext.setOnClickListener(v -> {
+            if (viewPager.getCurrentItem() < onboardingItems.size() - 1) {
+                viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
             }
         });
 
-        tvSkip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(OnboardingActivity.this, LoginActivity.class));
-                finish();
-            }
+        tvSkip.setOnClickListener(v -> {
+            startActivity(new Intent(OnboardingActivity.this, LoginActivity.class));
+            finish();
         });
 
-        btnGetStarted.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(OnboardingActivity.this, LoginActivity.class));
-                finish();
-            }
+        btnGetStarted.setOnClickListener(v -> {
+            startActivity(new Intent(OnboardingActivity.this, LoginActivity.class));
+            finish();
         });
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {

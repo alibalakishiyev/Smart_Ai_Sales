@@ -11,8 +11,8 @@ android {
         applicationId "com.smart_ai_sales"
         minSdk 26
         targetSdk 36
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
     }
 
     buildTypes {
@@ -105,5 +105,15 @@ dependencies {
 
     // JSoup
     implementation 'org.jsoup:jsoup:1.17.2'
+
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    // Şəkil yükləmək üçün
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+
+    // RecyclerView üçün
+    implementation 'androidx.recyclerview:recyclerview:1.3.2'
+
 
 }

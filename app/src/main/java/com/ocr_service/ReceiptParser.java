@@ -132,41 +132,10 @@ public class ReceiptParser {
             is.close();
         } catch (Exception e) {
             Log.e(TAG, "OCR düzəlişləri yüklənə bilmədi, default dəyərlər istifadə olunacaq", e);
-            loadDefaultCorrections();
         }
     }
 
-    /**
-     * Default düzəlişlər (əgər JSON yüklənməsə)
-     */
-    private static void loadDefaultCorrections() {
-        productNameCorrections = new HashMap<String, String>() {{
-            put("TOST COREYI 600 OR", "TOST COREYI 600 QR");
-            put("XONCA Q0ZLU PAXLAVA", "XONCA QOZLU PAXLAVA");
-            put("ALMA STORINARED KG", "ALMA STORINARED KG");
-            put("XIYAR MELIT KG", "XIYAR MELIT KG");
-            put("Paket Araz 31*60 5KG", "Paket Araz 31*60 5KG");
-            put("CASPIAN ANTI-PERS FR", "CASPIAN ANTI-PERS FR");
-            put("ALPEN GOLD SHOK.MIND", "ALPEN GOLD SHOK.MIND");
-            put("ANCHOR KERE YAGI 180", "ANCHOR KERE YAGI 180");
-            put("CUPA CUPS XXL 29GR", "CUPA CUPS XXL 29GR");
-            put("MANDARIN MURKOT KG", "MANDARIN MURKOT KG");
-            put("ARMUD ABATI KG", "ARMUD ABATI KG");
-            put("MANDORA KG", "MANDORA KG");
-            put("DARLETTO SNEJKA MALI", "DARLETTO SNEJKA MALI");
-            put("7 DAYS KRUASSAN CIYE", "7 DAYS KRUASSAN CIYE");
-            put("SELMAN AG PENDIRI 1*", "SELMAN AG PENDIRI");
-        }};
 
-        // Default pattern-lər
-        ocrPatterns = new ArrayList<>();
-
-        // Default lüğət
-        ocrDictionary = new HashMap<>();
-
-        isJsonLoaded = true;
-        Log.d(TAG, "Default düzəlişlər yükləndi");
-    }
 
     /**
      * OCR nəticəsini parse edir

@@ -13,9 +13,16 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/card_dark"
-        app:title="Smart AI Sales"
+        app:title="Jibim"
         app:titleTextColor="@color/white"
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="start"
+            android:src="@drawable/jibim_bckg_nano"
+            android:padding="1dp" />
 
         <ImageView
             android:id="@+id/btnLogout"
@@ -63,19 +70,25 @@
                     android:gravity="center"
                     android:padding="20dp">
 
+                    <ImageView
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/jibim_bckg_nano"/>
+
                     <TextView
                         android:id="@+id/tvWelcome"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Xoş gəldiniz!"
-                        android:textColor="@color/white"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
                         android:fontFamily="sans-serif-black"
                         android:shadowColor="@color/purple_500"
                         android:shadowDx="2"
                         android:shadowDy="2"
-                        android:shadowRadius="4"/>
+                        android:shadowRadius="4"
+                        android:text="Xoş gəldiniz!"
+                        android:textColor="@color/white"
+                        android:textSize="28sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvQuote"
@@ -130,6 +143,54 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- AI Analysis Card - YENİ -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/ai_purple"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="8dp"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🤖 AI Analiz"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp"/>
+
+                    <TextView
+                        android:id="@+id/tvAIAnalysis"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="🤖 AI analiz edilir..."
+                        android:textColor="@color/white_90"
+                        android:textSize="13sp"
+                        android:lineSpacingExtra="4dp"
+                        android:layout_marginBottom="12dp"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAIAnalysis"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Yenilə"
+                        android:textAllCaps="false"
+                        android:textSize="12sp"
+                        android:backgroundTint="@color/white"
+                        android:textColor="@color/ai_purple"
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:layout_gravity="end"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
             <!-- Stats Section -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -177,7 +238,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:columnCount="3"
-                android:rowCount="2"
+                android:rowCount="3"
                 android:alignmentMode="alignMargins"
                 android:columnOrderPreserved="false"
                 android:padding="4dp">
@@ -205,7 +266,6 @@
                         android:padding="12dp">
 
                         <ImageView
-                            android:id="@+id/imgDashboard"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:src="@drawable/ic_dashboard"
@@ -265,7 +325,6 @@
                         android:padding="12dp">
 
                         <ImageView
-                            android:id="@+id/imgAddData"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:src="@drawable/ic_add"
@@ -324,7 +383,6 @@
                         android:padding="12dp">
 
                         <ImageView
-                            android:id="@+id/imgReports"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:src="@drawable/ic_reports"
@@ -360,7 +418,7 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- RECEIPT SCANNER CARD - YENİ -->
+                <!-- Receipt Scanner Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardReceiptScanner"
                     android:layout_width="0dp"
@@ -369,7 +427,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="4dp"
                     android:layout_marginBottom="8dp"
-                    app:cardBackgroundColor="@color/scanner_purple"
+                    app:cardBackgroundColor="#FF6B6B"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="8dp"
                     android:foreground="?selectableItemBackground"
@@ -384,7 +442,6 @@
                         android:padding="12dp">
 
                         <ImageView
-                            android:id="@+id/imgReceiptScanner"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:src="@drawable/ic_receipt_scanner"
@@ -415,7 +472,127 @@
                             android:textAllCaps="false"
                             android:textSize="10sp"
                             android:backgroundTint="@color/white"
-                            android:textColor="@color/scanner_purple"
+                            android:textColor="#FF6B6B"
+                            style="@style/Widget.MaterialComponents.Button"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Discount Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardDiscounts"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginBottom="8dp"
+                    app:cardBackgroundColor="#FF9800"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="8dp"
+                    android:foreground="?selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="12dp">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_discount"
+                            android:tint="@color/white"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Endirimlər"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ən ucuzlar"
+                            android:textColor="@color/white_80"
+                            android:textSize="12sp"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnDiscounts"
+                            android:layout_width="match_parent"
+                            android:layout_height="33dp"
+                            android:layout_marginTop="8dp"
+                            android:text="Bax"
+                            android:textAllCaps="false"
+                            android:textSize="10sp"
+                            android:backgroundTint="@color/white"
+                            android:textColor="#FF9800"
+                            style="@style/Widget.MaterialComponents.Button"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- AI Analysis Card - Menu -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardAIAnalysis"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginBottom="8dp"
+                    app:cardBackgroundColor="#9C27B0"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="8dp"
+                    android:foreground="?selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="12dp">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_ai_feature"
+                            android:tint="@color/white"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="AI Analiz"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Proqnoz"
+                            android:textColor="@color/white_80"
+                            android:textSize="12sp"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAIAnalysis"
+                            android:layout_width="match_parent"
+                            android:layout_height="33dp"
+                            android:layout_marginTop="8dp"
+                            android:text="Analiz et"
+                            android:textAllCaps="false"
+                            android:textSize="10sp"
+                            android:backgroundTint="@color/white"
+                            android:textColor="#9C27B0"
                             style="@style/Widget.MaterialComponents.Button"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -427,7 +604,6 @@
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     android:layout_marginLeft="4dp"
-                    android:layout_marginRight="4dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     app:cardBackgroundColor="@color/warning"
@@ -445,7 +621,6 @@
                         android:padding="12dp">
 
                         <ImageView
-                            android:id="@+id/imgSettings"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:src="@drawable/ic_settings"
@@ -480,16 +655,6 @@
                             style="@style/Widget.MaterialComponents.Button"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
-
-                <!-- Boş kart (3 sütun üçün balans) -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:visibility="invisible"/>
             </GridLayout>
 
             <!-- Version -->
@@ -503,12 +668,15 @@
                 android:gravity="center"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="16dp"/>
+
             <LinearLayout
                 android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp">
+                android:layout_marginEnd="8dp"
+                android:orientation="vertical"
+                android:gravity="center">
 
                 <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/adView1"

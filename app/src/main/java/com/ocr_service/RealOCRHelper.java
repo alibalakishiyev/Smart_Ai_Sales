@@ -4,7 +4,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.media.ExifInterface;
 import android.util.Log;
@@ -15,29 +19,68 @@ import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 /**
- * Təkmilləşdirilmiş OCR Helper - SUPER GÜCLÜ VERSİYA
- * Balaca və böyük qəbzləri oxumaq üçün optimallaşdırılıb
+ * ═══════════════════════════════════════════════════════════════
+ *  RealOCRHelper — Adaptiv Multi-Pass OCR Mühərriki
+ *  Hər ölçüdəki qəbzi maksimum dəqiqliklə oxuyur
+ *
+ *  Dəstəklənən ölçülər:
+ *    • XS  — height < 1300px  → scale 2.0x + güclü kontrast
+ *    • S   — height < 1500px  → scale 1.7x + kontrast
+ *    • M   — height < 1800px  → scale 1.5x + standart
+ *    • L   — height < 2200px  → scale 1.3x + yüngül
+ *    • XL  — height >= 2200px → scale 1.1x + minimal
+ *
+ *  6 Preprocessing Metodu:
+ *    0 - Orijinal (böyüdülmüş)
+ *    1 - Adaptiv eşik (Otsu-benzər)
+ *    2 - Yüksək kontrast ağ-qara
+ *    3 - Tersine çevrilmiş + kontrast
+ *    4 - Kəskinləşdirilmiş (Laplacian-benzər)
+ *    5 - Gamma düzəltmə + parlaq
+ * ═══════════════════════════════════════════════════════════════
  */
 public class RealOCRHelper {
+
     private static final String TAG = "RealOCRHelper";
+
+    // ── Ölçü Həddləri ──────────────────────────────────────────
+    private static final int HEIGHT_XS  = 1300;
+    private static final int HEIGHT_S   = 1500;
+    private static final int HEIGHT_M   = 1800;
+    private static final int HEIGHT_L   = 2200;
+
+    // ── Hər ölçü üçün optimal böyütmə faktoru ──────────────────
+    private static final float SCALE_XS = 2.0f;
+    private static final float SCALE_S  = 1.7f;
+    private static final float SCALE_M  = 1.5f;
+    private static final float SCALE_L  = 1.3f;
+    private static final float SCALE_XL = 1.1f;
+
+    // ── Minimum tələb olunan blok sayları ──────────────────────
+    private static final int MIN_BLOCKS_XS = 3;
+    private static final int MIN_BLOCKS_S  = 5;
+    private static final int MIN_BLOCKS_M  = 7;
+    private static final int MIN_BLOCKS_L  = 10;
+    private static final int MIN_BLOCKS_XL = 12;
+
+    // ── Maksimum preprocessing keçiş sayı ─────────────────────
+    private static final int MAX_ATTEMPTS = 6;
+
     private TextRecognizer textRecognizer;
+    private final Context context;
 
-    // Height-ə görə threshold-lar
-    private static final int HEIGHT_SMALL = 1300;  // 1235px olanlar
-    private static final int HEIGHT_MEDIUM = 1500; // 1500px olanlar
-    private static final int HEIGHT_LARGE = 2000;  // 1903px olanlar
-
+    // ── TextBlock modeli ──────────────────────────────────────
     public static class TextBlock {
         public String text;
         public Rect rect;
         public float confidence;
+        public int lineIndex;
 
         public TextBlock(String text, Rect rect, float confidence) {
             this.text = text;
@@ -51,8 +94,41 @@ public class RealOCRHelper {
 
         @Override
         public String toString() {
-            return String.format("'%s' at [%d,%d,%d,%d]",
-                    text, rect.left, rect.top, rect.right, rect.bottom);
+            return String.format("'%s' @ [%d,%d] conf=%.2f", text, rect.top, rect.left, confidence);
+        }
+    }
+
+    // ── Şəkil metadata modeli ─────────────────────────────────
+    private static class ImageProfile {
+        int width, height;
+        float scaleFactor;
+        int minRequiredBlocks;
+        String category;
+
+        ImageProfile(int w, int h) {
+            this.width = w;
+            this.height = h;
+            if (h < HEIGHT_XS) {
+                scaleFactor = SCALE_XS;
+                minRequiredBlocks = MIN_BLOCKS_XS;
+                category = "XS";
+            } else if (h < HEIGHT_S) {
+                scaleFactor = SCALE_S;
+                minRequiredBlocks = MIN_BLOCKS_S;
+                category = "S";
+            } else if (h < HEIGHT_M) {
+                scaleFactor = SCALE_M;
+                minRequiredBlocks = MIN_BLOCKS_M;
+                category = "M";
+            } else if (h < HEIGHT_L) {
+                scaleFactor = SCALE_L;
+                minRequiredBlocks = MIN_BLOCKS_L;
+                category = "L";
+            } else {
+                scaleFactor = SCALE_XL;
+                minRequiredBlocks = MIN_BLOCKS_XL;
+                category = "XL";
+            }
         }
     }
 
@@ -61,347 +137,465 @@ public class RealOCRHelper {
         void onError(String error);
     }
 
+    // ── OCR keçidi nəticəsi ───────────────────────────────────
+    private static class AttemptResult {
+        List<TextBlock> blocks;
+        int methodUsed;
+        AttemptResult(List<TextBlock> blocks, int method) {
+            this.blocks = blocks;
+            this.methodUsed = method;
+        }
+    }
+
     public RealOCRHelper(Context context) {
+        this.context = context;
         try {
             textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
-            Log.d(TAG, "ML Kit Text Recognizer started successfully");
+            Log.i(TAG, "✅ ML Kit TextRecognizer uğurla işə salındı");
         } catch (Exception e) {
-            Log.e(TAG, "Error starting ML Kit: " + e.getMessage());
+            Log.e(TAG, "❌ ML Kit başlanğıc xətası: " + e.getMessage());
             throw e;
         }
     }
 
-    public void detectText(Bitmap bitmap, OCRCallback callback) {
-        if (bitmap == null) {
-            callback.onError("Bitmap is null");
+    /**
+     * Ana giriş nöqtəsi — şəkili analiz et və OCR uygula
+     */
+    public void detectText(Bitmap originalBitmap, OCRCallback callback) {
+        if (originalBitmap == null) {
+            callback.onError("Bitmap null-dur");
             return;
         }
-
         if (textRecognizer == null) {
-            callback.onError("TextRecognizer not initialized");
+            callback.onError("TextRecognizer başlanmayıb");
             return;
         }
 
-        // Height-ə görə böyütmə faktorunu təyin et
-        float scaleFactor;
-        String imageType;
-        int height = bitmap.getHeight();
-        int width = bitmap.getWidth();
+        ImageProfile profile = new ImageProfile(originalBitmap.getWidth(), originalBitmap.getHeight());
+        Log.i(TAG, String.format("📏 Şəkil: %dx%d [%s] → scale=%.1fx, minBlocks=%d",
+                profile.width, profile.height, profile.category,
+                profile.scaleFactor, profile.minRequiredBlocks));
 
-        if (height < HEIGHT_SMALL) {
-            scaleFactor = 1.5f; // 350x1235
-            imageType = "BALACA (height<1400)";
-        } else if (height < HEIGHT_MEDIUM) {
-            scaleFactor = 1.3f; // 350x1500
-            imageType = "ORTA (1400-1800)";
-        } else if (height < HEIGHT_LARGE) {
-            scaleFactor = 1.5f; // 350x1903
-            imageType = "UZUN (1800-2000)";
-        } else {
-            scaleFactor = 1.5f; // 2000px+
-            imageType = "COX UZUN (height>2000)";
-        }
+        // Ön böyütmə — bütün metodlar üçün base kimi istifadə olunur
+        Bitmap scaledBase = scaleBitmap(originalBitmap, profile.scaleFactor);
+        Log.d(TAG, String.format("   Böyüdülmüş baza: %dx%d", scaledBase.getWidth(), scaledBase.getHeight()));
 
-        Log.d(TAG, "Şəkil tipi: " + imageType + ", ölçü: " + width + "x" + height +
-                ", faktor: " + scaleFactor + "x");
-
-        Bitmap scaledBitmap = scaleBitmap(bitmap, scaleFactor);
-        Log.d(TAG, "Böyüdülmüş: " + scaledBitmap.getWidth() + "x" + scaledBitmap.getHeight());
-
-        // 1. CƏHD: Güclü preprocessing ilə
-        tryWithPreprocessing(scaledBitmap, callback, 0);
+        // Multi-pass başlat
+        runMultiPass(scaledBase, originalBitmap, profile, callback, 0, null);
     }
 
     /**
-     * Sadə böyütmə metodu
+     * Rekursiv Multi-Pass OCR
+     * Hər keçiddə fərqli preprocessing metodunu sınayır,
+     * ən yaxşı nəticəni qaytarır.
      */
-    private Bitmap scaleBitmap(Bitmap original, float scaleFactor) {
-        try {
-            int newWidth = (int) (original.getWidth() * scaleFactor);
-            int newHeight = (int) (original.getHeight() * scaleFactor);
-            return Bitmap.createScaledBitmap(original, newWidth, newHeight, true);
-        } catch (Exception e) {
-            Log.e(TAG, "Böyütmə xətası: " + e.getMessage());
-            return original;
-        }
-    }
+    private void runMultiPass(Bitmap scaledBase, Bitmap originalBitmap,
+                              ImageProfile profile, OCRCallback callback,
+                              int attempt, AttemptResult bestSoFar) {
 
-    private void tryWithPreprocessing(Bitmap bitmap, OCRCallback callback, int attempt) {
-        List<Bitmap> variants = new ArrayList<>();
-
-        switch (attempt) {
-            case 0:
-                // 1-ci cəhd: Orijinal + böyütmə
-                variants.add(preprocessBitmap(bitmap, 0));
-                break;
-            case 1:
-                // 2-ci cəhd: Ağ-qara + yüksək kontrast
-                variants.add(preprocessBitmap(bitmap, 1));
-                break;
-            case 2:
-                // 3-ci cəhd: Tersinə çevrilmiş (ağ fon, qara mətn)
-                variants.add(preprocessBitmap(bitmap, 2));
-                break;
-            case 3:
-                // 4-ci cəhd: Kəskinləşdirilmiş
-                variants.add(preprocessBitmap(bitmap, 3));
-                break;
-            case 4:
-                // 5-ci cəhd: Parlaq
-                variants.add(preprocessBitmap(bitmap, 4));
-                break;
-            default:
-                // Bütün cəhdlər uğursuz oldusa, orijinal ilə cəhd et
-                tryWithOriginal(bitmap, callback);
-                return;
-        }
-
-        processVariant(variants.get(0), bitmap, callback, attempt);
-    }
-
-    private void processVariant(Bitmap variant, Bitmap original, OCRCallback callback, int attempt) {
-        InputImage image = InputImage.fromBitmap(variant, 0);
-
-        textRecognizer.process(image)
-                .addOnSuccessListener(visionText -> {
-                    List<TextBlock> textBlocks = new ArrayList<>();
-
-                    for (Text.TextBlock block : visionText.getTextBlocks()) {
-                        for (Text.Line line : block.getLines()) {
-                            String lineText = line.getText().trim();
-                            Rect boundingBox = line.getBoundingBox();
-
-                            if (boundingBox != null && !lineText.isEmpty() && lineText.length() > 1) {
-                                textBlocks.add(new TextBlock(lineText, boundingBox));
-                                Log.d(TAG, "OCR Line (cəhd " + attempt + "): '" + lineText + "'");
-                            }
-                        }
-                    }
-
-                    Collections.sort(textBlocks, new Comparator<TextBlock>() {
-                        @Override
-                        public int compare(TextBlock b1, TextBlock b2) {
-                            return Integer.compare(b1.rect.top, b2.rect.top);
-                        }
-                    });
-
-                    Log.d(TAG, "Cəhd " + attempt + ": " + textBlocks.size() + " blok tapıldı");
-
-                    // Şəkil ölçüsünə görə tələb olunan blok sayı
-                    int requiredBlocks = 5;
-                    if (original.getHeight() < HEIGHT_SMALL) {
-                        requiredBlocks = 3; // Balaca şəkillər üçün 3 blok kifayətdir
-                    }
-
-                    if (textBlocks.size() >= requiredBlocks) {
-                        if (variant != original) {
-                            variant.recycle();
-                        }
-                        callback.onSuccess(textBlocks);
-                    } else {
-                        // Az blok tapıldısa, növbəti cəhdə keç
-                        if (variant != original) {
-                            variant.recycle();
-                        }
-                        Log.d(TAG, "Cəhd " + attempt + " yetərli deyil (" + textBlocks.size() + "), növbəti cəhdə keçilir");
-                        tryWithPreprocessing(original, callback, attempt + 1);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "OCR error (cəhd " + attempt + "): " + e.getMessage());
-                    if (variant != original) {
-                        variant.recycle();
-                    }
-                    tryWithPreprocessing(original, callback, attempt + 1);
-                });
-    }
-
-    private void tryWithOriginal(Bitmap bitmap, OCRCallback callback) {
-        Log.d(TAG, "Son cəhd: Orijinal bitmap");
-
-        InputImage image = InputImage.fromBitmap(bitmap, 0);
-
-        textRecognizer.process(image)
-                .addOnSuccessListener(visionText -> {
-                    List<TextBlock> textBlocks = new ArrayList<>();
-
-                    for (Text.TextBlock block : visionText.getTextBlocks()) {
-                        for (Text.Line line : block.getLines()) {
-                            String lineText = line.getText().trim();
-                            Rect boundingBox = line.getBoundingBox();
-
-                            if (boundingBox != null && !lineText.isEmpty() && lineText.length() > 1) {
-                                textBlocks.add(new TextBlock(lineText, boundingBox));
-                                Log.d(TAG, "OCR Line (son): '" + lineText + "'");
-                            }
-                        }
-                    }
-
-                    Collections.sort(textBlocks, new Comparator<TextBlock>() {
-                        @Override
-                        public int compare(TextBlock b1, TextBlock b2) {
-                            return Integer.compare(b1.rect.top, b2.rect.top);
-                        }
-                    });
-
-                    Log.d(TAG, "Son cəhd: " + textBlocks.size() + " blok tapıldı");
-                    callback.onSuccess(textBlocks);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "OCR error (son): " + e.getMessage());
-                    callback.onError(e.getMessage());
-                });
-    }
-
-    /**
-     * Şəkili OCR üçün optimallaşdır - 5 FƏRQLİ ÜSUL
-     */
-    private Bitmap preprocessBitmap(Bitmap original, int method) {
-        try {
-            // 1. Şəkili böyüt (əsas)
-            Bitmap scaledBitmap;
-
-            // Height-ə görə böyütmə faktorunu təyin et
-            int height = original.getHeight();
-            float scaleFactor;
-
-            if (height < HEIGHT_SMALL) {
-                scaleFactor = 1.5f;
-            } else if (height < HEIGHT_MEDIUM) {
-                scaleFactor = 1.3f;
-            } else if (height < HEIGHT_LARGE) {
-                scaleFactor = 1.2f;
+        if (attempt >= MAX_ATTEMPTS) {
+            // Bütün cəhdlər bitdi — ən yaxşı nəticəni qaytar
+            if (bestSoFar != null && !bestSoFar.blocks.isEmpty()) {
+                Log.i(TAG, String.format("✅ Final: %d blok (method %d)", bestSoFar.blocks.size(), bestSoFar.methodUsed));
+                callback.onSuccess(bestSoFar.blocks);
             } else {
-                scaleFactor = 1.0f;
+                // Son çarə: originalı birbaşa ver
+                runFallback(originalBitmap, callback);
             }
+            return;
+        }
 
-            int newWidth = (int) (original.getWidth() * scaleFactor);
-            int newHeight = (int) (original.getHeight() * scaleFactor);
-            scaledBitmap = Bitmap.createScaledBitmap(original, newWidth, newHeight, true);
-            Log.d(TAG, "Method " + method + ": Scaled to " + newWidth + "x" + newHeight + " (faktor: " + scaleFactor + "x)");
+        Bitmap processedBitmap = applyPreprocessing(scaledBase, attempt, profile);
+        InputImage image = InputImage.fromBitmap(processedBitmap, 0);
 
-            // 2. Metoda görə preprocessing
-            Bitmap processed = Bitmap.createBitmap(scaledBitmap.getWidth(), scaledBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-            int[] pixels = new int[scaledBitmap.getWidth() * scaledBitmap.getHeight()];
-            scaledBitmap.getPixels(pixels, 0, scaledBitmap.getWidth(), 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight());
+        final int currentAttempt = attempt;
+        final Bitmap finalProcessed = processedBitmap;
 
-            for (int i = 0; i < pixels.length; i++) {
-                int pixel = pixels[i];
-                int r = Color.red(pixel);
-                int g = Color.green(pixel);
-                int b = Color.blue(pixel);
+        textRecognizer.process(image)
+                .addOnSuccessListener(visionText -> {
+                    List<TextBlock> blocks = extractTextBlocks(visionText, attempt);
 
-                // Ağ-qara çevir
-                int gray = (r + g + b) / 3;
+                    Log.d(TAG, String.format("   Cəhd %d [%s]: %d blok",
+                            currentAttempt, getMethodName(currentAttempt), blocks.size()));
 
-                switch (method) {
-                    case 0: // Method 0: Orijinal
-                        processed = scaledBitmap;
-                        continue;
+                    // Bitmap-i yaddaşdan sil (əgər base ilə fərqlidirsə)
+                    if (finalProcessed != scaledBase) {
+                        finalProcessed.recycle();
+                    }
 
-                    case 1: // Method 1: Ağ-qara + yüksək kontrast
-                        // Kontrast artır
-                        if (gray < 128) {
-                            gray = (int) (gray * 0.7); // Qaraları daha qara
-                        } else {
-                            gray = (int) (gray * 1.3); // Ağları daha ağ
-                        }
-                        gray = Math.min(255, Math.max(0, gray));
-                        break;
+                    // Ən yaxşı nəticəni yenilə
+                    AttemptResult current = new AttemptResult(blocks, currentAttempt);
+                    AttemptResult newBest = chooseBetter(bestSoFar, current, profile.minRequiredBlocks);
 
-                    case 2: // Method 2: Tersinə çevrilmiş (ağ fon, qara mətn)
-                        gray = 255 - gray;
-                        // Kontrast artır
-                        if (gray < 128) {
-                            gray = (int) (gray * 0.7);
-                        } else {
-                            gray = (int) (gray * 1.3);
-                        }
-                        gray = Math.min(255, Math.max(0, gray));
-                        break;
+                    // Kifayət qədər blok tapıldısa, bitir
+                    if (blocks.size() >= profile.minRequiredBlocks + 3) {
+                        Log.i(TAG, String.format("✅ Kifayətdir! %d blok (method %d)", blocks.size(), currentAttempt));
+                        callback.onSuccess(blocks);
+                        return;
+                    }
 
-                    case 3: // Method 3: Kəskinləşdirilmiş
-                        // Kənarları kəskinləşdir
-                        if (gray > 200) {
-                            gray = 255; // Ağları tam ağ et
-                        } else if (gray < 50) {
-                            gray = 0;   // Qaraları tam qara et
-                        }
-                        break;
+                    // Növbəti metodla davam et
+                    runMultiPass(scaledBase, originalBitmap, profile, callback, currentAttempt + 1, newBest);
+                })
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "   Cəhd " + currentAttempt + " uğursuz: " + e.getMessage());
+                    if (finalProcessed != scaledBase) finalProcessed.recycle();
+                    runMultiPass(scaledBase, originalBitmap, profile, callback, currentAttempt + 1, bestSoFar);
+                });
+    }
 
-                    case 4: // Method 4: Parlaq
-                        gray = (int) (gray * 1.2);
-                        gray = Math.min(255, gray);
-                        break;
+    /**
+     * 6 Preprocessing Metodu
+     */
+    private Bitmap applyPreprocessing(Bitmap base, int method, ImageProfile profile) {
+        switch (method) {
+            case 0:
+                // Orijinal böyüdülmüş — heç bir əməliyyat yoxdur
+                return base;
+
+            case 1:
+                // Adaptiv eşik (Otsu-benzər) — Ağ-qara + adaptiv kəsmə
+                return applyAdaptiveThreshold(base);
+
+            case 2:
+                // Yüksək kontrast ağ-qara — kontrast gücləndirilir
+                return applyHighContrastGrayscale(base, 1.8f);
+
+            case 3:
+                // Tersine çevrilmiş + kontrast — tünd fon, açıq mətn üçün
+                return applyInvertedContrast(base);
+
+            case 4:
+                // Kəskinləşdirilmiş — kənar aşkarlama artırılmış
+                return applySharpening(base);
+
+            case 5:
+                // Gamma düzəltmə + parlaq
+                return applyGammaCorrection(base, 0.7f);
+
+            default:
+                return base;
+        }
+    }
+
+    // ── Preprocessing: Adaptiv Eşik ──────────────────────────
+    private Bitmap applyAdaptiveThreshold(Bitmap src) {
+        int w = src.getWidth(), h = src.getHeight();
+        int[] pixels = new int[w * h];
+        src.getPixels(pixels, 0, w, 0, 0, w, h);
+
+        // Ortalama parlaqlığı hesabla
+        long sum = 0;
+        for (int p : pixels) {
+            sum += luminance(p);
+        }
+        int avgLum = (int) (sum / pixels.length);
+        int threshold = Math.max(100, Math.min(160, avgLum));
+
+        for (int i = 0; i < pixels.length; i++) {
+            int lum = luminance(pixels[i]);
+            pixels[i] = lum < threshold ? 0xFF000000 : 0xFFFFFFFF;
+        }
+
+        Bitmap result = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        result.setPixels(pixels, 0, w, 0, 0, w, h);
+        return result;
+    }
+
+    // ── Preprocessing: Yüksək Kontrast ───────────────────────
+    private Bitmap applyHighContrastGrayscale(Bitmap src, float contrastFactor) {
+        int w = src.getWidth(), h = src.getHeight();
+        int[] pixels = new int[w * h];
+        src.getPixels(pixels, 0, w, 0, 0, w, h);
+
+        for (int i = 0; i < pixels.length; i++) {
+            int lum = luminance(pixels[i]);
+            // S-əyri kontrast artırması
+            float norm = lum / 255f;
+            norm = (float) Math.pow(norm, 1.0 / contrastFactor);
+            int gray = (int) (norm * 255);
+            // Güclü kontrast — açıqları daha açıq, qaranlıqları daha qaranlıq
+            if (gray > 160) gray = Math.min(255, (int)(gray * 1.1f));
+            else if (gray < 80) gray = Math.max(0, (int)(gray * 0.7f));
+            gray = clamp(gray);
+            pixels[i] = Color.argb(Color.alpha(pixels[i]), gray, gray, gray);
+        }
+
+        Bitmap result = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        result.setPixels(pixels, 0, w, 0, 0, w, h);
+        return result;
+    }
+
+    // ── Preprocessing: Tersine + Kontrast ────────────────────
+    private Bitmap applyInvertedContrast(Bitmap src) {
+        int w = src.getWidth(), h = src.getHeight();
+        int[] pixels = new int[w * h];
+        src.getPixels(pixels, 0, w, 0, 0, w, h);
+
+        for (int i = 0; i < pixels.length; i++) {
+            int lum = luminance(pixels[i]);
+            int inverted = 255 - lum;
+            // Kontrast artır
+            if (inverted > 128) inverted = clamp((int)(inverted * 1.3f));
+            else inverted = clamp((int)(inverted * 0.7f));
+            pixels[i] = Color.argb(Color.alpha(pixels[i]), inverted, inverted, inverted);
+        }
+
+        Bitmap result = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        result.setPixels(pixels, 0, w, 0, 0, w, h);
+        return result;
+    }
+
+    // ── Preprocessing: Kəskinləşdirmə (Unsharp Mask) ─────────
+    private Bitmap applySharpening(Bitmap src) {
+        // Sadə kəskinləşdirmə: orijinal + (orijinal - bulanıq) * faktor
+        int w = src.getWidth(), h = src.getHeight();
+        int[] pixels = new int[w * h];
+        src.getPixels(pixels, 0, w, 0, 0, w, h);
+
+        int[] output = new int[w * h];
+
+        // 3x3 kəskinləşdirmə kernel
+        int[][] kernel = {
+                {0, -1, 0},
+                {-1, 5, -1},
+                {0, -1, 0}
+        };
+
+        for (int y = 1; y < h - 1; y++) {
+            for (int x = 1; x < w - 1; x++) {
+                int sumR = 0, sumG = 0, sumB = 0;
+                for (int ky = -1; ky <= 1; ky++) {
+                    for (int kx = -1; kx <= 1; kx++) {
+                        int p = pixels[(y + ky) * w + (x + kx)];
+                        int k = kernel[ky + 1][kx + 1];
+                        sumR += Color.red(p) * k;
+                        sumG += Color.green(p) * k;
+                        sumB += Color.blue(p) * k;
+                    }
                 }
-
-                pixels[i] = Color.argb(Color.alpha(pixel), gray, gray, gray);
+                // Ağ-qarayə çevir + kəskin
+                int lum = (clamp(sumR) + clamp(sumG) + clamp(sumB)) / 3;
+                output[y * w + x] = Color.argb(255, lum, lum, lum);
             }
+        }
 
-            if (method != 0) {
-                processed.setPixels(pixels, 0, processed.getWidth(), 0, 0, processed.getWidth(), processed.getHeight());
+        // Kənar piksellər
+        for (int x = 0; x < w; x++) {
+            int lum = luminance(pixels[x]);
+            output[x] = Color.argb(255, lum, lum, lum);
+            lum = luminance(pixels[(h-1)*w+x]);
+            output[(h-1)*w+x] = Color.argb(255, lum, lum, lum);
+        }
+        for (int y = 0; y < h; y++) {
+            int lum = luminance(pixels[y*w]);
+            output[y*w] = Color.argb(255, lum, lum, lum);
+            lum = luminance(pixels[y*w+w-1]);
+            output[y*w+w-1] = Color.argb(255, lum, lum, lum);
+        }
+
+        Bitmap result = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        result.setPixels(output, 0, w, 0, 0, w, h);
+        return result;
+    }
+
+    // ── Preprocessing: Gamma Düzəltmə ────────────────────────
+    private Bitmap applyGammaCorrection(Bitmap src, float gamma) {
+        int w = src.getWidth(), h = src.getHeight();
+        int[] pixels = new int[w * h];
+        src.getPixels(pixels, 0, w, 0, 0, w, h);
+
+        // Gamma LUT (lookup table) — sürətli
+        int[] lut = new int[256];
+        for (int i = 0; i < 256; i++) {
+            lut[i] = clamp((int)(255 * Math.pow(i / 255.0, gamma)));
+        }
+
+        for (int i = 0; i < pixels.length; i++) {
+            int lum = luminance(pixels[i]);
+            int corrected = lut[lum];
+            // Parlaq et
+            corrected = clamp((int)(corrected * 1.15f));
+            pixels[i] = Color.argb(Color.alpha(pixels[i]), corrected, corrected, corrected);
+        }
+
+        Bitmap result = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        result.setPixels(pixels, 0, w, 0, 0, w, h);
+        return result;
+    }
+
+    /**
+     * ML Kit nəticəsindən TextBlock siyahısı çıxar
+     * Sətirləri top koordinatına görə sırala
+     */
+    private List<TextBlock> extractTextBlocks(Text visionText, int attempt) {
+        List<TextBlock> blocks = new ArrayList<>();
+
+        for (Text.TextBlock block : visionText.getTextBlocks()) {
+            for (Text.Line line : block.getLines()) {
+                String lineText = line.getText().trim();
+                Rect box = line.getBoundingBox();
+
+                if (box == null || lineText.isEmpty() || lineText.length() < 2) continue;
+
+                // Çox qısa və yalnız rəqəmsiz sətirləri süz
+                if (lineText.length() == 2 && !lineText.matches(".*\\d.*")) continue;
+
+                TextBlock tb = new TextBlock(lineText, box);
+                // ML Kit confidence (əgər varsa)
+                tb.confidence = calculateLineConfidence(line);
+                blocks.add(tb);
             }
+        }
 
-            if (scaledBitmap != original && method != 0) {
-                scaledBitmap.recycle();
+        // Top koordinatına görə sırala
+        Collections.sort(blocks, (a, b) -> Integer.compare(a.rect.top, b.rect.top));
+        return blocks;
+    }
+
+    /**
+     * Sətrin etimad dərəcəsini hesabla
+     */
+    private float calculateLineConfidence(Text.Line line) {
+        float totalConf = 0;
+        int count = 0;
+        for (Text.Element elem : line.getElements()) {
+            Float conf = elem.getConfidence();
+            if (conf != null) {
+                totalConf += conf;
+                count++;
             }
+        }
+        return count > 0 ? totalConf / count : 0.85f;
+    }
 
-            return processed;
+    /**
+     * İki nəticəni müqayisə et — daha çox bloklu olanı seç
+     */
+    private AttemptResult chooseBetter(AttemptResult a, AttemptResult b, int minRequired) {
+        if (a == null) return b;
+        if (b == null) return a;
+        // Minimum tələbi keçəni üstün tut
+        boolean aOk = a.blocks.size() >= minRequired;
+        boolean bOk = b.blocks.size() >= minRequired;
+        if (aOk && !bOk) return a;
+        if (!aOk && bOk) return b;
+        return a.blocks.size() >= b.blocks.size() ? a : b;
+    }
 
-        } catch (Exception e) {
-            Log.e(TAG, "Preprocessing xətası (method " + method + "): " + e.getMessage());
-            return original;
+    /**
+     * Son çarə: originalı birbaşa ML Kit-ə ver
+     */
+    private void runFallback(Bitmap original, OCRCallback callback) {
+        Log.w(TAG, "⚠️ Fallback: original bitmap ilə cəhd");
+        InputImage image = InputImage.fromBitmap(original, 0);
+        textRecognizer.process(image)
+                .addOnSuccessListener(visionText -> {
+                    List<TextBlock> blocks = extractTextBlocks(visionText, -1);
+                    Log.i(TAG, "Fallback: " + blocks.size() + " blok");
+                    callback.onSuccess(blocks);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Fallback da uğursuz: " + e.getMessage());
+                    callback.onError("OCR tam uğursuz oldu: " + e.getMessage());
+                });
+    }
+
+    // ── Yardımçı metodlar ─────────────────────────────────────
+
+    private Bitmap scaleBitmap(Bitmap src, float factor) {
+        if (factor <= 1.0f || factor > 3.0f) return src;
+        try {
+            int nw = (int)(src.getWidth() * factor);
+            int nh = (int)(src.getHeight() * factor);
+            // Maksimum ölçü məhdudiyyəti (OOM qoruma)
+            if ((long) nw * nh > 25_000_000L) {
+                float safeScale = (float) Math.sqrt(25_000_000.0 / (src.getWidth() * src.getHeight()));
+                nw = (int)(src.getWidth() * safeScale);
+                nh = (int)(src.getHeight() * safeScale);
+                Log.w(TAG, "OOM qoruma: scale " + factor + "x → " + safeScale + "x");
+            }
+            return Bitmap.createScaledBitmap(src, nw, nh, true);
+        } catch (OutOfMemoryError oom) {
+            Log.e(TAG, "OOM! Orijinal qaytarılır");
+            return src;
+        }
+    }
+
+    private int luminance(int pixel) {
+        // ITU-R BT.601 standartı
+        int r = Color.red(pixel);
+        int g = Color.green(pixel);
+        int b = Color.blue(pixel);
+        return (int)(0.299f * r + 0.587f * g + 0.114f * b);
+    }
+
+    private int clamp(int val) {
+        return Math.max(0, Math.min(255, val));
+    }
+
+    private String getMethodName(int method) {
+        switch (method) {
+            case 0: return "Orijinal";
+            case 1: return "AdaptivEşik";
+            case 2: return "YüksəkKontrast";
+            case 3: return "Tersine+Kontrast";
+            case 4: return "Kəskinləşdirmə";
+            case 5: return "GammaDüzəltmə";
+            default: return "Fallback";
         }
     }
 
     /**
-     * Şəkili fayldan yüklə və orientasiyanı düzəlt
+     * Fayldan bitmap yüklə — EXIF orientasiyanı avtomatik düzəldir
      */
-    public static Bitmap loadBitmap(String path) {
+    public static Bitmap loadBitmapFromPath(String path) {
         try {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeFile(path, options);
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
+            // İlk mərhələ: ölçüyü öyrən (yaddaşa yükləmədən)
+            opts.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(path, opts);
+
+            // Çox böyük şəkillər üçün əvvəlcədən kiçilt
+            opts.inJustDecodeBounds = false;
+            if (opts.outWidth * opts.outHeight > 30_000_000) {
+                opts.inSampleSize = 2;
+            }
+
+            Bitmap bitmap = BitmapFactory.decodeFile(path, opts);
             if (bitmap == null) return null;
 
-            // EXIF məlumatlarını oxu və orientasiyanı düzəlt
             ExifInterface exif = new ExifInterface(path);
-            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            int orientation = exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL);
 
             return rotateBitmap(bitmap, orientation);
-
         } catch (Exception e) {
-            Log.e(TAG, "Error loading bitmap: " + e.getMessage());
+            Log.e(TAG, "loadBitmapFromPath xətası: " + e.getMessage());
             return null;
         }
     }
 
-    private static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
+    private static Bitmap rotateBitmap(Bitmap src, int orientation) {
         Matrix matrix = new Matrix();
-
         switch (orientation) {
-            case ExifInterface.ORIENTATION_ROTATE_90:
-                matrix.postRotate(90);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_180:
-                matrix.postRotate(180);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_270:
-                matrix.postRotate(270);
-                break;
-            default:
-                return bitmap;
+            case ExifInterface.ORIENTATION_ROTATE_90:  matrix.postRotate(90);  break;
+            case ExifInterface.ORIENTATION_ROTATE_180: matrix.postRotate(180); break;
+            case ExifInterface.ORIENTATION_ROTATE_270: matrix.postRotate(270); break;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL: matrix.preScale(-1, 1); break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL: matrix.preScale(1, -1); break;
+            default: return src;
         }
-
         try {
-            Bitmap rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            if (rotated != bitmap) {
-                bitmap.recycle();
-            }
+            Bitmap rotated = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
+            if (rotated != src) src.recycle();
             return rotated;
         } catch (Exception e) {
-            return bitmap;
+            Log.e(TAG, "rotateBitmap xətası: " + e.getMessage());
+            return src;
         }
     }
 
@@ -409,9 +603,9 @@ public class RealOCRHelper {
         if (textRecognizer != null) {
             try {
                 textRecognizer.close();
-                Log.d(TAG, "TextRecognizer closed");
+                Log.i(TAG, "TextRecognizer bağlandı");
             } catch (Exception e) {
-                Log.e(TAG, "Error closing TextRecognizer: " + e.getMessage());
+                Log.e(TAG, "close() xətası: " + e.getMessage());
             }
         }
     }

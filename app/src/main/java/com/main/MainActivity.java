@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.DiscountMarket.DiscountActivity;
 import com.airbnb.lottie.LottieAnimationView;
 import com.authentication.LogoutManager;
 import com.dashboard.DashboardActivity;
@@ -46,9 +47,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.model.FinanceMLModel;
+import com.model.ProductMLModel;
 import com.ocr_service.ReceiptScannerActivity;
+import com.report.ReportActivity;
+import com.service.FinanceMonitoringService;
 import com.smart_ai_sales.R;
 import com.utils.BaseActivity;
 import com.utils.SettingsActivity;
@@ -71,9 +75,9 @@ public class MainActivity extends BaseActivity {
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
 
     // UI Elements
-    private MaterialCardView cardDashboard, cardAddData, cardReports, cardSettings, cardReceiptScanner; // <-- ƏLAVƏ
-    private MaterialButton btnDashboard, btnAddData, btnReports, btnSettings, btnReceiptScanner; // <-- ƏLAVƏ
-    private TextView tvWelcome, tvQuote, tvVersion;
+    private MaterialCardView cardDashboard, cardDiscounts, cardAddData, cardReports, cardSettings, cardReceiptScanner, cardAIAnalysis;
+    private MaterialButton btnDashboard, btnDiscounts, btnAddData, btnReports, btnSettings, btnReceiptScanner, btnAIAnalysis;
+    private TextView tvWelcome, tvQuote, tvVersion, tvAIAnalysis;
     private LottieAnimationView animationView;
     private ViewPager2 viewPagerFeatures;
     private TabLayout tabLayout;
@@ -83,6 +87,10 @@ public class MainActivity extends BaseActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
+
+    // AI Models
+    private FinanceMLModel financeModel;
+    private boolean isAIActive = false;
 
     // Animations
     private Animation fadeIn, slideUp;
@@ -102,6 +110,10 @@ public class MainActivity extends BaseActivity {
     private int totalProducts = 0;
     private double balance = 0;
 
+    // AI Analysis Results
+    private String aiInsight = "";
+    private float aiRiskScore = 0;
+    private double aiPredictedExpense = 0;
 
     private AdView mAdView;
     private InterstitialAd mInterstitialAd;
@@ -138,6 +150,9 @@ public class MainActivity extends BaseActivity {
         // Initialize Views
         initViews();
 
+        // Initialize AI Model
+        initializeAIModel();
+
         // Load Animations
         loadAnimations();
 
@@ -158,8 +173,6 @@ public class MainActivity extends BaseActivity {
 
         // Check User
         checkUserStatus();
-
-
     }
 
     private void initViews() {
@@ -168,20 +181,24 @@ public class MainActivity extends BaseActivity {
         cardAddData = findViewById(R.id.cardAddData);
         cardReports = findViewById(R.id.cardReports);
         cardSettings = findViewById(R.id.cardSettings);
-        cardReceiptScanner = findViewById(R.id.cardReceiptScanner); // <-- ƏLAVƏ
+        cardReceiptScanner = findViewById(R.id.cardReceiptScanner);
+        cardDiscounts = findViewById(R.id.cardDiscounts);
+        cardAIAnalysis = findViewById(R.id.cardAIAnalysis);
 
         // Buttons
         btnDashboard = findViewById(R.id.btnDashboard);
         btnAddData = findViewById(R.id.btnAddData);
         btnReports = findViewById(R.id.btnReports);
         btnSettings = findViewById(R.id.btnSettings);
-        btnReceiptScanner = findViewById(R.id.btnReceiptScanner); // <-- ƏLAVƏ
-
+        btnReceiptScanner = findViewById(R.id.btnReceiptScanner);
+        btnDiscounts = findViewById(R.id.btnDiscounts);
+        btnAIAnalysis = findViewById(R.id.btnAIAnalysis);
 
         // Text
         tvWelcome = findViewById(R.id.tvWelcome);
         tvQuote = findViewById(R.id.tvQuote);
         tvVersion = findViewById(R.id.tvVersion);
+        tvAIAnalysis = findViewById(R.id.tvAIAnalysis);
 
         // Animation
         animationView = findViewById(R.id.animationView);
@@ -195,9 +212,35 @@ public class MainActivity extends BaseActivity {
 
         tvVersion.setText("Version 1.0.0");
 
+        Intent serviceIntent = new Intent(this, FinanceMonitoringService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
+
         mAdView = findViewById(R.id.adView1);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+    }
+
+    private void initializeAIModel() {
+        try {
+            financeModel = new FinanceMLModel(this);
+            isAIActive = financeModel != null && financeModel.isInitialized();
+
+            if (isAIActive) {
+                Log.d(TAG, "✅ AI Model aktivdir!");
+                tvAIAnalysis.setText("🤖 AI analiz edilir...");
+            } else {
+                Log.w(TAG, "AI Model aktiv deyil");
+                tvAIAnalysis.setText("📊 AI analiz üçün məlumat toplanır");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "AI Model yüklənmədi", e);
+            isAIActive = false;
+            tvAIAnalysis.setText("📊 Statistik məlumatlar");
+        }
     }
 
     private void loadAnimations() {
@@ -267,11 +310,13 @@ public class MainActivity extends BaseActivity {
 
                         String description = "";
                         if (kg != null && kg > 0) {
-                            description = kg + " kq";
+                            description = String.format("%.2f kq", kg);
                         } else if (liter != null && liter > 0) {
-                            description = liter + " L";
+                            description = String.format("%.2f L", liter);
                         } else if (price != null && price > 0) {
                             description = currencyFormat.format(price);
+                        } else {
+                            description = "Qiymət yoxdur";
                         }
 
                         FeatureItem item = new FeatureItem(
@@ -342,7 +387,6 @@ public class MainActivity extends BaseActivity {
     private void loadTransactionStats(String userId) {
         Log.d(TAG, "Loading transaction statistics");
 
-        // Get today's date range
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
@@ -355,7 +399,6 @@ public class MainActivity extends BaseActivity {
         calendar.set(Calendar.SECOND, 59);
         Date endOfDay = calendar.getTime();
 
-        // Load all transactions
         db.collection("transactions")
                 .whereEqualTo("userId", userId)
                 .get()
@@ -370,10 +413,22 @@ public class MainActivity extends BaseActivity {
 
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         String type = doc.getString("type");
-                        Double amount = doc.getDouble("amount");
 
-                        // Get date safely
-                        Date transactionDate = getDateFromDoc(doc, "date");
+                        Boolean isBulk = doc.getBoolean("isBulkTransaction");
+                        Double amount = null;
+                        if (isBulk != null && isBulk) {
+                            amount = doc.getDouble("groupTotalAmount");
+                        } else {
+                            amount = doc.getDouble("totalAmount");
+                            if (amount == null) {
+                                amount = doc.getDouble("amount");
+                            }
+                        }
+
+                        Date transactionDate = getDateFromDoc(doc, "timestamp");
+                        if (transactionDate == null) {
+                            transactionDate = getDateFromDoc(doc, "date");
+                        }
 
                         if (amount != null) {
                             if ("income".equals(type)) {
@@ -383,7 +438,6 @@ public class MainActivity extends BaseActivity {
                             }
                         }
 
-                        // Check if from today
                         if (transactionDate != null &&
                                 !transactionDate.before(startOfDay) &&
                                 !transactionDate.after(endOfDay)) {
@@ -400,13 +454,146 @@ public class MainActivity extends BaseActivity {
                     Log.d(TAG, String.format("Stats - Income: %.2f, Expense: %.2f, Balance: %.2f",
                             totalIncome, totalExpense, balance));
 
-                    // Load products count
                     loadProductsCount(userId);
+
+                    // Run AI Analysis after loading data
+                    runAIAnalysis();
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error loading transactions: " + e.getMessage());
                     loadDefaultStats();
                 });
+    }
+
+    private void runAIAnalysis() {
+        if (!isAIActive || financeModel == null) {
+            updateAIDisplayWithStats();
+            return;
+        }
+
+        try {
+            // Prepare data for AI analysis
+            double weeklyExpense = calculateWeeklyExpense();
+            double monthlyExpense = totalExpense;
+            double dailyAvg = weeklyExpense / 7;
+
+            // Calculate risk score
+            if (monthlyExpense > 0) {
+                aiRiskScore = (float) (weeklyExpense / (monthlyExpense / 4));
+                if (aiRiskScore > 1.3f) aiRiskScore = 0.8f;
+                else if (aiRiskScore > 1.1f) aiRiskScore = 0.6f;
+                else if (aiRiskScore > 0.9f) aiRiskScore = 0.4f;
+                else aiRiskScore = 0.3f;
+            } else {
+                aiRiskScore = 0.3f;
+            }
+
+            // Predict next 3 days expense
+            aiPredictedExpense = dailyAvg * 3;
+
+            // Generate AI insight
+            aiInsight = generateAIInsight();
+
+            // Update UI
+            updateAIDisplay();
+
+        } catch (Exception e) {
+            Log.e(TAG, "AI Analysis failed", e);
+            updateAIDisplayWithStats();
+        }
+    }
+
+    private double calculateWeeklyExpense() {
+        long weekAgo = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L;
+        double weeklyExpense = 0;
+
+        // This would need transaction data - simplified for now
+        if (totalTransactions > 0 && totalExpense > 0) {
+            weeklyExpense = totalExpense / 4; // Approximate
+        }
+
+        return weeklyExpense;
+    }
+
+    private String generateAIInsight() {
+        StringBuilder insight = new StringBuilder();
+
+        // Financial health assessment
+        if (balance < 0) {
+            insight.append("⚠️ XƏBƏRDARLIQ: Balans mənfidir! Xərclərinizi azaldın.\n");
+        } else if (balance < 100) {
+            insight.append("⚡ Balans azalır. Diqqətli olun.\n");
+        } else {
+            insight.append("✅ Maliyyə vəziyyətiniz yaxşıdır.\n");
+        }
+
+        // Risk assessment
+        if (aiRiskScore > 0.7f) {
+            insight.append("🔴 YÜKSƏK RİSK: Həftəlik xərcləriniz çox artıb!\n");
+        } else if (aiRiskScore > 0.4f) {
+            insight.append("🟡 ORTA RİSK: Xərclərinizə nəzarət edin.\n");
+        } else {
+            insight.append("🟢 AŞAĞI RİSK: Normal davam edin.\n");
+        }
+
+        // Prediction
+        insight.append(String.format("📊 3 GÜNLÜK PROQNOZ: ₼%.2f xərc gözlənilir.\n", aiPredictedExpense));
+
+        // Savings recommendation
+        double recommendedSavings = aiPredictedExpense * 0.15;
+        insight.append(String.format("💡 TÖVSİYƏ: ₼%.2f qənaət etməyə çalışın.\n", recommendedSavings));
+
+        // Expense ratio warning
+        if (totalIncome > 0) {
+            double expenseRatio = (totalExpense / totalIncome) * 100;
+            if (expenseRatio > 70) {
+                insight.append("📉 Xərclər gəlirin 70%-dən çoxdur! Büdcə planlaması edin.");
+            } else if (expenseRatio > 50) {
+                insight.append("📊 Xərclər gəlirin 50%-ni keçir. Diqqətli olun.");
+            } else {
+                insight.append("🎉 Əla! Xərcləriniz gəlirinizin altında qalır.");
+            }
+        }
+
+        return insight.toString();
+    }
+
+    private void updateAIDisplay() {
+        runOnUiThread(() -> {
+            StringBuilder display = new StringBuilder();
+            display.append("🤖 AI ANALİZİ\n");
+            display.append("══════════════════\n\n");
+            display.append(aiInsight);
+
+            tvAIAnalysis.setText(display.toString());
+        });
+    }
+
+    private void updateAIDisplayWithStats() {
+        runOnUiThread(() -> {
+            StringBuilder display = new StringBuilder();
+            display.append("📊 MALİYYƏ STATİSTİKASI\n");
+            display.append("══════════════════\n\n");
+            display.append(String.format("💰 Balans: %s\n", formatCurrency(balance)));
+            display.append(String.format("📈 Ümumi Gəlir: %s\n", formatCurrency(totalIncome)));
+            display.append(String.format("📉 Ümumi Xərc: %s\n", formatCurrency(totalExpense)));
+            display.append(String.format("📦 Məhsul sayı: %d\n", totalProducts));
+            display.append(String.format("🔄 Əməliyyat sayı: %d\n", totalTransactions));
+
+            if (totalIncome > 0) {
+                double expenseRatio = (totalExpense / totalIncome) * 100;
+                display.append(String.format("\n📊 Xərc/Gəlir nisbəti: %.1f%%", expenseRatio));
+                if (expenseRatio > 70) {
+                    display.append(" (⚠️ Yüksək)");
+                } else if (expenseRatio > 50) {
+                    display.append(" (⚡ Orta)");
+                } else {
+                    display.append(" (✅ Yaxşı)");
+                }
+            }
+
+            tvAIAnalysis.setText(display.toString());
+        });
     }
 
     private Date getDateFromDoc(DocumentSnapshot doc, String field) {
@@ -423,6 +610,15 @@ public class MainActivity extends BaseActivity {
             Date date = doc.getDate(field);
             if (date != null) {
                 return date;
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+
+        try {
+            Long timestampLong = doc.getLong(field);
+            if (timestampLong != null) {
+                return new Date(timestampLong);
             }
         } catch (Exception e) {
             // Ignore
@@ -462,7 +658,6 @@ public class MainActivity extends BaseActivity {
     private void updateStatsDisplay() {
         statItems.clear();
 
-        // Balance
         statItems.add(new StatItem(
                 "Balans",
                 formatCurrency(balance),
@@ -470,7 +665,6 @@ public class MainActivity extends BaseActivity {
                 balance >= 0 ? "#4CAF50" : "#F44336"
         ));
 
-        // Total Income
         statItems.add(new StatItem(
                 "Ümumi Gəlir",
                 formatCurrency(totalIncome),
@@ -478,7 +672,6 @@ public class MainActivity extends BaseActivity {
                 "#4CAF50"
         ));
 
-        // Total Expense
         statItems.add(new StatItem(
                 "Ümumi Xərc",
                 formatCurrency(totalExpense),
@@ -486,7 +679,6 @@ public class MainActivity extends BaseActivity {
                 "#F44336"
         ));
 
-        // Today's Income
         statItems.add(new StatItem(
                 "Bugünki Gəlir",
                 formatCurrency(todayIncome),
@@ -494,7 +686,6 @@ public class MainActivity extends BaseActivity {
                 "#4CAF50"
         ));
 
-        // Today's Expense
         statItems.add(new StatItem(
                 "Bugünki Xərc",
                 formatCurrency(todayExpense),
@@ -502,7 +693,6 @@ public class MainActivity extends BaseActivity {
                 "#F44336"
         ));
 
-        // Products
         statItems.add(new StatItem(
                 "Məhsullar",
                 String.valueOf(totalProducts),
@@ -510,7 +700,6 @@ public class MainActivity extends BaseActivity {
                 "#2196F3"
         ));
 
-        // Transactions
         statItems.add(new StatItem(
                 "Əməliyyatlar",
                 String.valueOf(totalTransactions),
@@ -565,19 +754,44 @@ public class MainActivity extends BaseActivity {
         btnAddData.setOnClickListener(addDataClick);
 
         // Reports
-        cardReports.setOnClickListener(v -> {
+        View.OnClickListener reportsClick = v -> {
             animateClick(v);
-            Toast.makeText(this, "Hesabatlar hazırlanır...", Toast.LENGTH_SHORT).show();
-        });
-        btnReports.setOnClickListener(v -> cardReports.performClick());
+            new Handler().postDelayed(() -> {
+                Intent intent = new Intent(MainActivity.this, ReportActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }, 200);
+        };
+        cardReports.setOnClickListener(reportsClick);
+        btnReports.setOnClickListener(reportsClick);
 
-        // ===== RECEIPT SCANNER - YENİ ƏLAVƏ =====
+        // Receipt Scanner
         View.OnClickListener receiptScannerClick = v -> {
             animateClick(v);
             checkCameraPermissionAndOpenScanner();
         };
         cardReceiptScanner.setOnClickListener(receiptScannerClick);
         btnReceiptScanner.setOnClickListener(receiptScannerClick);
+
+        // Discounts
+        View.OnClickListener discountsClick = v -> {
+            animateClick(v);
+            new Handler().postDelayed(() -> {
+                startActivity(new Intent(this, DiscountActivity.class));
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            }, 200);
+        };
+        cardDiscounts.setOnClickListener(discountsClick);
+        btnDiscounts.setOnClickListener(discountsClick);
+
+        // AI Analysis
+        View.OnClickListener aiClick = v -> {
+            animateClick(v);
+            runAIAnalysis();
+            Toast.makeText(this, "AI analiz yeniləndi", Toast.LENGTH_SHORT).show();
+        };
+        cardAIAnalysis.setOnClickListener(aiClick);
+        btnAIAnalysis.setOnClickListener(aiClick);
 
         // Settings
         View.OnClickListener settingsClick = v -> {
@@ -610,7 +824,7 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onAdDismissedFullScreenContent() {
                         Log.d("MainActivity", "Reklam bağlandı. Yeni reklam yüklənir...");
-                        mInterstitialAd = null; // Mövcud reklam obyektini null edin.
+                        mInterstitialAd = null;
                         loadInterstitialAd();
                     }
 
@@ -623,9 +837,7 @@ public class MainActivity extends BaseActivity {
                     public void onAdShowedFullScreenContent() {
                         Log.d("MainActivity", "Reklam göstərilir.");
                     }
-
                 });
-
             }
 
             @Override
@@ -634,7 +846,6 @@ public class MainActivity extends BaseActivity {
                 Log.d("MainActivity", "Interstitial reklamı yüklənmədi: " + loadAdError.getMessage());
             }
         });
-
     }
 
     private void showInterstitialAd() {
@@ -642,7 +853,7 @@ public class MainActivity extends BaseActivity {
         if (mInterstitialAd != null && (currentTime - lastAdShownTime >= AD_INTERVAL)) {
             Log.d("MainActivity", "Reklam göstərilir...");
             mInterstitialAd.show(MainActivity.this);
-            lastAdShownTime = currentTime; // Son reklam göstərilmə vaxtını yeniləyin
+            lastAdShownTime = currentTime;
         } else if (mInterstitialAd == null) {
             Log.d("MainActivity", "Reklam hazır deyil.");
         } else {
@@ -650,45 +861,23 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    // ===== YENİ METOD: Kamera permission yoxlaması =====
     private void checkCameraPermissionAndOpenScanner() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                // Kamera icazəsi var - scanner aç
                 openReceiptScanner();
             } else {
-                // Kamera icazəsi yox - istə
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.CAMERA},
                         CAMERA_PERMISSION_REQUEST_CODE);
             }
         } else {
-            // Android 6-dan aşağı - birbaşa aç
             openReceiptScanner();
         }
     }
 
-    // MainActivity-də
-    private void showOCRChoiceDialog() {
-        String[] options = {"AddDataActivity-də OCR", "ReceiptScannerActivity"};
-        new AlertDialog.Builder(this)
-                .setTitle("OCR seçimi")
-                .setItems(options, (dialog, which) -> {
-                    if (which == 0) {
-                        // Birbaşa AddDataActivity
-                        Intent intent = new Intent(this, AddDataActivity.class);
-                        intent.putExtra("open_scanner", true);
-                        startActivity(intent);
-                    } else {
-                        // ReceiptScannerActivity
-                        checkCameraPermissionAndOpenScanner();
-                    }
-                })
-                .show();
-    }
     private void openReceiptScanner() {
         Intent intent = new Intent(this, ReceiptScannerActivity.class);
-        startActivityForResult(intent, 1001); // <-- startActivityForResult istifadə edin
+        startActivityForResult(intent, 1001);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
@@ -696,40 +885,48 @@ public class MainActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1001) {
-            if (resultCode == RESULT_OK) {
-                // OCR-dan uğurla qayıtdı, məlumatları əldə et
-                Log.d(TAG, "OCR tamamlandı, məlumatlar alındı");
+        if (requestCode == 1001 && resultCode == RESULT_OK && data != null) {
+            Log.d(TAG, "OCR tamamlandı, məlumatlar alındı");
 
-                // İstəyə bağlı olaraq məlumatları göstərə bilərsiniz
-                if (data != null) {
-                    String storeName = data.getStringExtra("store_name");
-                    int productCount = data.getStringArrayListExtra("product_names").size();
+            String storeName = data.getStringExtra("store_name");
+            String date = data.getStringExtra("date");
+            String time = data.getStringExtra("time");
+            double totalAmount = data.getDoubleExtra("total_amount", 0);
+            String docId = data.getStringExtra("doc_id");
+            String fiscalCode = data.getStringExtra("fiscal_code");
 
-                    Toast.makeText(this,
-                            "📄 " + storeName + " - " + productCount + " məhsul",
-                            Toast.LENGTH_SHORT).show();
-                }
-            } else if (resultCode == RESULT_CANCELED) {
-                Log.d(TAG, "OCR ləğv edildi");
-            }
+            ArrayList<String> productNames = data.getStringArrayListExtra("product_names");
+            ArrayList<String> productPrices = data.getStringArrayListExtra("product_prices");
+            ArrayList<String> productQuantities = data.getStringArrayListExtra("product_quantities");
+            ArrayList<String> productUnits = data.getStringArrayListExtra("product_units");
+
+            Intent addDataIntent = new Intent(this, AddDataActivity.class);
+            addDataIntent.putExtra("store_name", storeName);
+            addDataIntent.putExtra("date", date);
+            addDataIntent.putExtra("time", time);
+            addDataIntent.putExtra("total_amount", totalAmount);
+            addDataIntent.putExtra("doc_id", docId);
+            addDataIntent.putExtra("fiscal_code", fiscalCode);
+            addDataIntent.putStringArrayListExtra("product_names", productNames);
+            addDataIntent.putStringArrayListExtra("product_prices", productPrices);
+            addDataIntent.putStringArrayListExtra("product_quantities", productQuantities);
+            addDataIntent.putStringArrayListExtra("product_units", productUnits);
+            addDataIntent.putExtra("from_ocr", true);
+
+            startActivity(addDataIntent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         }
     }
 
-    // ===== Permission nəticəsi =====
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // İcazə verildi
                 openReceiptScanner();
             } else {
-                // İcazə verilmədi
                 Toast.makeText(this, "Qəbz skan etmək üçün kamera icazəsi lazımdır", Toast.LENGTH_LONG).show();
-
-                // İcazə niyə lazımdır izah et
                 new AlertDialog.Builder(this)
                         .setTitle("Kamera İcazəsi")
                         .setMessage("Qəbzləri skan etmək üçün kamera icazəsi lazımdır. İcazəni settings-dən verə bilərsiniz.")
@@ -762,8 +959,10 @@ public class MainActivity extends BaseActivity {
         new Handler().postDelayed(() -> cardDashboard.startAnimation(slideUp), 100);
         new Handler().postDelayed(() -> cardAddData.startAnimation(slideUp), 200);
         new Handler().postDelayed(() -> cardReports.startAnimation(slideUp), 300);
-        new Handler().postDelayed(() -> cardReceiptScanner.startAnimation(slideUp), 350); // <-- ƏLAVƏ
-        new Handler().postDelayed(() -> cardSettings.startAnimation(slideUp), 400);
+        new Handler().postDelayed(() -> cardReceiptScanner.startAnimation(slideUp), 350);
+        new Handler().postDelayed(() -> cardDiscounts.startAnimation(slideUp), 400);
+        new Handler().postDelayed(() -> cardAIAnalysis.startAnimation(slideUp), 450);
+        new Handler().postDelayed(() -> cardSettings.startAnimation(slideUp), 500);
     }
 
     private void checkUserStatus() {
@@ -788,7 +987,7 @@ public class MainActivity extends BaseActivity {
                 "Məlumat gələcəyin ən dəyərli sərvətidir",
                 "AI ilə satışlarınızı zirvəyə qaldırın",
                 "Bugün dünəndən daha yaxşı olsun",
-                "Qəbzləri skan et, vaxta qənaət et" // <-- YENİ
+                "Qəbzləri skan et, vaxta qənaət et"
         };
         return quotes[(int) (System.currentTimeMillis() / (1000 * 60 * 60 * 24)) % quotes.length];
     }
@@ -893,7 +1092,6 @@ public class MainActivity extends BaseActivity {
                 // Use default color
             }
 
-            // Animate numbers
             if (item.value.contains("₼")) {
                 animateNumber(holder.textValue, item.value);
             }

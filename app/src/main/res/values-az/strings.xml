@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Jibim</string>
+    <string name="app_name_short">Jibim</string>
+
+
+
+    <!-- Common -->
+    <string name="welcome">Xoş gəldiniz</string>
+    <string name="save">Yadda Saxla</string>
+    <string name="cancel">Ləğv Et</string>
+    <string name="ok">OK</string>
+    <string name="yes">Bəli</string>
+    <string name="no">Xeyr</string>
+    <string name="loading">Yüklənir...</string>
+    <string name="refresh">Yenilə</string>
+    <string name="add">Əlavə Et</string>
+    <string name="logout">Çıxış</string>
+    <string name="settings">Parametrlər</string>
+    <string name="language">Dil</string>
+    <string name="language_changed">Dil dəyişdirildi</string>
+    <string name="dark_mode">Qaranlıq Rejim</string>
+    <string name="version">Versiya</string>
+    <string name="about">Haqqında</string>
+    <string name="profile">Mənim Məlumatlarım</string>
+    <string name="reset_password">Şifrəni Sıfırla</string>
+    <string name="add_salary">Maaş Əlavə Et</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard">İdarə Paneli</string>
+    <string name="current_balance">Cari Balans</string>
+    <string name="monthly_salary">Aylıq Maaş</string>
+    <string name="monthly_expense">Aylıq Xərc</string>
+    <string name="today">Bugün</string>
+    <string name="this_week">Bu Həftə</string>
+    <string name="this_month">Bu Ay</string>
+    <string name="income">Gəlir</string>
+    <string name="expense">Xərc</string>
+    <string name="net">Net</string>
+    <string name="income_vs_expense_trend">Gəlir vs Xərc Trendi</string>
+    <string name="last_30_days">Son 30 gün</string>
+    <string name="expense_categories">Xərc Kateqoriyaları</string>
+    <string name="financial_health">Maliyyə Sağlamlığı</string>
+    <string name="savings_rate">Qənaət dərəcəsi</string>
+    <string name="expense_ratio">Xərc nisbəti</string>
+    <string name="status">Vəziyyət</string>
+    <string name="ai_prediction">AI Proqnoz</string>
+    <string name="tomorrow_estimate">Sabah üçün təxmin</string>
+    <string name="prediction_accuracy">Proqnoz dəqiqliyi</string>
+    <string name="ai_analysis">AI Analiz</string>
+    <string name="click_for_details">Ətraflı analiz üçün klikləyin →</string>
+    <string name="all_transactions">Bütün Əməliyyatlar</string>
+    <string name="view_recent_transactions">Son əməliyyatları gör</string>
+    <string name="insufficient_data">Məlumat az</string>
+    <string name="excellent">Əla</string>
+    <string name="good">Yaxşı</string>
+    <string name="average">Orta</string>
+    <string name="poor">Zəif</string>
+    <string name="analyzing">Analiz edilir...</string>
+
+    <!-- Days -->
+    <string name="monday">Bazar ertəsi</string>
+    <string name="tuesday">Çərşənbə axşamı</string>
+    <string name="wednesday">Çərşənbə</string>
+    <string name="thursday">Cümə axşamı</string>
+    <string name="friday">Cümə</string>
+    <string name="saturday">Şənbə</string>
+    <string name="sunday">Bazar</string>
+
+    <!-- Navigation Drawer -->
+    <string name="nav_dashboard">İdarə Paneli</string>
+    <string name="nav_reports">Hesabatlar</string>
+    <string name="nav_sales_analysis">Satış Analizi</string>
+    <string name="nav_settings">Parametrlər</string>
+    <string name="nav_logout">Çıxış</string>
+
+    <!-- Greeting -->
+    <string name="hello">Salam,</string>
+    <string name="guest">Qonaq</string>
+
+    <!-- AI Analysis Dialog -->
+    <string name="ai_analysis_title">🤖 AI Analiz</string>
+    <string name="total_statistics">📊 Ümumi Statistika</string>
+    <string name="total_income">Ümumi Gəlir</string>
+    <string name="total_expense">Ümumi Xərc</string>
+    <string name="net_profit">Xalis Mənfəət</string>
+    <string name="monthly_salary_label">Aylıq Maaş:</string>
+    <string name="category_analysis_title">📋 Kateqoriya Analizi</string>
+    <string name="recommendations_title">💡 Tövsiyələr</string>
+    <string name="financial_health_title">🏥 Maliyyə Sağlamlığı</string>
+    <string name="close">Bağla</string>
+    <string name="insufficient_salary_data">Maaş məlumatı daxil edin</string>
+
+    <!-- Onboarding -->
+    <string name="skip">Keç</string>
+    <string name="next">Növbəti</string>
+    <string name="get_started">Başlayaq</string>
+    <string name="onboarding_title_1">Satışları İzlə</string>
+    <string name="onboarding_desc_1">Günlük, həftəlik və aylıq satışlarınızı real-time izləyin</string>
+    <string name="onboarding_title_2">AI Analiz</string>
+    <string name="onboarding_desc_2">Süni intellekt satışlarınızı analiz edib tövsiyələr verir</string>
+    <string name="onboarding_title_3">Proqnozlaşdırma</string>
+    <string name="onboarding_desc_3">Gələcək satış trendlərini proqnozlaşdırın</string>
+    <string name="onboarding_title_4">Firebase ilə Təhlükəsiz</string>
+    <string name="onboarding_desc_4">Bütün məlumatlarınız Firebase buludunda təhlükəsiz saxlanılır</string>
+
+    <!-- Add Data Activity -->
+    <string name="add_data_title">Məlumat Əlavə Et</string>
+    <string name="date">Tarix</string>
+    <string name="time">Saat</string>
+    <string name="day">Gün</string>
+    <string name="transaction_type">Əməliyyat Növü</string>
+    <string name="category">Kateqoriya</string>
+    <string name="products">Məhsullar</string>
+    <string name="select_product">Məhsul seçin...</string>
+    <string name="no_products">Məhsul yoxdur</string>
+    <string name="add_new_product">Yeni Məhsul Əlavə Et</string>
+    <string name="product_name">Məhsul adı</string>
+    <string name="price">Qiymət</string>
+    <string name="quantity">Miqdar</string>
+    <string name="liter">Litr</string>
+    <string name="kilogram">Kiloqram</string>
+    <string name="add_to_list">Məhsulu Listə Əlavə Et</string>
+    <string name="product_list">Məhsul Listi</string>
+    <string name="selected_count">seçilib</string>
+    <string name="total_selected">Seçilmiş ümumi</string>
+    <string name="location">Konum</string>
+    <string name="get_location">Konum Al</string>
+    <string name="new_location">Yeni konum</string>
+    <string name="add_location">Konum Əlavə Et</string>
+    <string name="note_optional">Qeyd (istəyə bağlı)</string>
+    <string name="additional_note">Əlavə qeyd</string>
+    <string name="preview">Önizləmə</string>
+    <string name="type">Növ</string>
+    <string name="total">Cəmi</string>
+    <string name="scan">Skan et</string>
+    <string name="online">Online</string>
+    <string name="offline_mode">Offline rejim</string>
+    <string name="offline_data_saved">Offline rejim: Məlumatlar lokalda saxlanılacaq</string>
+    <string name="location_not_loaded">Konum alınmadı</string>
+    <string name="getting_location">Konum alınır...</string>
+    <string name="location_permission_required">Konum izni tələb olunur</string>
+    <string name="camera_permission_required">Qəbz skan etmək üçün kamera icazəsi lazımdır</string>
+
+    <!-- Categories -->
+    <string name="category_grocery">🛒 Ərzaq</string>
+    <string name="category_transport">🚗 Nəqliyyat</string>
+    <string name="category_rent">🏠 Kirayə</string>
+    <string name="category_utilities">💡 Kommunal</string>
+    <string name="category_entertainment">🎮 Əyləncə</string>
+    <string name="category_health">🏥 Səhiyyə</string>
+    <string name="category_education">📚 Təhsil</string>
+    <string name="category_clothing">👕 Geyim</string>
+    <string name="category_technology">📱 Texnologiya</string>
+    <string name="category_restaurant">🍽️ Restoran</string>
+    <string name="category_travel">✈️ Səyahət</string>
+    <string name="category_other">💼 Digər</string>
+    <string name="category_salary">💰 Maaş</string>
+    <string name="category_bonus">💼 Bonus</string>
+    <string name="category_investment">📈 İnvestisiya</string>
+    <string name="category_sale">🛍️ Satış</string>
+    <string name="category_gift">🎁 Hədiyyə</string>
+    <string name="category_freelance">💵 Freelance</string>
+    <string name="category_business">🏢 Biznes</string>
+
+
+    <string name="tab_all">Hamısı</string>
+    <string name="best_price_label">Ən ucuz</string>
+    <string name="search_hint">Məhsul axtar…</string>
+    <string name="loading_text">Endirimlər yüklənir…</string>
+    <string name="no_products_found">Məhsul tapılmadı</string>
+    <string name="product_image_desc">Məhsul şəkli</string>
+
+
+</resources>

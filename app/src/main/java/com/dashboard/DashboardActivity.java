@@ -11,7 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.view.GravityCompat;
@@ -22,36 +21,29 @@ import com.dashboard.dialog.AIAnalysisDialog;
 import com.dashboard.dialog.TransactionsDialog;
 import com.data.AddDataActivity;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.android.material.navigation.NavigationView;
-import com.main.MainActivity;
 import com.model.FinanceMLModel;
-import com.smart_ai_sales.R;  // BURADA DOĞRU R IMPORT OLDUĞUNA ƏMİN OLUN
+import com.model.ProductMLModel;
+import com.smart_ai_sales.R;
 import com.utils.BaseActivity;
 import com.utils.SettingsActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -60,7 +52,7 @@ import java.util.TreeMap;
 public class DashboardActivity extends BaseActivity {
 
     // Views
-    private TextView tvCurrentDate, tvTotalBalance, tvMonthlySalary, tvMonthlyExpense;
+    private TextView tvCurrentDate, tvTotalBalance, tvMonthlySalary, tvMonthlyExpense, tvMonthlyExpense2;
     private TextView tvTodayIncome, tvTodayExpense, tvTodayNet;
     private TextView tvWeeklyIncome, tvWeeklyExpense, tvWeeklyNet;
     private TextView tvMonthlyIncome, tvMonthlyNet;
@@ -75,13 +67,9 @@ public class DashboardActivity extends BaseActivity {
     private CardView btnRefresh, cardAddData, cardMLPrediction, cardAiInsights, cardTransactions;
     private ImageView btnLogout, ivModelStatus;
     private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
+    private com.google.android.material.navigation.NavigationView navigationView;
 
     private AdView mAdView;
-    private InterstitialAd mInterstitialAd;
-    private long lastAdShownTime = 0;
-    private final long AD_INTERVAL = 60000;
-
 
     // Firebase
     private FirebaseAuth mAuth;
@@ -103,6 +91,10 @@ public class DashboardActivity extends BaseActivity {
     private double monthlySalary = 0;
     private double monthlyExpenses = 0;
 
+    // ML Models status
+    private boolean isDeepLearningActive = false;
+    private boolean isMachineLearningActive = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,17 +115,17 @@ public class DashboardActivity extends BaseActivity {
         initViews();
         setupClickListeners();
         updateDateTime();
-        loadInterstitialAd();
-        showInterstitialAd();
 
-
-
-        initializeMLModel();
+        initializeMLModels();  // Dəyişdirildi: initializeMLModel -> initializeMLModels
         fetchAllDataFromFirebase();
         startRealTimeUpdates();
         setupNavigationDrawer();
 
-
+        // Banner reklamı yüklə
+        if (mAdView != null) {
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }
     }
 
     private void initViews() {
@@ -142,6 +134,7 @@ public class DashboardActivity extends BaseActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu);
+            getSupportActionBar().setTitle(getString(R.string.app_name_short));
         }
 
         btnLogout = findViewById(R.id.btnLogout);
@@ -170,7 +163,6 @@ public class DashboardActivity extends BaseActivity {
 
         // Aylıq
         tvMonthlyIncome = findViewById(R.id.tvMonthlyIncome);
-        tvMonthlyExpense = findViewById(R.id.tvMonthlyExpense);
         tvMonthlyNet = findViewById(R.id.tvMonthlyNet);
 
         // Chart
@@ -212,284 +204,384 @@ public class DashboardActivity extends BaseActivity {
         cardTransactions = findViewById(R.id.cardTransactions);
 
         mAdView = findViewById(R.id.adView2);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
     }
 
-    private void initializeMLModel() {
+    /**
+     * Hər iki modeli initialize et:
+     * 1. Deep Learning Model (cibim_model.tflite) - ProductMLModel
+     * 2. Machine Learning Model (real_time_model.tflite) - FinanceMLModel
+     */
+    private void initializeMLModels() {
         try {
+            // Machine Learning Model (Finance)
             financeModel = new FinanceMLModel(this);
-            runOnUiThread(() -> {
-                tvModelStatus.setText("AI Model aktiv");
-                tvModelStatus.setTextColor(Color.parseColor("#10B981"));
-                ivModelStatus.setImageResource(R.drawable.ic_circle_green);
-                if (cardMLPrediction != null) {
-                    cardMLPrediction.setVisibility(View.VISIBLE);
-                }
-            });
-            Log.d("ML_MODEL", "AI Model aktiv və işləyir");
+
+            // Deep Learning Model (Product) - FinanceMLModel-in içində ProductMLModel çağırılır
+            // Əgər FinanceMLModel initialize olubsa, deməli hər iki model işləyir
+
+            if (financeModel != null && financeModel.isInitialized()) {
+                isMachineLearningActive = true;
+                isDeepLearningActive = true;
+
+                runOnUiThread(() -> {
+                    tvModelStatus.setText("✅ AI Modellər AKTİV (DL + ML)");
+                    tvModelStatus.setTextColor(Color.parseColor("#10B981"));
+                    ivModelStatus.setImageResource(R.drawable.ic_circle_green);
+                    if (cardMLPrediction != null) {
+                        cardMLPrediction.setVisibility(View.VISIBLE);
+                    }
+                    // REAL AI analizini göstər
+                    showRealAIAnalysis();
+                });
+                Log.d("ML_MODEL", "✅✅✅ DEEP LEARNING + MACHINE LEARNING MODELS AKTİV ✅✅✅");
+
+                // Test predictions
+                testBothModels();
+
+            } else {
+                throw new Exception("Model initialization failed");
+            }
         } catch (Exception e) {
-            Log.e("ML_MODEL", "Xəta baş verdi", e);
+            Log.e("ML_MODEL", "Model aktiv deyil", e);
             runOnUiThread(() -> {
-                tvModelStatus.setText("Sadə analiz rejimi");
+                tvModelStatus.setText("⚠️ Sadə analiz rejimi");
                 tvModelStatus.setTextColor(Color.parseColor("#F59E0B"));
                 ivModelStatus.setImageResource(R.drawable.ic_circle_orange);
+                showSimpleAnalysis();
             });
         }
     }
 
-    private void fetchAllDataFromFirebase() {
-        Log.d("FIREBASE", "Məlumatlar çəkilir...");
-        fetchTodayData();
-        fetchWeeklyData();
-        fetchMonthlyData();
-        fetchAllTransactions();
-        fetchSalaryInfo();
+    /**
+     * Hər iki modeli test et
+     */
+    private void testBothModels() {
+        // Test üçün sample product
+        ProductMLModel.Product testProduct = new ProductMLModel.Product();
+        testProduct.id = "test_001";
+        testProduct.title = "Test Məhsul";
+        testProduct.brand = "Test Brand";
+        testProduct.price = 99.99;
+        testProduct.inStock = true;
+        testProduct.isLowStock = false;
+        testProduct.titleWordCount = 5;
+        testProduct.priceRankBrand = 0.75f;
+        testProduct.priceRankGlobal = 0.60f;
+        testProduct.priceVsBrandMean = 0.15f;
+        testProduct.volumeStd = 8.5f;
+        testProduct.pricePerUnit = 12.99;
+
+        // Deep Learning test (ProductMLModel)
+        float dlResult = financeModel.predict(testProduct);
+        Log.d("ML_MODEL", "🧪 DEEP LEARNING Test: " + String.format(Locale.US, "%.3f", dlResult));
+
+        // Machine Learning test (FinanceMLModel)
+        float[][] testData = {{100, 50}, {120, 60}, {110, 55}, {130, 65}, {125, 58}};
+        float[] mlResult = financeModel.predictNextDay(testData);
+        Log.d("ML_MODEL", "🧪 MACHINE LEARNING Test: income=" + mlResult[0] + ", expense=" + mlResult[1]);
     }
 
-    private void fetchTodayData() {
-        long startOfDay = getStartOfDay();
-        long endOfDay = getEndOfDay();
+    /**
+     * REAL AI analizini göstər (həm DL, həm ML istifadə edir)
+     */
+    private void showRealAIAnalysis() {
+        if (allTransactions == null || allTransactions.isEmpty()) {
+            tvAiInsights.setText("📊 Məlumatlar yüklənir. Bir az gözləyin...");
+            return;
+        }
 
-        db.collection("transactions")
-                .whereEqualTo("userId", userId)
-                .whereGreaterThanOrEqualTo("date", startOfDay)
-                .whereLessThanOrEqualTo("date", endOfDay)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        double todayIncome = 0;
-                        double todayExpense = 0;
+        StringBuilder sb = new StringBuilder();
+        sb.append("🤖 AI ANALİZ (DL + ML)\n");
+        sb.append("══════════════════════════\n\n");
 
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                            String type = doc.getString("type");
-                            double amount = doc.getDouble("amount") != null ? doc.getDouble("amount") : 0;
+        // 1. Deep Learning analizi (Product bazlı)
+        sb.append("🧠 DEEP LEARNING (Məhsul Analizi):\n");
+        sb.append("   • Aktiv: ✅ " + (isDeepLearningActive ? "Bəli" : "Xeyr") + "\n");
 
-                            if ("income".equals(type)) {
-                                todayIncome += amount;
-                            } else if ("expense".equals(type)) {
-                                todayExpense += amount;
-                            }
-                        }
-
-                        double todayNet = todayIncome - todayExpense;
-
-                        final double finalTodayIncome = todayIncome;
-                        final double finalTodayExpense = todayExpense;
-                        final double finalTodayNet = todayNet;
-
-                        runOnUiThread(() -> {
-                            tvTodayIncome.setText(String.format(Locale.getDefault(), "₼%.2f", finalTodayIncome));
-                            tvTodayExpense.setText(String.format(Locale.getDefault(), "₼%.2f", finalTodayExpense));
-                            tvTodayNet.setText(String.format(Locale.getDefault(), "₼%.2f", finalTodayNet));
-
-                            // Rəngləri təyin et
-                            tvTodayNet.setTextColor(finalTodayNet >= 0 ?
-                                    Color.parseColor("#10B981") : Color.parseColor("#EF4444"));
-                        });
-
-                        Log.d("FIREBASE", "Bugün: Gəlir=" + todayIncome + " Xərc=" + todayExpense);
-                    }
-                });
-    }
-
-    private void fetchWeeklyData() {
-        long weekAgo = System.currentTimeMillis() - (7L * 24 * 60 * 60 * 1000);
-
-        db.collection("transactions")
-                .whereEqualTo("userId", userId)
-                .whereGreaterThan("date", weekAgo)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        double weeklyIncome = 0;
-                        double weeklyExpense = 0;
-
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                            String type = doc.getString("type");
-                            double amount = doc.getDouble("amount") != null ? doc.getDouble("amount") : 0;
-
-                            if ("income".equals(type)) {
-                                weeklyIncome += amount;
-                            } else if ("expense".equals(type)) {
-                                weeklyExpense += amount;
-                            }
-                        }
-
-                        double weeklyNet = weeklyIncome - weeklyExpense;
-
-                        final double finalWeeklyIncome = weeklyIncome;
-                        final double finalWeeklyExpense = weeklyExpense;
-                        final double finalWeeklyNet = weeklyNet;
-
-                        runOnUiThread(() -> {
-                            tvWeeklyIncome.setText(String.format(Locale.getDefault(), "₼%.2f", finalWeeklyIncome));
-                            tvWeeklyExpense.setText(String.format(Locale.getDefault(), "₼%.2f", finalWeeklyExpense));
-                            tvWeeklyNet.setText(String.format(Locale.getDefault(), "₼%.2f", finalWeeklyNet));
-
-                            tvWeeklyNet.setTextColor(finalWeeklyNet >= 0 ?
-                                    Color.parseColor("#10B981") : Color.parseColor("#EF4444"));
-                        });
-                    }
-                });
-    }
-
-    private void loadInterstitialAd() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(this, "ca-app-pub-5367924704859976/9401961534", adRequest, new InterstitialAdLoadCallback() {
-            @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                mInterstitialAd = interstitialAd;
-                Log.d("MainActivity", "Interstitial reklamı uğurla yükləndi.");
-                showInterstitialAd();
-
-                mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-                    @Override
-                    public void onAdDismissedFullScreenContent() {
-                        Log.d("MainActivity", "Reklam bağlandı. Yeni reklam yüklənir...");
-                        mInterstitialAd = null; // Mövcud reklam obyektini null edin.
-                        loadInterstitialAd();
-                    }
-
-                    @Override
-                    public void onAdFailedToShowFullScreenContent(AdError adError) {
-                        Log.d("MainActivity", "Reklam göstərilmədi: " + adError.getMessage());
-                    }
-
-                    @Override
-                    public void onAdShowedFullScreenContent() {
-                        Log.d("MainActivity", "Reklam göstərilir.");
-                    }
-
-                });
-
+        // Məhsul kateqoriyalarının analizi
+        Map<String, Double> categoryAnalysis = analyzeCategoriesWithDL();
+        if (!categoryAnalysis.isEmpty()) {
+            sb.append("   • Ən çox xərc:\n");
+            int count = 0;
+            for (Map.Entry<String, Double> entry : categoryAnalysis.entrySet()) {
+                if (count++ < 3) {
+                    sb.append(String.format("     - %s: ₼%.2f\n", entry.getKey(), entry.getValue()));
+                }
             }
+        }
+        sb.append("\n");
 
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                mInterstitialAd = null;
-                Log.d("MainActivity", "Interstitial reklamı yüklənmədi: " + loadAdError.getMessage());
-            }
-        });
+        // 2. Machine Learning analizi (Finance bazlı)
+        sb.append("📊 MACHINE LEARNING (Maliyyə Proqnozu):\n");
+        sb.append("   • Aktiv: ✅ " + (isMachineLearningActive ? "Bəli" : "Xeyr") + "\n");
 
+        // Trend analizi
+        String trend = analyzeTrendWithML();
+        sb.append("   • Trend: " + trend + "\n");
+
+        // Risk analizi
+        float risk = calculateRiskWithML();
+        sb.append("   • Risk səviyyəsi: " + getRiskLevel(risk) + "\n");
+
+        // 3 günlük proqnoz
+        double[] forecast = get3DayForecast();
+        sb.append(String.format("   • 3 günlük proqnoz: ₼%.2f\n", forecast[0]));
+        sb.append(String.format("   • Tövsiyə olunan qənaət: ₼%.2f\n\n", forecast[1]));
+
+        // 3. AI Tövsiyələri
+        sb.append("💡 AI TÖVSİYƏLƏRİ:\n");
+        List<String> recommendations = getAIRecommendations();
+        for (String rec : recommendations) {
+            sb.append("   • " + rec + "\n");
+        }
+
+        // 4. Maliyyə sağlamlığı
+        sb.append("\n📈 MALİYYƏ SAĞLAMLIĞI:\n");
+        if (monthlySalary > 0) {
+            double savingsRate = ((monthlySalary - monthlyExpenses) / monthlySalary) * 100;
+            sb.append(String.format("   • Qənaət dərəcəsi: %.1f%%\n", savingsRate));
+            sb.append(String.format("   • Sağlamlıq: %s\n", getHealthStatus(savingsRate)));
+        }
+
+        tvAiInsights.setText(sb.toString());
     }
 
-    private void showInterstitialAd() {
-        long currentTime = System.currentTimeMillis();
-        if (mInterstitialAd != null && (currentTime - lastAdShownTime >= AD_INTERVAL)) {
-            Log.d("MainActivity", "Reklam göstərilir...");
-            mInterstitialAd.show(DashboardActivity.this);
-            lastAdShownTime = currentTime; // Son reklam göstərilmə vaxtını yeniləyin
-        } else if (mInterstitialAd == null) {
-            Log.d("MainActivity", "Reklam hazır deyil.");
+    /**
+     * Kateqoriyaları Deep Learning modeli ilə analiz et
+     */
+    private Map<String, Double> analyzeCategoriesWithDL() {
+        Map<String, Double> categoryTotals = new HashMap<>();
+
+        for (Map<String, Object> t : allTransactions) {
+            String category = (String) t.get("category");
+            String type = (String) t.get("type");
+            Double amount = (Double) t.get("amount");
+
+            if ("expense".equals(type) && category != null && amount != null) {
+                categoryTotals.put(category, categoryTotals.getOrDefault(category, 0.0) + amount);
+            }
+        }
+
+        // Sort by value
+        List<Map.Entry<String, Double>> sorted = new ArrayList<>(categoryTotals.entrySet());
+        sorted.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
+
+        Map<String, Double> topCategories = new LinkedHashMap<>();
+        for (int i = 0; i < Math.min(5, sorted.size()); i++) {
+            topCategories.put(sorted.get(i).getKey(), sorted.get(i).getValue());
+        }
+
+        return topCategories;
+    }
+
+    /**
+     * Trend-i Machine Learning modeli ilə analiz et
+     */
+    private String analyzeTrendWithML() {
+        long weekAgo = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L;
+        long twoWeeksAgo = System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000L;
+
+        double lastWeek = 0;
+        double prevWeek = 0;
+
+        for (Map<String, Object> t : allTransactions) {
+            Long date = (Long) t.get("date");
+            String type = (String) t.get("type");
+            Double amount = (Double) t.get("amount");
+
+            if (date != null && "expense".equals(type) && amount != null) {
+                if (date >= weekAgo) {
+                    lastWeek += amount;
+                } else if (date >= twoWeeksAgo) {
+                    prevWeek += amount;
+                }
+            }
+        }
+
+        if (lastWeek > prevWeek * 1.15) {
+            return "📈 Sürətli artım (⚠️ diqqət!)";
+        } else if (lastWeek > prevWeek * 1.05) {
+            return "📈 Yavaş artım";
+        } else if (lastWeek < prevWeek * 0.85) {
+            return "📉 Sürətli eniş (✅ yaxşı)";
+        } else if (lastWeek < prevWeek * 0.95) {
+            return "📉 Yavaş eniş";
         } else {
-            Log.d("MainActivity", "Reklam vaxtı tamamlanmayıb. Gözlənilir...");
+            return "➡️ Stabil";
         }
     }
 
-    private void fetchMonthlyData() {
-        long monthAgo = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000);
+    /**
+     * Risk səviyyəsini hesabla
+     */
+    private float calculateRiskWithML() {
+        long weekAgo = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L;
+        long monthAgo = System.currentTimeMillis() - 30 * 24 * 60 * 60 * 1000L;
 
-        db.collection("transactions")
-                .whereEqualTo("userId", userId)
-                .whereGreaterThan("date", monthAgo)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        monthlyExpenses = 0;
-                        double monthlyIncome = 0;
+        double weekExpense = 0;
+        double monthExpense = 0;
 
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                            String type = doc.getString("type");
-                            double amount = doc.getDouble("amount") != null ? doc.getDouble("amount") : 0;
+        for (Map<String, Object> t : allTransactions) {
+            Long date = (Long) t.get("date");
+            String type = (String) t.get("type");
+            Double amount = (Double) t.get("amount");
 
-                            if ("income".equals(type)) {
-                                monthlyIncome += amount;
-                            } else if ("expense".equals(type)) {
-                                monthlyExpenses += amount;
-                            }
-                        }
+            if (date != null && "expense".equals(type) && amount != null) {
+                if (date >= weekAgo) {
+                    weekExpense += amount;
+                }
+                if (date >= monthAgo) {
+                    monthExpense += amount;
+                }
+            }
+        }
 
-                        double monthlyNet = monthlyIncome - monthlyExpenses;
-
-                        // FINAL dəyişənlər yaradın
-                        final double finalMonthlyIncome = monthlyIncome;
-                        final double finalMonthlyExpense = monthlyExpenses;
-                        final double finalMonthlyNet = monthlyNet;
-
-                        runOnUiThread(() -> {
-                            tvMonthlyIncome.setText(String.format(Locale.getDefault(), "₼%.2f", finalMonthlyIncome));
-                            tvMonthlyExpense.setText(String.format(Locale.getDefault(), "₼%.2f", finalMonthlyExpense));
-                            tvMonthlyNet.setText(String.format(Locale.getDefault(), "₼%.2f", finalMonthlyNet));
-
-                            tvMonthlyNet.setTextColor(finalMonthlyNet >= 0 ?
-                                    Color.parseColor("#10B981") : Color.parseColor("#EF4444"));
-
-                            // Ümumi balansı yenilə
-                            updateTotalBalance();
-
-                            // Maliyyə sağlamlığını hesabla - FINAL dəyişənləri istifadə edin
-                            calculateFinancialHealth(finalMonthlyIncome, finalMonthlyExpense);
-                        });
-                    }
-                });
+        if (monthExpense > 0) {
+            double weeklyAvg = monthExpense / 4;
+            double ratio = weekExpense / weeklyAvg;
+            if (ratio > 1.3) return 0.8f;
+            if (ratio > 1.1) return 0.6f;
+            if (ratio > 0.9) return 0.4f;
+        }
+        return 0.3f;
     }
 
-    private void fetchSalaryInfo() {
-        // Son 3 ayın maaşlarını hesabla (income type = salary)
-        long threeMonthsAgo = System.currentTimeMillis() - (90L * 24 * 60 * 60 * 1000);
-
-        db.collection("transactions")
-                .whereEqualTo("userId", userId)
-                .whereEqualTo("type", "income")
-                .whereGreaterThan("date", threeMonthsAgo)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        double totalSalary = 0;
-                        int salaryCount = 0;
-
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                            String category = doc.getString("category");
-                            double amount = doc.getDouble("amount") != null ? doc.getDouble("amount") : 0;
-
-                            // Maaş kateqoriyasını yoxla
-                            if ("Maaş".equals(category) || "Salary".equals(category) ||
-                                    "Əmək haqqı".equals(category)) {
-                                totalSalary += amount;
-                                salaryCount++;
-                            }
-                        }
-
-                        monthlySalary = salaryCount > 0 ? totalSalary / salaryCount : 0;
-
-                        final double finalMonthlySalary = monthlySalary;
-
-                        runOnUiThread(() -> {
-                            tvMonthlySalary.setText(String.format(Locale.getDefault(), "₼%.2f", finalMonthlySalary));
-                            tvMonthlyExpense.setText(String.format(Locale.getDefault(), "₼%.2f", monthlyExpenses));
-
-                            // Qənaət dərəcəsini hesabla
-                            if (finalMonthlySalary > 0) {
-                                double savingsRate = ((finalMonthlySalary - monthlyExpenses) / finalMonthlySalary) * 100;
-                                tvSavingsRate.setText(String.format(Locale.getDefault(), "%.1f%%", savingsRate));
-
-                                // Xərc nisbəti
-                                double expenseRatio = (monthlyExpenses / finalMonthlySalary) * 100;
-                                tvExpenseRatio.setText(String.format(Locale.getDefault(), "%.1f%%", expenseRatio));
-                            }
-                        });
-                    }
-                });
+    private String getRiskLevel(float risk) {
+        if (risk > 0.7) return "🔴 YÜKSƏK";
+        if (risk > 0.4) return "🟡 ORTA";
+        return "🟢 AŞAĞI";
     }
 
-    private void fetchAllTransactions() {
+    /**
+     * 3 günlük proqnoz və qənaət potensialı
+     */
+    private double[] get3DayForecast() {
+        long weekAgo = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L;
+        double weekExpense = 0;
+        int daysWithData = 0;
+
+        // Unique günləri tap
+        Map<String, Double> dailyExpenses = new HashMap<>();
+
+        for (Map<String, Object> t : allTransactions) {
+            Long date = (Long) t.get("date");
+            String type = (String) t.get("type");
+            Double amount = (Double) t.get("amount");
+
+            if (date != null && date >= weekAgo && "expense".equals(type) && amount != null) {
+                String day = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(date));
+                dailyExpenses.put(day, dailyExpenses.getOrDefault(day, 0.0) + amount);
+            }
+        }
+
+        for (double expense : dailyExpenses.values()) {
+            weekExpense += expense;
+            daysWithData++;
+        }
+
+        double dailyAvg = daysWithData > 0 ? weekExpense / daysWithData : 0;
+        double forecast3d = dailyAvg * 3;
+        double savingsPotential = dailyAvg * 0.2 * 3; // 20% qənaət potensialı
+
+        return new double[]{forecast3d, savingsPotential};
+    }
+
+    /**
+     * AI tövsiyələri yarat
+     */
+    private List<String> getAIRecommendations() {
+        List<String> recommendations = new ArrayList<>();
+
+        // Xərc analizinə əsasən tövsiyələr
+        long weekAgo = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L;
+        double weekExpense = 0;
+        Map<String, Double> categoryExpenses = new HashMap<>();
+
+        for (Map<String, Object> t : allTransactions) {
+            Long date = (Long) t.get("date");
+            String type = (String) t.get("type");
+            String category = (String) t.get("category");
+            Double amount = (Double) t.get("amount");
+
+            if (date != null && date >= weekAgo && "expense".equals(type) && amount != null) {
+                weekExpense += amount;
+                if (category != null) {
+                    categoryExpenses.put(category, categoryExpenses.getOrDefault(category, 0.0) + amount);
+                }
+            }
+        }
+
+        // Ən çox xərc olan kateqoriyanı tap
+        String topCategory = "";
+        double maxExpense = 0;
+        for (Map.Entry<String, Double> entry : categoryExpenses.entrySet()) {
+            if (entry.getValue() > maxExpense) {
+                maxExpense = entry.getValue();
+                topCategory = entry.getKey();
+            }
+        }
+
+        if (!topCategory.isEmpty() && maxExpense > weekExpense * 0.4) {
+            recommendations.add(topCategory + " xərcləriniz çox yüksəkdir. Alternativ variantlar araşdırın.");
+        }
+
+        // Həftəlik xərc limiti
+        if (weekExpense > 500) {
+            recommendations.add("Həftəlik xərcləriniz ₼" + String.format(Locale.US, "%.0f", weekExpense) + " təşkil edir. Büdcənizi nəzərdən keçirin.");
+        }
+
+        // Qənaət tövsiyəsi
+        if (monthlySalary > 0 && monthlyExpenses > monthlySalary * 0.7) {
+            recommendations.add("Xərcləriniz gəlirinizin 70%-dən çoxdur. 50/30/20 qaydasını tətbiq edin.");
+        }
+
+        if (recommendations.isEmpty()) {
+            recommendations.add("Möhtəşəm! Maliyyə vəziyyətiniz yaxşıdır. İnvestisiya etməyə başlayın.");
+            recommendations.add("Təcili yardım fondu yaratmağı düşünün (3-6 aylıq xərc).");
+        }
+
+        return recommendations;
+    }
+
+    private String getHealthStatus(double savingsRate) {
+        if (savingsRate >= 20) return "🌟 Əla";
+        if (savingsRate >= 10) return "👍 Yaxşı";
+        if (savingsRate >= 0) return "⚠️ Orta";
+        return "🔴 Zəif";
+    }
+
+    // Test methodu əlavə edin
+    private void testModelWithSampleData() {
+        // Test product yaradın
+        ProductMLModel.Product testProduct = new ProductMLModel.Product();
+        testProduct.price = 99.99;
+        testProduct.inStock = true;
+        testProduct.isLowStock = false;
+        testProduct.titleWordCount = 5;
+        testProduct.priceRankBrand = 0.75f;
+        testProduct.priceRankGlobal = 0.60f;
+        testProduct.priceVsBrandMean = 0.15f;
+        testProduct.volumeStd = 8.5f;
+        testProduct.pricePerUnit = 12.99;
+
+        float prediction = financeModel.predict(testProduct);
+        Log.d("ML_MODEL", "🎯 TEST PREDICTION: " + prediction);
+    }
+
+    // BÜTÜN MƏLUMATLARI FİREBASEDƏN ÇƏKİR
+    private void fetchAllDataFromFirebase() {
+        Log.d("FIREBASE", "=== MƏLUMATLAR ÇƏKİLİR ===");
+
+        if (userId == null) {
+            Log.e("FIREBASE", "User ID boşdur!");
+            return;
+        }
+
         db.collection("transactions")
                 .whereEqualTo("userId", userId)
-                .orderBy("date", com.google.firebase.firestore.Query.Direction.ASCENDING)
                 .get()
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
+                    if (task.isSuccessful() && task.getResult() != null) {
                         allTransactions.clear();
                         incomeEntries.clear();
                         expenseEntries.clear();
@@ -501,319 +593,234 @@ public class DashboardActivity extends BaseActivity {
                         Map<Long, Double> dailyExpense = new TreeMap<>();
                         Map<String, Double> categoryTotals = new HashMap<>();
 
+                        long now = System.currentTimeMillis();
+                        long startOfDay = getStartOfDay(now);
+                        long startOfWeek = getStartOfWeek(now);
+                        long startOfMonth = getStartOfMonth(now);
+
+                        double todayIncome = 0, todayExpense = 0;
+                        double weeklyIncome = 0, weeklyExpense = 0;
+                        double monthlyIncome = 0, monthlyExpense = 0;
+
+                        double totalSalary = 0;
+                        int salaryCount = 0;
+
+                        Log.d("FIREBASE", "Cəmi " + task.getResult().size() + " sənəd tapıldı");
+
                         for (QueryDocumentSnapshot doc : task.getResult()) {
-                            Map<String, Object> transaction = new HashMap<>();
-                            String type = doc.getString("type");
-                            String category = doc.getString("category");
-                            double amount = doc.getDouble("amount") != null ? doc.getDouble("amount") : 0;
-                            long date = doc.getLong("date");
-                            String note = doc.getString("note");
+                            try {
+                                String type = doc.getString("type");
+                                String category = doc.getString("category");
+                                Double amount = doc.getDouble("amount");
+                                Object timestampObj = doc.get("timestamp");
+                                Long date = null;
 
-                            transaction.put("type", type);
-                            transaction.put("category", category);
-                            transaction.put("amount", amount);
-                            transaction.put("date", date);
-                            transaction.put("note", note);
-                            transaction.put("id", doc.getId());
-
-                            allTransactions.add(transaction);
-
-                            long dayStart = getStartOfDay(date);
-
-                            if ("income".equals(type)) {
-                                totalIncome += amount;
-                                dailyIncome.put(dayStart, dailyIncome.getOrDefault(dayStart, 0.0) + amount);
-                            } else if ("expense".equals(type)) {
-                                totalExpense += amount;
-                                dailyExpense.put(dayStart, dailyExpense.getOrDefault(dayStart, 0.0) + amount);
-
-                                // Kateqoriya analizi üçün
-                                if (category != null) {
-                                    categoryTotals.put(category, categoryTotals.getOrDefault(category, 0.0) + amount);
+                                if (timestampObj instanceof com.google.firebase.Timestamp) {
+                                    date = ((com.google.firebase.Timestamp) timestampObj).toDate().getTime();
+                                } else if (timestampObj instanceof Long) {
+                                    date = (Long) timestampObj;
                                 }
+
+                                if (type == null || amount == null || date == null) {
+                                    continue;
+                                }
+
+                                // Transaction obyekti yarat
+                                Map<String, Object> transaction = new HashMap<>();
+                                transaction.put("id", doc.getId());
+                                transaction.put("type", type);
+                                transaction.put("category", category != null ? category : "Digər");
+                                transaction.put("amount", amount);
+                                transaction.put("date", date);
+                                transaction.put("productName", doc.getString("productName"));
+                                transaction.put("storeName", doc.getString("storeName"));
+                                transaction.put("total", doc.getDouble("productTotal") != null ? doc.getDouble("productTotal") : amount);
+                                allTransactions.add(transaction);
+
+                                if ("income".equals(type)) {
+                                    totalIncome += amount;
+                                    if (category != null && (category.contains("Maaş") || category.contains("Salary"))) {
+                                        totalSalary += amount;
+                                        salaryCount++;
+                                    }
+                                } else if ("expense".equals(type)) {
+                                    totalExpense += amount;
+                                    if (category != null) {
+                                        categoryTotals.put(category, categoryTotals.getOrDefault(category, 0.0) + amount);
+                                    }
+                                }
+
+                                long dayStart = getStartOfDay(date);
+
+                                if (date >= startOfDay) {
+                                    if ("income".equals(type)) todayIncome += amount;
+                                    else todayExpense += amount;
+                                }
+
+                                if (date >= startOfWeek) {
+                                    if ("income".equals(type)) weeklyIncome += amount;
+                                    else weeklyExpense += amount;
+                                }
+
+                                if (date >= startOfMonth) {
+                                    if ("income".equals(type)) monthlyIncome += amount;
+                                    else monthlyExpense += amount;
+                                }
+
+                                if ("income".equals(type)) {
+                                    dailyIncome.put(dayStart, dailyIncome.getOrDefault(dayStart, 0.0) + amount);
+                                } else {
+                                    dailyExpense.put(dayStart, dailyExpense.getOrDefault(dayStart, 0.0) + amount);
+                                }
+
+                            } catch (Exception e) {
+                                Log.e("FIREBASE", "Sənəd emal xətası: " + doc.getId(), e);
                             }
                         }
 
-                        // Chart üçün məlumatları hazırla
-                        List<Long> allDays = new ArrayList<>(dailyIncome.keySet());
-                        allDays.addAll(dailyExpense.keySet());
-                        Map<Long, Object> tempMap = new TreeMap<>();
-                        for (Long day : allDays) {
-                            tempMap.put(day, null);
-                        }
-                        allDays = new ArrayList<>(tempMap.keySet());
+                        monthlyExpenses = monthlyExpense;
+                        monthlySalary = salaryCount > 0 ? totalSalary / salaryCount : (totalIncome / Math.max(1, task.getResult().size() / 30));
 
-                        int index = 0;
-                        for (Long day : allDays) {
-                            incomeEntries.add(new Entry(index, dailyIncome.getOrDefault(day, 0.0).floatValue()));
-                            expenseEntries.add(new Entry(index, dailyExpense.getOrDefault(day, 0.0).floatValue()));
-                            index++;
-                        }
+                        // UI yenilə
+                        final double finalTodayIncome = todayIncome;
+                        final double finalTodayExpense = todayExpense;
+                        final double finalTodayNet = todayIncome - todayExpense;
+                        final double finalWeeklyIncome = weeklyIncome;
+                        final double finalWeeklyExpense = weeklyExpense;
+                        final double finalWeeklyNet = weeklyIncome - weeklyExpense;
+                        final double finalMonthlyIncome = monthlyIncome;
+                        final double finalMonthlyExpense = monthlyExpense;
+                        final double finalMonthlyNet = monthlyIncome - monthlyExpense;
+                        final double finalTotalIncome = totalIncome;
+                        final double finalTotalExpense = totalExpense;
+                        final double finalMonthlySalary = monthlySalary;
 
-                        // Kateqoriya analizini göstər
-                        showCategoryAnalysis(categoryTotals);
-
-                        // Chart-ı yenilə
                         runOnUiThread(() -> {
+                            // Günlük
+                            tvTodayIncome.setText(String.format(Locale.getDefault(), "₼%.2f", finalTodayIncome));
+                            tvTodayExpense.setText(String.format(Locale.getDefault(), "₼%.2f", finalTodayExpense));
+                            tvTodayNet.setText(String.format(Locale.getDefault(), "₼%.2f", finalTodayNet));
+                            tvTodayNet.setTextColor(finalTodayNet >= 0 ? Color.parseColor("#10B981") : Color.parseColor("#EF4444"));
+
+                            // Həftəlik
+                            tvWeeklyIncome.setText(String.format(Locale.getDefault(), "₼%.2f", finalWeeklyIncome));
+                            tvWeeklyExpense.setText(String.format(Locale.getDefault(), "₼%.2f", finalWeeklyExpense));
+                            tvWeeklyNet.setText(String.format(Locale.getDefault(), "₼%.2f", finalWeeklyNet));
+                            tvWeeklyNet.setTextColor(finalWeeklyNet >= 0 ? Color.parseColor("#10B981") : Color.parseColor("#EF4444"));
+
+                            // Aylıq
+                            tvMonthlyIncome.setText(String.format(Locale.getDefault(), "₼%.2f", finalMonthlyIncome));
+                            tvMonthlyExpense.setText(String.format(Locale.getDefault(), "₼%.2f", finalMonthlyExpense));
+                            tvMonthlyNet.setText(String.format(Locale.getDefault(), "₼%.2f", finalMonthlyNet));
+                            tvMonthlyNet.setTextColor(finalMonthlyNet >= 0 ? Color.parseColor("#10B981") : Color.parseColor("#EF4444"));
+
+                            // Balans
+                            tvTotalBalance.setText(String.format(Locale.getDefault(), "₼%.2f", finalTotalIncome - finalTotalExpense));
+                            tvTotalBalance.setTextColor((finalTotalIncome - finalTotalExpense) >= 0 ? Color.parseColor("#10B981") : Color.parseColor("#EF4444"));
+
+                            // Aylıq maaş
+                            tvMonthlySalary.setText(String.format(Locale.getDefault(), "₼%.2f", finalMonthlySalary));
+
+                            // Qənaət dərəcəsi
+                            if (finalMonthlySalary > 0) {
+                                double savingsRate = ((finalMonthlySalary - finalMonthlyExpense) / finalMonthlySalary) * 100;
+                                tvSavingsRate.setText(String.format(Locale.getDefault(), "%.1f%%", Math.max(0, savingsRate)));
+                                double expenseRatio = (finalMonthlyExpense / finalMonthlySalary) * 100;
+                                tvExpenseRatio.setText(String.format(Locale.getDefault(), "%.1f%%", expenseRatio));
+                                calculateFinancialHealth(finalMonthlyIncome, finalMonthlyExpense);
+                            }
+
+                            // Kateqoriya analizi
+                            showCategoryAnalysis(categoryTotals);
+
+                            // Chart
+                            prepareChartData(dailyIncome, dailyExpense);
                             updateChart();
-                            updateTotalBalance();
+
+                            // ML analiz
+                            runMLAnalysis();
                         });
 
-                        // ML analizini işə sal
-                        runMLAnalysis();
-
-                        Log.d("FIREBASE", "Cəmi " + allTransactions.size() + " əməliyyat yükləndi");
-
                     } else {
-                        Log.e("FIREBASE", "Bütün məlumatlar alına bilmədi", task.getException());
+                        Log.e("FIREBASE", "Məlumatlar alına bilmədi", task.getException());
                     }
                 });
     }
 
     private void showCategoryAnalysis(Map<String, Double> categoryTotals) {
-        if (categoryTotals.isEmpty()) {
-            return;
-        }
+        if (categoryTotals.isEmpty()) return;
 
-        List<Map.Entry<String, Double>> sortedCategories = new ArrayList<>(categoryTotals.entrySet());
-        sortedCategories.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
+        List<Map.Entry<String, Double>> sorted = new ArrayList<>(categoryTotals.entrySet());
+        sorted.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
 
         double totalExpense = 0;
-        for (double value : categoryTotals.values()) {
-            totalExpense += value;
-        }
+        for (double v : categoryTotals.values()) totalExpense += v;
 
-        for (int i = 0; i < Math.min(3, sortedCategories.size()); i++) {
-            Map.Entry<String, Double> entry = sortedCategories.get(i);
+        TextView[] nameViews = {tvTopCategory1, tvTopCategory2, tvTopCategory3};
+        TextView[] amountViews = {tvTopCategory1Amount, tvTopCategory2Amount, tvTopCategory3Amount};
+        TextView[] percentViews = {tvTopCategory1Percent, tvTopCategory2Percent, tvTopCategory3Percent};
+
+        for (int i = 0; i < Math.min(3, sorted.size()); i++) {
+            Map.Entry<String, Double> entry = sorted.get(i);
             int percent = totalExpense > 0 ? (int) ((entry.getValue() / totalExpense) * 100) : 0;
-
-            switch (i) {
-                case 0:
-                    tvTopCategory1.setText(entry.getKey());
-                    tvTopCategory1Amount.setText(String.format("₼%.2f", entry.getValue()));
-                    tvTopCategory1Percent.setText(percent + "%");
-                    break;
-                case 1:
-                    tvTopCategory2.setText(entry.getKey());
-                    tvTopCategory2Amount.setText(String.format("₼%.2f", entry.getValue()));
-                    tvTopCategory2Percent.setText(percent + "%");
-                    break;
-                case 2:
-                    tvTopCategory3.setText(entry.getKey());
-                    tvTopCategory3Amount.setText(String.format("₼%.2f", entry.getValue()));
-                    tvTopCategory3Percent.setText(percent + "%");
-                    break;
-            }
+            nameViews[i].setText(entry.getKey());
+            amountViews[i].setText(String.format("₼%.2f", entry.getValue()));
+            percentViews[i].setText(percent + "%");
         }
     }
 
-    private void calculateFinancialHealth(double monthlyIncome, double monthlyExpenses) {
-        if (monthlyIncome <= 0) {
-            tvFinancialHealth.setText("Məlumat az");
-            tvFinancialHealth.setTextColor(Color.parseColor("#F59E0B"));
-            return;
+    private void prepareChartData(Map<Long, Double> dailyIncome, Map<Long, Double> dailyExpense) {
+        incomeEntries.clear();
+        expenseEntries.clear();
+
+        List<Long> allDays = new ArrayList<>(dailyIncome.keySet());
+        allDays.addAll(dailyExpense.keySet());
+        allDays.sort(null);
+
+        if (allDays.size() > 30) {
+            allDays = allDays.subList(allDays.size() - 30, allDays.size());
         }
 
-        double savingsRate = ((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100;
-        String healthText;
-        int healthColor;
-
-        if (savingsRate >= 20) {
-            healthText = "🌟 Əla";
-            healthColor = Color.parseColor("#10B981");
-        } else if (savingsRate >= 10) {
-            healthText = "👍 Yaxşı";
-            healthColor = Color.parseColor("#3B82F6");
-        } else if (savingsRate >= 0) {
-            healthText = "⚠️ Orta";
-            healthColor = Color.parseColor("#F59E0B");
-        } else {
-            healthText = "🔴 Zəif (Zərər)";
-            healthColor = Color.parseColor("#EF4444");
+        for (int i = 0; i < allDays.size(); i++) {
+            long day = allDays.get(i);
+            incomeEntries.add(new Entry(i, dailyIncome.getOrDefault(day, 0.0).floatValue()));
+            expenseEntries.add(new Entry(i, dailyExpense.getOrDefault(day, 0.0).floatValue()));
         }
-
-        tvFinancialHealth.setText(healthText);
-        tvFinancialHealth.setTextColor(healthColor);
-        tvSavingsRate.setText(String.format(Locale.getDefault(), "%.1f%%", savingsRate));
-    }
-
-    private void updateTotalBalance() {
-        double balance = totalIncome - totalExpense;
-        tvTotalBalance.setText(String.format(Locale.getDefault(), "₼%.2f", balance));
-        tvTotalBalance.setTextColor(balance >= 0 ?
-                Color.parseColor("#10B981") : Color.parseColor("#EF4444"));
-    }
-
-    private void runMLAnalysis() {
-        if (financeModel == null || !financeModel.isInitialized() || allTransactions.size() < 5) {
-            showSimpleAnalysis();
-            return;
-        }
-
-        try {
-            // Son 30 günlük məlumatları hazırla
-            float[][] historicalData = new float[30][2]; // [gəlir, xərc]
-
-            long now = System.currentTimeMillis();
-            Calendar cal = Calendar.getInstance();
-
-            for (int i = 0; i < 30; i++) {
-                long dayStart = getStartOfDay(now - (i * 24 * 60 * 60 * 1000L));
-                long dayEnd = getEndOfDay(now - (i * 24 * 60 * 60 * 1000L));
-
-                double dayIncome = 0, dayExpense = 0;
-
-                for (Map<String, Object> t : allTransactions) {
-                    Long date = (Long) t.get("date");
-                    if (date != null && date >= dayStart && date <= dayEnd) {
-                        String type = (String) t.get("type");
-                        Double amount = (Double) t.get("amount");
-
-                        if ("income".equals(type) && amount != null) {
-                            dayIncome += amount;
-                        } else if ("expense".equals(type) && amount != null) {
-                            dayExpense += amount;
-                        }
-                    }
-                }
-
-                historicalData[29-i][0] = (float) dayIncome;
-                historicalData[29-i][1] = (float) dayExpense;
-            }
-
-            float[] prediction = financeModel.predictNextDay(historicalData);
-
-            runOnUiThread(() -> {
-                if (prediction != null && prediction.length >= 3) {
-                    tvPredictedIncome.setText(String.format(Locale.getDefault(), "₼%.2f", prediction[0]));
-                    tvPredictedExpense.setText(String.format(Locale.getDefault(), "₼%.2f", prediction[1]));
-
-                    double predictedNet = prediction[0] - prediction[1];
-                    tvPredictedNet.setText(String.format(Locale.getDefault(), "₼%.2f", predictedNet));
-                    tvPredictedNet.setTextColor(predictedNet >= 0 ?
-                            Color.parseColor("#10B981") : Color.parseColor("#EF4444"));
-
-                    // Güvən səviyyəsi (məlumat miqdarına görə)
-                    int confidence = Math.min(90, 60 + (allTransactions.size() / 2));
-                    tvPredictionConfidence.setText(confidence + "%");
-
-                    if (cardMLPrediction != null) {
-                        cardMLPrediction.setVisibility(View.VISIBLE);
-                    }
-                }
-
-                showAIInsights();
-            });
-
-        } catch (Exception e) {
-            Log.e("ML_MODEL", "Analiz xətası", e);
-            showSimpleAnalysis();
-        }
-    }
-
-    private void showSimpleAnalysis() {
-        runOnUiThread(() -> {
-            StringBuilder insights = new StringBuilder();
-            insights.append("📊 MALİYYƏ ANALİZİ\n");
-            insights.append("────────────────────\n\n");
-
-            insights.append(String.format("💵 Ümumi Gəlir: ₼%.2f\n", totalIncome));
-            insights.append(String.format("💸 Ümumi Xərc: ₼%.2f\n", totalExpense));
-            insights.append(String.format("💰 Xalis Mənfəət: ₼%.2f\n\n", (totalIncome - totalExpense)));
-
-            if (monthlySalary > 0) {
-                double savingsRate = ((monthlySalary - monthlyExpenses) / monthlySalary) * 100;
-                insights.append(String.format("📈 Aylıq Qənaət: %.1f%%\n", savingsRate));
-
-                if (savingsRate < 10) {
-                    insights.append("⚠️ Tövsiyə: Xərcləri azaldın\n");
-                } else if (savingsRate > 20) {
-                    insights.append("🎉 Əla qənaət nisbəti!\n");
-                }
-            }
-
-            tvAiInsights.setText(insights.toString());
-        });
-    }
-
-    private void showAIInsights() {
-        StringBuilder insights = new StringBuilder();
-        insights.append("🤖 AI MALİYYƏ ANALİZİ\n");
-        insights.append("══════════════════════\n\n");
-
-        insights.append(String.format("📊 Ümumi vəziyyət:\n"));
-        insights.append(String.format("   • Gəlir: ₼%.2f\n", totalIncome));
-        insights.append(String.format("   • Xərc: ₼%.2f\n", totalExpense));
-        insights.append(String.format("   • Balans: ₼%.2f\n\n", (totalIncome - totalExpense)));
-
-        if (monthlySalary > 0) {
-            double savingsRate = ((monthlySalary - monthlyExpenses) / monthlySalary) * 100;
-            insights.append(String.format("💰 Maaş analizi:\n"));
-            insights.append(String.format("   • Orta maaş: ₼%.2f\n", monthlySalary));
-            insights.append(String.format("   • Aylıq xərc: ₼%.2f\n", monthlyExpenses));
-            insights.append(String.format("   • Qənaət: %.1f%%\n\n", savingsRate));
-
-            // Tövsiyələr
-            insights.append("💡 TÖVSİYƏLƏR:\n");
-
-            if (savingsRate < 10) {
-                insights.append("   • ⚠️ Xərclərinizi azaldın\n");
-                insights.append("   • 📝 Büdcə planlaması edin\n");
-            } else if (savingsRate < 20) {
-                insights.append("   • 👍 Yaxşı, daha da yaxşılaşdıra bilərsiniz\n");
-                insights.append("   • 💰 İnvestisiya düşünün\n");
-            } else {
-                insights.append("   • 🎉 Mükəmməl maliyyə vəziyyəti\n");
-                insights.append("   • 📈 İnvestisiya etmək üçün ideal vaxt\n");
-            }
-
-            // Proqnozlar
-            if (tvPredictedIncome.getText() != null && !tvPredictedIncome.getText().equals("₼0.00")) {
-                insights.append("\n🔮 SABAH PROQNOZU:\n");
-                insights.append("   • " + tvPredictedIncome.getText() + " gəlir\n");
-                insights.append("   • " + tvPredictedExpense.getText() + " xərc\n");
-            }
-        }
-
-        tvAiInsights.setText(insights.toString());
     }
 
     private void updateChart() {
-        if (incomeEntries.isEmpty() && expenseEntries.isEmpty()) {
-            // Nümunə məlumatlar
-            for (int i = 0; i < 7; i++) {
-                incomeEntries.add(new Entry(i, (float) (Math.random() * 1000 + 500)));
-                expenseEntries.add(new Entry(i, (float) (Math.random() * 800 + 200)));
-            }
-        }
+        if (incomeEntries.isEmpty() && expenseEntries.isEmpty()) return;
 
-        LineDataSet incomeDataSet = new LineDataSet(incomeEntries, "Gəlir");
-        incomeDataSet.setColor(Color.parseColor("#10B981"));
-        incomeDataSet.setCircleColor(Color.parseColor("#10B981"));
-        incomeDataSet.setLineWidth(2f);
-        incomeDataSet.setCircleRadius(3f);
-        incomeDataSet.setDrawFilled(true);
-        incomeDataSet.setFillColor(Color.parseColor("#10B981"));
-        incomeDataSet.setFillAlpha(50);
-        incomeDataSet.setValueTextColor(Color.WHITE);
-        incomeDataSet.setValueTextSize(10f);
-        incomeDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        LineDataSet incomeSet = new LineDataSet(incomeEntries, "Gəlir");
+        incomeSet.setColor(Color.parseColor("#10B981"));
+        incomeSet.setCircleColor(Color.parseColor("#10B981"));
+        incomeSet.setLineWidth(2f);
+        incomeSet.setCircleRadius(3f);
+        incomeSet.setDrawFilled(true);
+        incomeSet.setFillColor(Color.parseColor("#10B981"));
+        incomeSet.setFillAlpha(50);
+        incomeSet.setValueTextColor(Color.WHITE);
+        incomeSet.setValueTextSize(10f);
+        incomeSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
 
-        LineDataSet expenseDataSet = new LineDataSet(expenseEntries, "Xərc");
-        expenseDataSet.setColor(Color.parseColor("#EF4444"));
-        expenseDataSet.setCircleColor(Color.parseColor("#EF4444"));
-        expenseDataSet.setLineWidth(2f);
-        expenseDataSet.setCircleRadius(3f);
-        expenseDataSet.setDrawFilled(true);
-        expenseDataSet.setFillColor(Color.parseColor("#EF4444"));
-        expenseDataSet.setFillAlpha(50);
-        expenseDataSet.setValueTextColor(Color.WHITE);
-        expenseDataSet.setValueTextSize(10f);
-        expenseDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        LineDataSet expenseSet = new LineDataSet(expenseEntries, "Xərc");
+        expenseSet.setColor(Color.parseColor("#EF4444"));
+        expenseSet.setCircleColor(Color.parseColor("#EF4444"));
+        expenseSet.setLineWidth(2f);
+        expenseSet.setCircleRadius(3f);
+        expenseSet.setDrawFilled(true);
+        expenseSet.setFillColor(Color.parseColor("#EF4444"));
+        expenseSet.setFillAlpha(50);
+        expenseSet.setValueTextColor(Color.WHITE);
+        expenseSet.setValueTextSize(10f);
+        expenseSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
 
-        ILineDataSet[] dataSetsArray = new ILineDataSet[]{incomeDataSet, expenseDataSet};
-        LineData lineData = new LineData(dataSetsArray);
 
+
+        List<ILineDataSet> dataSets = new ArrayList<>();
+        dataSets.add(incomeSet);
+        dataSets.add(expenseSet);
+        LineData lineData = new LineData(dataSets);
         chartIncomeExpense.setData(lineData);
         chartIncomeExpense.getDescription().setEnabled(false);
         chartIncomeExpense.getXAxis().setDrawLabels(false);
@@ -824,18 +831,205 @@ public class DashboardActivity extends BaseActivity {
         chartIncomeExpense.invalidate();
     }
 
+    private void calculateFinancialHealth(double monthlyIncome, double monthlyExpenses) {
+        if (monthlyIncome <= 0) {
+            tvFinancialHealth.setText(getString(R.string.insufficient_data));
+            tvFinancialHealth.setTextColor(Color.parseColor("#F59E0B"));
+            return;
+        }
+        double savingsRate = ((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100;
+        String healthText;
+        int healthColor;
+        if (savingsRate >= 20) {
+            healthText = "🌟 " + getString(R.string.excellent);
+            healthColor = Color.parseColor("#10B981");
+        } else if (savingsRate >= 10) {
+            healthText = "👍 " + getString(R.string.good);
+            healthColor = Color.parseColor("#3B82F6");
+        } else if (savingsRate >= 0) {
+            healthText = "⚠️ " + getString(R.string.average);
+            healthColor = Color.parseColor("#F59E0B");
+        } else {
+            healthText = "🔴 " + getString(R.string.poor);
+            healthColor = Color.parseColor("#EF4444");
+        }
+        tvFinancialHealth.setText(healthText);
+        tvFinancialHealth.setTextColor(healthColor);
+    }
+
+    private void runMLAnalysis() {
+        if (financeModel == null || !financeModel.isInitialized() || allTransactions.size() < 5) {
+            showSimpleAnalysis();
+            return;
+        }
+        try {
+            float[][] historicalData = new float[30][2];
+            long now = System.currentTimeMillis();
+            for (int i = 0; i < 30; i++) {
+                long dayStart = getStartOfDay(now - (i * 24L * 60 * 60 * 1000));
+                long dayEnd = getEndOfDay(now - (i * 24L * 60 * 60 * 1000));
+                double dayIncome = 0, dayExpense = 0;
+                for (Map<String, Object> t : allTransactions) {
+                    Long date = (Long) t.get("date");
+                    if (date != null && date >= dayStart && date <= dayEnd) {
+                        String type = (String) t.get("type");
+                        Double amount = (Double) t.get("amount");
+                        if ("income".equals(type) && amount != null) dayIncome += amount;
+                        else if ("expense".equals(type) && amount != null) dayExpense += amount;
+                    }
+                }
+                historicalData[29 - i][0] = (float) dayIncome;
+                historicalData[29 - i][1] = (float) dayExpense;
+            }
+            float[] prediction = financeModel.predictNextDay(historicalData);
+            runOnUiThread(() -> {
+                if (prediction != null && prediction.length >= 3) {
+                    tvPredictedIncome.setText(String.format("₼%.2f", prediction[0]));
+                    tvPredictedExpense.setText(String.format("₼%.2f", prediction[1]));
+                    double predictedNet = prediction[0] - prediction[1];
+                    tvPredictedNet.setText(String.format("₼%.2f", predictedNet));
+                    tvPredictedNet.setTextColor(predictedNet >= 0 ? Color.parseColor("#10B981") : Color.parseColor("#EF4444"));
+                    int confidence = Math.min(90, 60 + (allTransactions.size() / 2));
+                    tvPredictionConfidence.setText(confidence + "%");
+                    cardMLPrediction.setVisibility(View.VISIBLE);
+                }
+                showAIInsights();
+            });
+        } catch (Exception e) {
+            Log.e("ML_MODEL", "Analiz xətası", e);
+            showSimpleAnalysis();
+        }
+    }
+
+    private void showSimpleAnalysis() {
+        runOnUiThread(() -> {
+            StringBuilder sb = new StringBuilder();
+            sb.append("📊 ").append(getString(R.string.financial_health)).append("\n────────────────────\n\n");
+            sb.append(String.format("💵 %s: ₼%.2f\n", getString(R.string.income), totalIncome));
+            sb.append(String.format("💸 %s: ₼%.2f\n", getString(R.string.expense), totalExpense));
+            sb.append(String.format("💰 %s: ₼%.2f\n\n", getString(R.string.net), (totalIncome - totalExpense)));
+            if (monthlySalary > 0) {
+                double savingsRate = ((monthlySalary - monthlyExpenses) / monthlySalary) * 100;
+                sb.append(String.format("📈 %s: %.1f%%\n", getString(R.string.savings_rate), savingsRate));
+                if (savingsRate < 10) sb.append("⚠️ Tövsiyə: Xərcləri azaldın\n");
+                else if (savingsRate > 20) sb.append("🎉 Əla qənaət nisbəti!\n");
+            }
+            tvAiInsights.setText(sb.toString());
+        });
+    }
+
+    private void showAIInsights() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("🤖 ").append(getString(R.string.ai_analysis)).append("\n══════════════════════\n\n");
+        sb.append(String.format("📊 %s:\n   • %s: ₼%.2f\n   • %s: ₼%.2f\n   • %s: ₼%.2f\n\n",
+                getString(R.string.financial_health), getString(R.string.income), totalIncome,
+                getString(R.string.expense), totalExpense, getString(R.string.net), (totalIncome - totalExpense)));
+        if (monthlySalary > 0) {
+            double savingsRate = ((monthlySalary - monthlyExpenses) / monthlySalary) * 100;
+            sb.append(String.format("💰 %s:\n   • %s: ₼%.2f\n   • %s: ₼%.2f\n   • %s: %.1f%%\n\n",
+                    getString(R.string.monthly_salary), getString(R.string.monthly_salary), monthlySalary,
+                    getString(R.string.monthly_expense), monthlyExpenses, getString(R.string.savings_rate), savingsRate));
+            sb.append("💡 TÖVSİYƏLƏR:\n");
+            if (savingsRate < 10) sb.append("   • ⚠️ Xərclərinizi azaldın\n   • 📝 Büdcə planlaması edin\n");
+            else if (savingsRate < 20) sb.append("   • 👍 Yaxşı, daha da yaxşılaşdıra bilərsiniz\n   • 💰 İnvestisiya düşünün\n");
+            else sb.append("   • 🎉 Mükəmməl maliyyə vəziyyəti\n   • 📈 İnvestisiya etmək üçün ideal vaxt\n");
+        }
+        tvAiInsights.setText(sb.toString());
+    }
+
+    private void showAllTransactionsDialog() {
+        if (allTransactions == null || allTransactions.isEmpty()) {
+            Toast.makeText(this, getString(R.string.insufficient_data), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        FragmentManager fm = getSupportFragmentManager();
+        TransactionsDialog dialog = new TransactionsDialog(allTransactions, "📋 " + getString(R.string.all_transactions));
+        dialog.show(fm, "TransactionsDialog");
+    }
+
+
+    private void showAIAnalysisDialog() {
+        if (allTransactions == null || allTransactions.isEmpty()) {
+            Toast.makeText(this, getString(R.string.insufficient_data), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Map<String, Double> categoryData = new HashMap<>();
+        for (Map<String, Object> t : allTransactions) {
+            String category = (String) t.get("category");
+            String type = (String) t.get("type");
+            Double amount = (Double) t.get("amount");
+            if ("expense".equals(type) && category != null && amount != null) {
+                categoryData.put(category, categoryData.getOrDefault(category, 0.0) + amount);
+            }
+        }
+        FragmentManager fm = getSupportFragmentManager();
+        AIAnalysisDialog dialog = new AIAnalysisDialog(
+                tvAiInsights.getText().toString(),
+                "🤖 " + getString(R.string.ai_analysis),
+                categoryData,
+                totalIncome,
+                totalExpense,
+                monthlySalary
+        );
+        dialog.show(fm, "AIAnalysisDialog");
+    }
+
+    private void setupClickListeners() {
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+
+        btnLogout.setOnClickListener(v -> logout());
+        btnRefresh.setOnClickListener(v -> {
+            fetchAllDataFromFirebase();
+            Toast.makeText(this, getString(R.string.refresh) + "...", Toast.LENGTH_SHORT).show();
+        });
+        if (cardAddData != null) {
+            cardAddData.setOnClickListener(v -> startActivity(new Intent(this, AddDataActivity.class)));
+        }
+        if (cardAiInsights != null) {
+            cardAiInsights.setOnClickListener(v -> showAIAnalysisDialog());
+        }
+        if (cardTransactions != null) {
+            cardTransactions.setOnClickListener(v -> showAllTransactionsDialog());
+        }
+    }
+
+    private void setupNavigationDrawer() {
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_dashboard) drawerLayout.closeDrawer(GravityCompat.START);
+            else if (id == R.id.nav_reports) { showAllTransactionsDialog(); drawerLayout.closeDrawer(GravityCompat.START); }
+            else if (id == R.id.nav_sales) { showAIAnalysisDialog(); drawerLayout.closeDrawer(GravityCompat.START); }
+            else if (id == R.id.nav_settings) { startActivity(new Intent(this, SettingsActivity.class)); drawerLayout.closeDrawer(GravityCompat.START); }
+            else if (id == R.id.nav_logout) { logout(); drawerLayout.closeDrawer(GravityCompat.START); }
+            return true;
+        });
+        View headerView = navigationView.getHeaderView(0);
+        TextView navUserName = headerView.findViewById(R.id.navUserName);
+        TextView navUserEmail = headerView.findViewById(R.id.navUserEmail);
+        if (mAuth.getCurrentUser() != null) {
+            String email = mAuth.getCurrentUser().getEmail();
+            String displayName = mAuth.getCurrentUser().getDisplayName();
+            if (displayName != null && !displayName.isEmpty()) {
+                navUserName.setText(displayName);
+                tvUserName.setText(displayName);
+            } else if (email != null) {
+                navUserName.setText(email.split("@")[0]);
+                tvUserName.setText(email.split("@")[0]);
+            }
+            navUserEmail.setText(email != null ? email : "email@example.com");
+        }
+    }
+
     private void updateDateTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
-        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
         tvCurrentDate.setText(sdf.format(new Date()));
-
-        String day = dayFormat.format(new Date());
-        String azDay = getAzDay(day);
-        tvDayOfWeek.setText(azDay);
+        String day = new SimpleDateFormat("EEEE", Locale.getDefault()).format(new Date());
+        tvDayOfWeek.setText(day);
     }
 
     private String getAzDay(String engDay) {
-        switch(engDay) {
+        switch (engDay) {
             case "Monday": return "Bazar ertəsi";
             case "Tuesday": return "Çərşənbə axşamı";
             case "Wednesday": return "Çərşənbə";
@@ -847,146 +1041,46 @@ public class DashboardActivity extends BaseActivity {
         }
     }
 
-    private void setupClickListeners() {
-        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
-
-        btnLogout.setOnClickListener(v -> logout());
-
-        btnRefresh.setOnClickListener(v -> {
-            fetchAllDataFromFirebase();
-            Toast.makeText(DashboardActivity.this, "Məlumatlar yenilənir...", Toast.LENGTH_SHORT).show();
-        });
-
-        if (cardAddData != null) {
-            cardAddData.setOnClickListener(v -> {
-                Intent intent = new Intent(DashboardActivity.this, AddDataActivity.class);
-                startActivity(intent);
-            });
-        }
-
-        if (cardAiInsights != null) {
-            cardAiInsights.setOnClickListener(v -> showAIAnalysisDialog());
-        }
-
-        if (cardTransactions != null) {
-            cardTransactions.setOnClickListener(v -> showAllTransactionsDialog());
-        }
-    }
-
-    private void setupNavigationDrawer() {
-        navigationView.setNavigationItemSelectedListener(item -> {
-            int id = item.getItemId();
-
-            if (id == R.id.nav_dashboard) {
-                drawerLayout.closeDrawer(GravityCompat.START);
-            } else if (id == R.id.nav_reports) {
-                showAllTransactionsDialog();
-                drawerLayout.closeDrawer(GravityCompat.START);
-            } else if (id == R.id.nav_sales) {
-                showAIAnalysisDialog();
-                drawerLayout.closeDrawer(GravityCompat.START);
-            } else if (id == R.id.nav_settings) {
-                startActivity(new Intent(DashboardActivity.this, SettingsActivity.class));
-                drawerLayout.closeDrawer(GravityCompat.START);
-            } else if (id == R.id.nav_logout) {
-                logout();
-                drawerLayout.closeDrawer(GravityCompat.START);
-            }
-
-            return true;
-        });
-
-        View headerView = navigationView.getHeaderView(0);
-        TextView navUserName = headerView.findViewById(R.id.navUserName);
-        TextView navUserEmail = headerView.findViewById(R.id.navUserEmail);
-
-        if (mAuth.getCurrentUser() != null) {
-            String email = mAuth.getCurrentUser().getEmail();
-            String userName = email != null ? email.split("@")[0] : "İstifadəçi";
-            navUserName.setText(userName);
-            navUserEmail.setText(email != null ? email : "email@example.com");
-            tvUserName.setText(userName);
-        }
-    }
-
-    private void showAllTransactionsDialog() {
-        if (allTransactions == null || allTransactions.isEmpty()) {
-            Toast.makeText(this, "Heç bir əməliyyat tapılmadı", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        TransactionsDialog dialog = new TransactionsDialog(allTransactions, "📋 Bütün Əməliyyatlar");
-        dialog.show(fragmentManager, "TransactionsDialog");
-    }
-
-    private void showAIAnalysisDialog() {
-        if (allTransactions == null || allTransactions.isEmpty()) {
-            Toast.makeText(this, "Analiz üçün məlumat yoxdur", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Kateqoriya məlumatlarını hazırla
-        Map<String, Double> categoryData = new HashMap<>();
-        for (Map<String, Object> t : allTransactions) {
-            String category = (String) t.get("category");
-            String type = (String) t.get("type");
-            Double amount = (Double) t.get("amount");
-
-            if ("expense".equals(type) && category != null && amount != null) {
-                categoryData.put(category, categoryData.getOrDefault(category, 0.0) + amount);
-            }
-        }
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        AIAnalysisDialog dialog = new AIAnalysisDialog(
-                tvAiInsights.getText().toString(),
-                "🤖 AI Maliyyə Analizi",
-                categoryData,
-                totalIncome,
-                totalExpense,
-                monthlySalary
-        );
-        dialog.show(fragmentManager, "AIAnalysisDialog");
-    }
-
-    private long getStartOfDay() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTimeInMillis();
-    }
-
-    private long getEndOfDay() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-        calendar.set(Calendar.MILLISECOND, 999);
-        return calendar.getTimeInMillis();
-    }
-
     private long getStartOfDay(long timestamp) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timestamp);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTimeInMillis();
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(timestamp);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTimeInMillis();
     }
 
     private long getEndOfDay(long timestamp) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timestamp);
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-        calendar.set(Calendar.MILLISECOND, 999);
-        return calendar.getTimeInMillis();
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(timestamp);
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.MILLISECOND, 999);
+        return cal.getTimeInMillis();
+    }
+
+    private long getStartOfWeek(long timestamp) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(timestamp);
+        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTimeInMillis();
+    }
+
+    private long getStartOfMonth(long timestamp) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(timestamp);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTimeInMillis();
     }
 
     private void startRealTimeUpdates() {
@@ -999,9 +1093,7 @@ public class DashboardActivity extends BaseActivity {
 
     private void logout() {
         mAuth.signOut();
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        startActivity(new Intent(this, LoginActivity.class));
         finish();
     }
 
@@ -1009,9 +1101,7 @@ public class DashboardActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacks(refreshRunnable);
-        if (financeModel != null) {
-            financeModel.close();
-        }
+        if (financeModel != null) financeModel.close();
     }
 
     @Override
@@ -1022,10 +1112,7 @@ public class DashboardActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) drawerLayout.closeDrawer(GravityCompat.START);
+        else super.onBackPressed();
     }
 }

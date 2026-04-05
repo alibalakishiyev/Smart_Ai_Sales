@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Jibim</string>
+    <string name="app_name_short">Jibim</string>
+
+    <!-- Common -->
+    <string name="welcome">Добро пожаловать</string>
+    <string name="save">Сохранить</string>
+    <string name="cancel">Отмена</string>
+    <string name="ok">OK</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="loading">Загрузка...</string>
+    <string name="refresh">Обновить</string>
+    <string name="add">Добавить</string>
+    <string name="logout">Выйти</string>
+    <string name="settings">Настройки</string>
+    <string name="language">Язык</string>
+    <string name="language_changed">Язык изменен</string>
+    <string name="dark_mode">Темный режим</string>
+    <string name="version">Версия</string>
+    <string name="about">О приложении</string>
+    <string name="profile">Мои данные</string>
+    <string name="reset_password">Сбросить пароль</string>
+    <string name="add_salary">Добавить зарплату</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard">Панель управления</string>
+    <string name="current_balance">Текущий баланс</string>
+    <string name="monthly_salary">Месячная зарплата</string>
+    <string name="monthly_expense">Месячный расход</string>
+    <string name="today">Сегодня</string>
+    <string name="this_week">Эта неделя</string>
+    <string name="this_month">Этот месяц</string>
+    <string name="income">Доход</string>
+    <string name="expense">Расход</string>
+    <string name="net">Чистый</string>
+    <string name="income_vs_expense_trend">Тренд доходов и расходов</string>
+    <string name="last_30_days">Последние 30 дней</string>
+    <string name="expense_categories">Категории расходов</string>
+    <string name="financial_health">Финансовое здоровье</string>
+    <string name="savings_rate">Норма сбережений</string>
+    <string name="expense_ratio">Коэффициент расходов</string>
+    <string name="status">Состояние</string>
+    <string name="ai_prediction">AI Прогноз</string>
+    <string name="tomorrow_estimate">Прогноз на завтра</string>
+    <string name="prediction_accuracy">Точность прогноза</string>
+    <string name="ai_analysis">AI Анализ</string>
+    <string name="click_for_details">Нажмите для деталей →</string>
+    <string name="all_transactions">Все операции</string>
+    <string name="view_recent_transactions">Посмотреть последние операции</string>
+    <string name="insufficient_data">Недостаточно данных</string>
+    <string name="excellent">Отлично</string>
+    <string name="good">Хорошо</string>
+    <string name="average">Средне</string>
+    <string name="poor">Плохо</string>
+    <string name="analyzing">Анализ...</string>
+
+    <!-- Days -->
+    <string name="monday">Понедельник</string>
+    <string name="tuesday">Вторник</string>
+    <string name="wednesday">Среда</string>
+    <string name="thursday">Четверг</string>
+    <string name="friday">Пятница</string>
+    <string name="saturday">Суббота</string>
+    <string name="sunday">Воскресенье</string>
+
+    <!-- Navigation Drawer -->
+    <string name="nav_dashboard">Панель управления</string>
+    <string name="nav_reports">Отчеты</string>
+    <string name="nav_sales_analysis">Анализ продаж</string>
+    <string name="nav_settings">Настройки</string>
+    <string name="nav_logout">Выйти</string>
+
+    <!-- Greeting -->
+    <string name="hello">Здравствуйте,</string>
+    <string name="guest">Гость</string>
+
+    <!-- AI Analysis Dialog -->
+    <string name="ai_analysis_title">🤖 AI Анализ</string>
+    <string name="total_statistics">📊 Общая статистика</string>
+    <string name="total_income">Общий доход</string>
+    <string name="total_expense">Общий расход</string>
+    <string name="net_profit">Чистая прибыль</string>
+    <string name="monthly_salary_label">Месячная зарплата:</string>
+    <string name="category_analysis_title">📋 Анализ категорий</string>
+    <string name="recommendations_title">💡 Рекомендации</string>
+    <string name="financial_health_title">🏥 Финансовое здоровье</string>
+    <string name="close">Закрыть</string>
+    <string name="insufficient_salary_data">Введите данные о зарплате</string>
+
+
+    <!-- Onboarding -->
+    <string name="skip">Пропустить</string>
+    <string name="next">Далее</string>
+    <string name="get_started">Начать</string>
+    <string name="onboarding_title_1">Отслеживайте продажи</string>
+    <string name="onboarding_desc_1">Отслеживайте ежедневные, еженедельные и ежемесячные продажи в реальном времени</string>
+    <string name="onboarding_title_2">AI Анализ</string>
+    <string name="onboarding_desc_2">Искусственный интеллект анализирует ваши продажи и дает рекомендации</string>
+    <string name="onboarding_title_3">Прогнозирование</string>
+    <string name="onboarding_desc_3">Прогнозируйте будущие тенденции продаж</string>
+    <string name="onboarding_title_4">Безопасность с Firebase</string>
+    <string name="onboarding_desc_4">Все ваши данные надежно хранятся в облаке Firebase</string>
+
+
+    <!-- Add Data Activity -->
+    <string name="add_data_title">Добавить данные</string>
+    <string name="date">Дата</string>
+    <string name="time">Время</string>
+    <string name="day">День</string>
+    <string name="transaction_type">Тип операции</string>
+    <string name="category">Категория</string>
+    <string name="products">Товары</string>
+    <string name="select_product">Выберите товар...</string>
+    <string name="no_products">Нет товаров</string>
+    <string name="add_new_product">Добавить новый товар</string>
+    <string name="product_name">Название товара</string>
+    <string name="price">Цена</string>
+    <string name="quantity">Количество</string>
+    <string name="liter">Литры</string>
+    <string name="kilogram">Килограммы</string>
+    <string name="add_to_list">Добавить в список</string>
+    <string name="product_list">Список товаров</string>
+    <string name="selected_count">выбрано</string>
+    <string name="total_selected">Выбрано всего</string>
+    <string name="location">Местоположение</string>
+    <string name="get_location">Получить</string>
+    <string name="new_location">Новое место</string>
+    <string name="add_location">Добавить</string>
+    <string name="note_optional">Заметка (необязательно)</string>
+    <string name="additional_note">Дополнительная заметка</string>
+    <string name="preview">Предпросмотр</string>
+    <string name="type">Тип</string>
+    <string name="total">Итого</string>
+    <string name="scan">Сканировать</string>
+    <string name="online">Онлайн</string>
+    <string name="offline_mode">Оффлайн режим</string>
+    <string name="offline_data_saved">Оффлайн: данные сохранены локально</string>
+    <string name="location_not_loaded">Местоположение не получено</string>
+    <string name="getting_location">Получение местоположения...</string>
+    <string name="location_permission_required">Требуется разрешение на местоположение</string>
+    <string name="camera_permission_required">Для сканирования чеков требуется разрешение камеры</string>
+
+    <!-- Categories -->
+    <string name="category_grocery">🛒 Продукты</string>
+    <string name="category_transport">🚗 Транспорт</string>
+    <string name="category_rent">🏠 Аренда</string>
+    <string name="category_utilities">💡 Коммунальные</string>
+    <string name="category_entertainment">🎮 Развлечения</string>
+    <string name="category_health">🏥 Здоровье</string>
+    <string name="category_education">📚 Образование</string>
+    <string name="category_clothing">👕 Одежда</string>
+    <string name="category_technology">📱 Технологии</string>
+    <string name="category_restaurant">🍽️ Ресторан</string>
+    <string name="category_travel">✈️ Путешествия</string>
+    <string name="category_other">💼 Другое</string>
+    <string name="category_salary">💰 Зарплата</string>
+    <string name="category_bonus">💼 Бонус</string>
+    <string name="category_investment">📈 Инвестиции</string>
+    <string name="category_sale">🛍️ Продажа</string>
+    <string name="category_gift">🎁 Подарок</string>
+    <string name="category_freelance">💵 Фриланс</string>
+    <string name="category_business">🏢 Бизнес</string>
+
+    <string name="tab_all">Все</string>
+    <string name="best_price_label">Лучшая цена</string>
+    <string name="search_hint">Поиск товаров…</string>
+    <string name="loading_text">Загрузка скидок…</string>
+    <string name="no_products_found">Товары не найдены</string>
+    <string name="product_image_desc">Изображение товара</string>
+
+</resources>
