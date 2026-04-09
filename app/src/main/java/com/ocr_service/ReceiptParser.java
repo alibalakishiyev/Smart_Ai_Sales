@@ -211,78 +211,136 @@ public class ReceiptParser {
      * Bütün məhsulları tap
      */
     private static void findAllProducts(List<String> lines, ReceiptData data) {
-        List<MatchedProduct> matchedProducts = new ArrayList<>();
-        boolean productSectionStarted = false;
-
-        // Əvvəlcə bütün məhsul adlarını və rəqəm sətirlərini topla
-        List<String> productNames = new ArrayList<>();
-        List<String> numberLines = new ArrayList<>();
+        boolean inProductSection = false;
 
         for (int i = 0; i < lines.size(); i++) {
-            String line = lines.get(i);
+            String line = lines.get(i).trim();
 
             // Məhsul bölməsinin başlanğıcı
-            if (line.contains("Məhsulun adı") || line.contains("Say Qiymat Cami")) {
-                productSectionStarted = true;
+            if (line.contains("Say Qiymat") || line.contains("Məhsulun adı")) {
+                inProductSection = true;
                 continue;
             }
-
-            // Cəmi bölməsinə çatdıqda dayan
-            if (line.contains("Cəmi") && line.length() < 10) {
+            // Bölmənin sonu
+            if (inProductSection && (line.startsWith("Cəmi") || line.startsWith("Ödəniş"))) {
                 break;
             }
+            if (!inProductSection) continue;
 
-            if (!productSectionStarted) continue;
+            // Vergi sətirlərini keç
+            if (isSkippableLine(line)) continue;
 
-            // Məhsul adı sətri (böyük hərflərlə)
-            if (line.matches(".*[A-ZƏİĞÖÜÇŞ0-9]{4,}.*") && !line.matches(".*\\d+[.,]\\d+.*\\d+[.,]\\d+.*")) {
-                if (line.length() > 3 && !line.contains("ƏDV") && !line.contains("%")) {
-                    productNames.add(line);
-                }
-                continue;
-            }
+            // ── FORMAT 1: "4.000 1.40 5.60" (rəqəm sətri əvvəl, ad sonra) ──
+            List<Double> nums = extractNumbers(line);
+            if (nums.size() >= 3 && isNumberLine(line)) {
+                // Növbəti sətir məhsul adı olmalıdır
+                if (i + 1 < lines.size()) {
+                    String nextLine = lines.get(i + 1).trim();
+                    if (!isNumberLine(nextLine) && !isSkippableLine(nextLine) && nextLine.length() > 2) {
+                        double qty   = nums.get(0);
+                        double price = nums.get(1);
+                        double total = nums.get(2);
 
-            // Rəqəm sətri
-            if (line.matches(".*\\d+[.,]\\d+.*\\d+[.,]\\d+.*") ||
-                    (line.matches(".*\\d+[.,]\\d+.*") && extractNumbers(line).size() >= 2)) {
-                numberLines.add(line);
-            }
-        }
-
-        Log.d(TAG, "Tapılan məhsul adları: " + productNames.size());
-        Log.d(TAG, "Tapılan rəqəm sətirləri: " + numberLines.size());
-
-        // Məhsul adları və rəqəm sətirlərini cütləşdir
-        int minCount = Math.min(productNames.size(), numberLines.size());
-        for (int i = 0; i < minCount; i++) {
-            String name = productNames.get(i);
-            String numbers = numberLines.get(i);
-
-            String cleanName = cleanProductName(name);
-            List<Double> numList = extractNumbers(numbers);
-
-            if (!cleanName.isEmpty() && numList.size() >= 2) {
-                ProductItem product = createProduct(cleanName, numList);
-                if (product != null) {
-                    // OCR xətasını düzəlt
-                    String correctedName = correctProductName(cleanName);
-                    if (!correctedName.isEmpty()) {
-                        if (product.getKg() > 0) {
-                            product = new ProductItem(correctedName, product.getKg(), product.getPrice(), product.getTotalAmount());
-                            product.setKg(product.getKg());
-                        } else {
-                            product = new ProductItem(correctedName, product.getQuantity(), product.getPrice());
+                        if (isValidProduct(nextLine, qty, price, total)) {
+                            data.products.add(buildProduct(nextLine, qty, price, total));
+                            Log.d(TAG, "F1 məhsul: " + nextLine + " | " + qty + " x " + price + " = " + total);
+                            i++; // ad sətirini keç
+                            continue;
                         }
                     }
-                    data.products.add(product);
-                    Log.d(TAG, "Məhsul " + (i+1) + ": " + product.getName() + " - " + product.getFormattedTotal());
+                }
+            }
+
+            // ── FORMAT 2: "BANAN KG ENDIRIMLI" (ad əvvəl, rəqəmlər sonra) ──
+            if (isProductNameLine(line)) {
+                // Növbəti 1-3 sətirdən rəqəmləri topla
+                List<Double> collectedNums = new ArrayList<>();
+                int j = i + 1;
+                while (j < lines.size() && j <= i + 4) {
+                    String next = lines.get(j).trim();
+                    if (isSkippableLine(next)) { j++; continue; }
+                    if (isProductNameLine(next) && collectedNums.size() == 0) break; // başqa ad başladı
+                    if (isProductNameLine(next) && collectedNums.size() > 0) break;
+                    collectedNums.addAll(extractNumbers(next));
+                    j++;
+                    if (collectedNums.size() >= 3) break;
+                }
+
+                if (collectedNums.size() >= 2) {
+                    double qty, price, total;
+                    if (collectedNums.size() >= 3) {
+                        qty   = collectedNums.get(0);
+                        price = collectedNums.get(1);
+                        total = collectedNums.get(2);
+                    } else {
+                        // Yalnız 2 rəqəm: say+qiymət və ya qiymət+cəmi
+                        qty   = collectedNums.get(0);
+                        price = collectedNums.get(1);
+                        total = qty * price;
+                    }
+
+                    if (isValidProduct(line, qty, price, total)) {
+                        data.products.add(buildProduct(line, qty, price, total));
+                        Log.d(TAG, "F2 məhsul: " + line + " | " + qty + " x " + price + " = " + total);
+                        i = j - 1; // oxunan sətirləri keç
+                        continue;
+                    }
                 }
             }
         }
 
-        // Əgər hələ də məhsul azdırsa, əlavə üsullarla axtar
-        if (data.products.size() < 12) {
-            findRemainingProducts(lines, data, productNames, numberLines);
+        Log.d(TAG, "Tapılan məhsul sayı: " + data.products.size());
+    }
+
+// ── Yardımçı metodlar ──────────────────────────────────────────
+
+    private static boolean isNumberLine(String line) {
+        // Sətrin əksəriyyəti rəqəm, nöqtə, boşluq
+        return line.matches("^[\\d.,\\s]+$") || extractNumbers(line).size() >= 2;
+    }
+
+    private static boolean isProductNameLine(String line) {
+        if (line.length() < 3) return false;
+        if (isSkippableLine(line)) return false;
+        if (isNumberLine(line)) return false;
+        // Böyük hərf məhsul adı əlaməti
+        String upper = line.toUpperCase(new Locale("az"));
+        int upperCount = 0;
+        for (char c : line.toCharArray()) if (Character.isUpperCase(c)) upperCount++;
+        return upperCount >= 2 || line.matches(".*[A-ZƏİĞÖÜÇŞ]{3,}.*");
+    }
+
+    private static boolean isSkippableLine(String line) {
+        return line.startsWith("*") ||
+                line.contains("ƏDV") ||
+                line.contains("Ticarat") ||
+                line.contains("Ticarət") ||
+                line.contains("azad") ||
+                line.contains("18%") ||
+                line.length() < 2;
+    }
+
+    private static boolean isValidProduct(String name, double qty, double price, double total) {
+        if (name.isEmpty() || price <= 0 || total <= 0) return false;
+        if (price > 500 || total > 2000) return false;
+        // Say * qiymət ≈ cəmi (10% tolerans)
+        double expected = qty * price;
+        return Math.abs(expected - total) / total < 0.15;
+    }
+
+    private static ProductItem buildProduct(String name, double qty, double price, double total) {
+        String cleanName = cleanProductName(name);
+        // JSON matcher ilə adı düzəlt
+        cleanName = ProductNameMatcher.match(cleanName);
+
+        if (qty != Math.floor(qty) || name.contains("KG") || name.contains("kq")) {
+            ProductItem p = new ProductItem(cleanName, qty, price, total);
+            p.setKg(qty);
+            return p;
+        } else {
+            ProductItem p = new ProductItem(cleanName, (int) Math.round(qty), price);
+            p.setTotalAmount(total);
+            return p;
         }
     }
 
@@ -394,22 +452,22 @@ public class ReceiptParser {
     /**
      * OCR xətasını düzəlt
      */
+    // ReceiptParser.java içərisində - mövcud metodu əvəz et:
+
     private static String correctProductName(String name) {
-        // Əvvəlcə JSON düzəlişlərini yoxla
+        // 1. Əvvəlcə JSON məhsul lüğəti ilə fuzzy match et
+        String matched = ProductNameMatcher.match(name);
+        if (!matched.equals(name)) {
+            return matched; // Uyğunluq tapıldı
+        }
+
+        // 2. Köhnə hardcoded düzəlişlər (fallback kimi saxla)
         if (!productNameCorrections.isEmpty()) {
             for (Map.Entry<String, String> entry : productNameCorrections.entrySet()) {
                 if (name.contains(entry.getKey()) || entry.getKey().contains(name)) {
                     return entry.getValue();
                 }
             }
-        }
-
-        // JSON yoxdursa, hardcoded düzəlişlərə bax
-        if (name.contains("TOST COREYI") && name.contains("OR")) {
-            return name.replace("OR", "QR");
-        }
-        if (name.contains("Q0ZLU")) {
-            return name.replace("Q0ZLU", "QOZLU");
         }
 
         return name;

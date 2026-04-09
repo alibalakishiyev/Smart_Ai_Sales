@@ -49,10 +49,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.model.FinanceMLModel;
-import com.model.ProductMLModel;
 import com.ocr_service.ReceiptScannerActivity;
 import com.report.ReportActivity;
-import com.service.FinanceMonitoringService;
+import com.serviceNotification.FinanceMonitoringService;
 import com.smart_ai_sales.R;
 import com.utils.BaseActivity;
 import com.utils.SettingsActivity;
@@ -64,10 +63,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class MainActivity extends BaseActivity {
 
@@ -75,7 +72,7 @@ public class MainActivity extends BaseActivity {
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
 
     // UI Elements
-    private MaterialCardView cardDashboard, cardDiscounts, cardAddData, cardReports, cardSettings, cardReceiptScanner, cardAIAnalysis;
+    private MaterialCardView cardDashboard, cardDiscounts, cardAddData, cardReports, cardSettings, cardReceiptScanner;
     private MaterialButton btnDashboard, btnDiscounts, btnAddData, btnReports, btnSettings, btnReceiptScanner, btnAIAnalysis;
     private TextView tvWelcome, tvQuote, tvVersion, tvAIAnalysis;
     private LottieAnimationView animationView;
@@ -183,7 +180,6 @@ public class MainActivity extends BaseActivity {
         cardSettings = findViewById(R.id.cardSettings);
         cardReceiptScanner = findViewById(R.id.cardReceiptScanner);
         cardDiscounts = findViewById(R.id.cardDiscounts);
-        cardAIAnalysis = findViewById(R.id.cardAIAnalysis);
 
         // Buttons
         btnDashboard = findViewById(R.id.btnDashboard);
@@ -384,9 +380,12 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    private void loadTransactionStats(String userId) {
-        Log.d(TAG, "Loading transaction statistics");
+    // MainActivity.java - Statistika hissəsinin tam düzgün versiyası
 
+    private void loadTransactionStats(String userId) {
+        Log.d(TAG, "Loading transaction statistics for user: " + userId);
+
+        // Get today's date range
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
@@ -399,6 +398,7 @@ public class MainActivity extends BaseActivity {
         calendar.set(Calendar.SECOND, 59);
         Date endOfDay = calendar.getTime();
 
+        // Load ALL transactions from Firebase
         db.collection("transactions")
                 .whereEqualTo("userId", userId)
                 .get()
@@ -409,22 +409,25 @@ public class MainActivity extends BaseActivity {
                     todayIncome = 0;
                     todayExpense = 0;
 
-                    Log.d(TAG, "Total transactions: " + totalTransactions);
+                    Log.d(TAG, "Total transactions found: " + totalTransactions);
 
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         String type = doc.getString("type");
 
-                        Boolean isBulk = doc.getBoolean("isBulkTransaction");
+                        // Get amount (support both old and new transaction formats)
                         Double amount = null;
+                        Boolean isBulk = doc.getBoolean("isBulkTransaction");
                         if (isBulk != null && isBulk) {
                             amount = doc.getDouble("groupTotalAmount");
-                        } else {
+                        }
+                        if (amount == null) {
                             amount = doc.getDouble("totalAmount");
-                            if (amount == null) {
-                                amount = doc.getDouble("amount");
-                            }
+                        }
+                        if (amount == null) {
+                            amount = doc.getDouble("amount");
                         }
 
+                        // Get date
                         Date transactionDate = getDateFromDoc(doc, "timestamp");
                         if (transactionDate == null) {
                             transactionDate = getDateFromDoc(doc, "date");
@@ -433,11 +436,14 @@ public class MainActivity extends BaseActivity {
                         if (amount != null) {
                             if ("income".equals(type)) {
                                 totalIncome += amount;
+                                Log.d(TAG, "Income added: " + amount + ", Total: " + totalIncome);
                             } else if ("expense".equals(type)) {
                                 totalExpense += amount;
+                                Log.d(TAG, "Expense added: " + amount + ", Total: " + totalExpense);
                             }
                         }
 
+                        // Check if transaction is from today
                         if (transactionDate != null &&
                                 !transactionDate.before(startOfDay) &&
                                 !transactionDate.after(endOfDay)) {
@@ -451,9 +457,17 @@ public class MainActivity extends BaseActivity {
 
                     balance = totalIncome - totalExpense;
 
-                    Log.d(TAG, String.format("Stats - Income: %.2f, Expense: %.2f, Balance: %.2f",
-                            totalIncome, totalExpense, balance));
+                    Log.d(TAG, "========================================");
+                    Log.d(TAG, "FINAL STATISTICS:");
+                    Log.d(TAG, "Total Income: " + formatCurrency(totalIncome));
+                    Log.d(TAG, "Total Expense: " + formatCurrency(totalExpense));
+                    Log.d(TAG, "Balance: " + formatCurrency(balance));
+                    Log.d(TAG, "Today Income: " + formatCurrency(todayIncome));
+                    Log.d(TAG, "Today Expense: " + formatCurrency(todayExpense));
+                    Log.d(TAG, "Total Transactions: " + totalTransactions);
+                    Log.d(TAG, "========================================");
 
+                    // Load products count
                     loadProductsCount(userId);
 
                     // Run AI Analysis after loading data
@@ -472,14 +486,13 @@ public class MainActivity extends BaseActivity {
         }
 
         try {
-            // Prepare data for AI analysis
+            // Calculate weekly expense (last 7 days)
             double weeklyExpense = calculateWeeklyExpense();
-            double monthlyExpense = totalExpense;
-            double dailyAvg = weeklyExpense / 7;
 
             // Calculate risk score
-            if (monthlyExpense > 0) {
-                aiRiskScore = (float) (weeklyExpense / (monthlyExpense / 4));
+            if (totalExpense > 0) {
+                double monthlyAvg = totalExpense / Math.max(1, totalTransactions / 30);
+                aiRiskScore = (float) (weeklyExpense / Math.max(1, monthlyAvg));
                 if (aiRiskScore > 1.3f) aiRiskScore = 0.8f;
                 else if (aiRiskScore > 1.1f) aiRiskScore = 0.6f;
                 else if (aiRiskScore > 0.9f) aiRiskScore = 0.4f;
@@ -489,6 +502,7 @@ public class MainActivity extends BaseActivity {
             }
 
             // Predict next 3 days expense
+            double dailyAvg = weeklyExpense / 7;
             aiPredictedExpense = dailyAvg * 3;
 
             // Generate AI insight
@@ -507,13 +521,16 @@ public class MainActivity extends BaseActivity {
         long weekAgo = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L;
         double weeklyExpense = 0;
 
-        // This would need transaction data - simplified for now
+        // Calculate from actual transactions (would need to query)
+        // For now, use average based on total
         if (totalTransactions > 0 && totalExpense > 0) {
-            weeklyExpense = totalExpense / 4; // Approximate
+            // Estimate weekly expense as 1/4 of total monthly (approximate)
+            weeklyExpense = totalExpense / Math.max(1, totalTransactions / 30) * 7;
         }
 
         return weeklyExpense;
     }
+
 
     private String generateAIInsight() {
         StringBuilder insight = new StringBuilder();
@@ -521,38 +538,63 @@ public class MainActivity extends BaseActivity {
         // Financial health assessment
         if (balance < 0) {
             insight.append("⚠️ XƏBƏRDARLIQ: Balans mənfidir! Xərclərinizi azaldın.\n");
+            insight.append("💰 Tövsiyə: Gəlirinizi artırmaq üçün yeni yollar axtarın.\n\n");
         } else if (balance < 100) {
-            insight.append("⚡ Balans azalır. Diqqətli olun.\n");
+            insight.append("⚡ Diqqət: Balans azalır. Xərclərə nəzarət edin.\n");
+            insight.append("💡 Tövsiyə: Növbəti 7 gündə lazımsız xərclərdən çəkinin.\n\n");
         } else {
-            insight.append("✅ Maliyyə vəziyyətiniz yaxşıdır.\n");
+            insight.append("✅ Maliyyə vəziyyətiniz yaxşıdır. Belə davam edin!\n");
+            insight.append("🎯 Tövsiyə: Qənaət etdiyiniz pulu investisiya edin.\n\n");
         }
 
         // Risk assessment
         if (aiRiskScore > 0.7f) {
-            insight.append("🔴 YÜKSƏK RİSK: Həftəlik xərcləriniz çox artıb!\n");
+            insight.append("🔴 YÜKSƏK RİSK: Son həftəlik xərcləriniz çox artıb!\n");
+            insight.append("📉 Tövsiyə: Büdcənizi nəzərdən keçirin və xərcləri azaldın.\n\n");
         } else if (aiRiskScore > 0.4f) {
-            insight.append("🟡 ORTA RİSK: Xərclərinizə nəzarət edin.\n");
+            insight.append("🟡 ORTA RİSK: Xərcləriniz normal səviyyədən yüksəkdir.\n");
+            insight.append("📊 Tövsiyə: Gündəlik xərclərinizi qeyd edin və izləyin.\n\n");
         } else {
-            insight.append("🟢 AŞAĞI RİSK: Normal davam edin.\n");
+            insight.append("🟢 AŞAĞI RİSK: Xərcləriniz nəzarət altındadır.\n");
+            insight.append("👍 Tövsiyə: Mövcud vəziyyəti qoruyun.\n\n");
         }
 
-        // Prediction
-        insight.append(String.format("📊 3 GÜNLÜK PROQNOZ: ₼%.2f xərc gözlənilir.\n", aiPredictedExpense));
-
-        // Savings recommendation
-        double recommendedSavings = aiPredictedExpense * 0.15;
-        insight.append(String.format("💡 TÖVSİYƏ: ₼%.2f qənaət etməyə çalışın.\n", recommendedSavings));
-
-        // Expense ratio warning
+        // Expense ratio analysis
         if (totalIncome > 0) {
             double expenseRatio = (totalExpense / totalIncome) * 100;
+            insight.append(String.format("📊 XƏRC/GƏLİR NİSBƏTİ: %.1f%%\n", expenseRatio));
+
             if (expenseRatio > 70) {
-                insight.append("📉 Xərclər gəlirin 70%-dən çoxdur! Büdcə planlaması edin.");
+                insight.append("⚠️ Bu nisbət çox yüksəkdir! 50/30/20 qaydasını tətbiq edin:\n");
+                insight.append("   • 50% - Əsas ehtiyaclar\n");
+                insight.append("   • 30% - İstəklər\n");
+                insight.append("   • 20% - Qənaət və investisiya\n\n");
             } else if (expenseRatio > 50) {
-                insight.append("📊 Xərclər gəlirin 50%-ni keçir. Diqqətli olun.");
+                insight.append("⚡ Nisbət ortadır. Qənaət etmək üçün imkanlar axtarın.\n\n");
             } else {
-                insight.append("🎉 Əla! Xərcləriniz gəlirinizin altında qalır.");
+                insight.append("✅ Əla nisbət! Qənaət etməyə davam edin.\n\n");
             }
+        }
+
+        // 3-day forecast
+        insight.append(String.format("📈 3 GÜNLÜK PROQNOZ:\n"));
+        insight.append(String.format("   • Gözlənilən xərc: ₼%.2f\n", aiPredictedExpense));
+
+        double recommendedSavings = aiPredictedExpense * 0.15;
+        insight.append(String.format("   • Tövsiyə olunan qənaət: ₼%.2f\n", recommendedSavings));
+
+        // Compare with current balance
+        if (balance > 0 && aiPredictedExpense > balance) {
+            insight.append("\n⚠️ XƏBƏRDARLIQ: Proqnoz edilən xərc balansınızdan çoxdur!\n");
+            insight.append("💡 Tövsiyə: Növbəti 3 gündə xüsusilə diqqətli olun.\n");
+        }
+
+        // Monthly summary
+        if (totalTransactions > 0) {
+            double avgTransaction = totalExpense / totalTransactions;
+            insight.append(String.format("\n📊 ORTALAMA STATİSTİKA:\n"));
+            insight.append(String.format("   • Orta əməliyyat məbləği: ₼%.2f\n", avgTransaction));
+            insight.append(String.format("   • Gündəlik ortalama xərc: ₼%.2f\n", aiPredictedExpense / 3));
         }
 
         return insight.toString();
@@ -561,9 +603,14 @@ public class MainActivity extends BaseActivity {
     private void updateAIDisplay() {
         runOnUiThread(() -> {
             StringBuilder display = new StringBuilder();
-            display.append("🤖 AI ANALİZİ\n");
-            display.append("══════════════════\n\n");
+            display.append("🤖 AI MALİYYƏ ANALİZİ\n");
+            display.append("══════════════════════════\n\n");
             display.append(aiInsight);
+
+            // Add footer with timestamp
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            display.append("\n──────────────────────────\n");
+            display.append("🕐 Son yeniləmə: " + timeFormat.format(new Date()));
 
             tvAIAnalysis.setText(display.toString());
         });
@@ -573,7 +620,7 @@ public class MainActivity extends BaseActivity {
         runOnUiThread(() -> {
             StringBuilder display = new StringBuilder();
             display.append("📊 MALİYYƏ STATİSTİKASI\n");
-            display.append("══════════════════\n\n");
+            display.append("══════════════════════════\n\n");
             display.append(String.format("💰 Balans: %s\n", formatCurrency(balance)));
             display.append(String.format("📈 Ümumi Gəlir: %s\n", formatCurrency(totalIncome)));
             display.append(String.format("📉 Ümumi Xərc: %s\n", formatCurrency(totalExpense)));
@@ -584,17 +631,27 @@ public class MainActivity extends BaseActivity {
                 double expenseRatio = (totalExpense / totalIncome) * 100;
                 display.append(String.format("\n📊 Xərc/Gəlir nisbəti: %.1f%%", expenseRatio));
                 if (expenseRatio > 70) {
-                    display.append(" (⚠️ Yüksək)");
+                    display.append(" (⚠️ Yüksək - Xərcləri azaldın!)");
                 } else if (expenseRatio > 50) {
-                    display.append(" (⚡ Orta)");
+                    display.append(" (⚡ Orta - Diqqətli olun)");
                 } else {
-                    display.append(" (✅ Yaxşı)");
+                    display.append(" (✅ Yaxşı - Davam edin)");
                 }
             }
+
+            if (totalTransactions > 0) {
+                double avgExpense = totalExpense / totalTransactions;
+                display.append(String.format("\n💳 Orta əməliyyat: %s", formatCurrency(avgExpense)));
+            }
+
+            display.append("\n\n──────────────────────────\n");
+            display.append("💡 AI analiz üçün məlumat toplanır...\n");
+            display.append("   Daha çox məlumat = Daha dəqiq analiz");
 
             tvAIAnalysis.setText(display.toString());
         });
     }
+
 
     private Date getDateFromDoc(DocumentSnapshot doc, String field) {
         try {
@@ -656,64 +713,111 @@ public class MainActivity extends BaseActivity {
     }
 
     private void updateStatsDisplay() {
-        statItems.clear();
+        runOnUiThread(() -> {
+            statItems.clear();
 
-        statItems.add(new StatItem(
-                "Balans",
-                formatCurrency(balance),
-                R.drawable.ic_balance,
-                balance >= 0 ? "#4CAF50" : "#F44336"
-        ));
+            // Balance Card
+            statItems.add(new StatItem(
+                    "Balans",
+                    formatCurrency(balance),
+                    R.drawable.ic_balance,
+                    balance >= 0 ? "#4CAF50" : "#F44336"
+            ));
 
-        statItems.add(new StatItem(
-                "Ümumi Gəlir",
-                formatCurrency(totalIncome),
-                R.drawable.ic_income,
-                "#4CAF50"
-        ));
+            // Total Income
+            statItems.add(new StatItem(
+                    "Ümumi Gəlir",
+                    formatCurrency(totalIncome),
+                    R.drawable.ic_income,
+                    "#4CAF50"
+            ));
 
-        statItems.add(new StatItem(
-                "Ümumi Xərc",
-                formatCurrency(totalExpense),
-                R.drawable.ic_expense,
-                "#F44336"
-        ));
+            // Total Expense
+            statItems.add(new StatItem(
+                    "Ümumi Xərc",
+                    formatCurrency(totalExpense),
+                    R.drawable.ic_expense,
+                    "#F44336"
+            ));
 
-        statItems.add(new StatItem(
-                "Bugünki Gəlir",
-                formatCurrency(todayIncome),
-                R.drawable.ic_today_income,
-                "#4CAF50"
-        ));
+            // Today's Income
+            statItems.add(new StatItem(
+                    "Bugünkü Gəlir",
+                    formatCurrency(todayIncome),
+                    R.drawable.ic_today_income,
+                    "#4CAF50"
+            ));
 
-        statItems.add(new StatItem(
-                "Bugünki Xərc",
-                formatCurrency(todayExpense),
-                R.drawable.ic_today_expense,
-                "#F44336"
-        ));
+            // Today's Expense
+            statItems.add(new StatItem(
+                    "Bugünkü Xərc",
+                    formatCurrency(todayExpense),
+                    R.drawable.ic_today_expense,
+                    "#F44336"
+            ));
 
-        statItems.add(new StatItem(
-                "Məhsullar",
-                String.valueOf(totalProducts),
-                R.drawable.ic_products,
-                "#2196F3"
-        ));
+            // Products Count
+            statItems.add(new StatItem(
+                    "Məhsullar",
+                    String.valueOf(totalProducts),
+                    R.drawable.ic_products,
+                    "#2196F3"
+            ));
 
-        statItems.add(new StatItem(
-                "Əməliyyatlar",
-                String.valueOf(totalTransactions),
-                R.drawable.ic_transactions,
-                "#9C27B0"
-        ));
+            // Transactions Count
+            statItems.add(new StatItem(
+                    "Əməliyyatlar",
+                    String.valueOf(totalTransactions),
+                    R.drawable.ic_transactions,
+                    "#9C27B0"
+            ));
 
-        Log.d(TAG, "Stats updated, items: " + statItems.size());
-        statsAdapter.notifyDataSetChanged();
-        animateStatsCards();
+            // AI: Expense Ratio (Xərc/Gəlir nisbəti)
+            if (totalIncome > 0) {
+                double expenseRatio = (totalExpense / totalIncome) * 100;
+                String ratioColor = expenseRatio > 70 ? "#F44336" : (expenseRatio > 50 ? "#FF9800" : "#4CAF50");
+                statItems.add(new StatItem(
+                        "Xərc/Gəlir",
+                        String.format(Locale.US, "%.1f%%", expenseRatio),
+                        R.drawable.ic_ratio,
+                        ratioColor
+                ));
+            }
+
+            // AI: Monthly Average Expense (Aylıq ortalama xərc)
+            if (totalTransactions > 0) {
+                double avgMonthlyExpense = totalExpense / Math.max(1, totalTransactions / 30);
+                statItems.add(new StatItem(
+                        "Aylıq Ort. Xərc",
+                        formatCurrency(avgMonthlyExpense),
+                        R.drawable.ic_monthly_avg,
+                        "#FF9800"
+                ));
+            }
+
+            // AI: Savings Potential (Qənaət potensialı)
+            if (totalIncome > 0 && totalExpense > 0) {
+                double savingsPotential = (totalIncome - totalExpense) * 0.2;
+                if (savingsPotential > 0) {
+                    statItems.add(new StatItem(
+                            "Qənaət Potensialı",
+                            formatCurrency(savingsPotential),
+                            R.drawable.ic_savings,
+                            "#2196F3"
+                    ));
+                }
+            }
+
+            Log.d(TAG, "Stats updated, total items: " + statItems.size());
+            statsAdapter.notifyDataSetChanged();
+
+            // Animate the new stats
+            animateStatsCards();
+        });
     }
 
     private String formatCurrency(double amount) {
-        return String.format("₼ %,.2f", amount);
+        return String.format(Locale.US, "₼ %,.2f", amount);
     }
 
     private void animateStatsCards() {
@@ -790,7 +894,7 @@ public class MainActivity extends BaseActivity {
             runAIAnalysis();
             Toast.makeText(this, "AI analiz yeniləndi", Toast.LENGTH_SHORT).show();
         };
-        cardAIAnalysis.setOnClickListener(aiClick);
+
         btnAIAnalysis.setOnClickListener(aiClick);
 
         // Settings
@@ -961,7 +1065,6 @@ public class MainActivity extends BaseActivity {
         new Handler().postDelayed(() -> cardReports.startAnimation(slideUp), 300);
         new Handler().postDelayed(() -> cardReceiptScanner.startAnimation(slideUp), 350);
         new Handler().postDelayed(() -> cardDiscounts.startAnimation(slideUp), 400);
-        new Handler().postDelayed(() -> cardAIAnalysis.startAnimation(slideUp), 450);
         new Handler().postDelayed(() -> cardSettings.startAnimation(slideUp), 500);
     }
 

@@ -182,6 +182,8 @@ public class AddDataActivity extends AppCompatActivity {
     private boolean isAmountValid = false;
     private boolean isCategoryValid = false;
 
+
+
     private AdView mAdView;
     private InterstitialAd mInterstitialAd;
     private long lastAdShownTime = 0;
@@ -267,6 +269,8 @@ public class AddDataActivity extends AppCompatActivity {
                     + "lastUsed LONG, "
                     + "useCount INTEGER DEFAULT 1)";
             db.execSQL(createLocationsTable);
+
+
         }
 
         @Override
@@ -305,6 +309,7 @@ public class AddDataActivity extends AppCompatActivity {
         animateViews();
         checkConnectivityAndSync();
         startConnectivityMonitoring();
+        fixExistingProductCategories();
 
         loadInterstitialAd();
         showInterstitialAd();
@@ -570,10 +575,15 @@ public class AddDataActivity extends AppCompatActivity {
         spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedCategory = parent.getItemAtPosition(position).toString();
+                String displayCategory = parent.getItemAtPosition(position).toString();
+
+                // ⭐ Göstərmək üçün emoji-li, saxlamaq üçün təmiz key
+                selectedCategory = getCategoryKey(displayCategory);
+
                 isCategoryValid = !selectedCategory.isEmpty();
                 updatePreview();
                 updateSaveButtonState();
+                loadProductsByCategory(selectedCategory);
             }
 
             @Override
@@ -841,21 +851,28 @@ public class AddDataActivity extends AppCompatActivity {
     }
 
     private void loadProductsFromFirebase() {
-        firebaseProducts.clear();
-        Log.d(TAG, "Loading products for user: " + userId);
+        // Kateqoriya seçilməyibsə hamısını yüklə
+        loadProductsByCategory(selectedCategory);
+    }
 
+    private void loadProductsByCategory(String category) {
+        firebaseProducts.clear();
+        Log.d(TAG, "Loading products for user: " + userId + ", category: " + category);
+
+        // ⭐ Yalnız userId ilə yüklə, filtri client-side et
         db.collection("products")
                 .whereEqualTo("userId", userId)
-                .orderBy("name")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    Log.d(TAG, "Products loaded: " + queryDocumentSnapshots.size());
+                    Log.d(TAG, "Total products fetched: " + queryDocumentSnapshots.size());
+
+                    String categoryKey = getCategoryKey(category);
 
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         ProductItem item = new ProductItem();
                         item.setId(doc.getId());
                         item.setName(doc.getString("name"));
-                        item.setCategory(doc.getString("category"));
+                        item.setCategory(doc.getString("category") != null ? doc.getString("category") : "");
 
                         Double kg = doc.getDouble("kg");
                         Double liter = doc.getDouble("liter");
@@ -867,18 +884,73 @@ public class AddDataActivity extends AppCompatActivity {
                         item.setUserId(doc.getString("userId"));
                         item.setCreatedAt(doc.getTimestamp("createdAt"));
 
-                        firebaseProducts.add(item);
+                        // ⭐ Client-side filtr - kateqoriya key-i ilə müqayisə
+                        String itemCategoryKey = getCategoryKey(item.getCategory());
+
+                        if (category == null || category.isEmpty() ||
+                                itemCategoryKey.equals(categoryKey)) {
+                            firebaseProducts.add(item);
+                        }
                     }
 
+                    Log.d(TAG, "Filtered products for '" + category + "': " + firebaseProducts.size());
                     updateProductsSpinner();
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error loading products", e);
-                    List<String> errorList = new ArrayList<>();
-                    errorList.add("❌ Yükləmə xətası");
+                    Log.e(TAG, "Error loading products: " + e.getMessage());
+                });
+    }
 
-                    productsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, errorList);
-                    spinnerProducts.setAdapter(productsAdapter);
+    private String getCategoryKey(String displayCategory) {
+        if (displayCategory == null) return "other";
+        String lower = displayCategory.toLowerCase();
+        if (lower.contains("ərzaq") || lower.contains("grocery") || lower.contains("продукт")) return "grocery";
+        if (lower.contains("nəqliyyat") || lower.contains("transport") || lower.contains("транспорт")) return "transport";
+        if (lower.contains("kirayə") || lower.contains("rent") || lower.contains("аренд")) return "rent";
+        if (lower.contains("kommunal") || lower.contains("utilities") || lower.contains("коммунал")) return "utilities";
+        if (lower.contains("əyləncə") || lower.contains("entertainment") || lower.contains("развлечен")) return "entertainment";
+        if (lower.contains("səhiyyə") || lower.contains("health") || lower.contains("здоровь")) return "health";
+        if (lower.contains("təhsil") || lower.contains("education") || lower.contains("образован")) return "education";
+        if (lower.contains("geyim") || lower.contains("clothing") || lower.contains("одежд")) return "clothing";
+        if (lower.contains("texnologiya") || lower.contains("technology") || lower.contains("технолог")) return "technology";
+        if (lower.contains("restoran") || lower.contains("restaurant") || lower.contains("ресторан")) return "restaurant";
+        if (lower.contains("səyahət") || lower.contains("travel") || lower.contains("путешеств")) return "travel";
+        if (lower.contains("maaş") || lower.contains("salary") || lower.contains("зарплат")) return "salary";
+        if (lower.contains("bonus")) return "bonus";
+        if (lower.contains("investisiya") || lower.contains("investment") || lower.contains("инвестиц")) return "investment";
+        if (lower.contains("satış") || lower.contains("sale") || lower.contains("продаж")) return "sale";
+        if (lower.contains("hədiyyə") || lower.contains("gift") || lower.contains("подарок")) return "gift";
+        if (lower.contains("freelance")) return "freelance";
+        if (lower.contains("biznes") || lower.contains("business") || lower.contains("бизнес")) return "business";
+        return "other";
+    }
+
+    private void fixExistingProductCategories() {
+        db.collection("products")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        String currentCategory = doc.getString("category");
+
+                        // Kateqoriya boşdursa və ya düzgün key deyilsə düzəlt
+                        String correctKey = getCategoryKey(currentCategory != null ? currentCategory : "");
+
+                        // Əgər artıq düzgün key-dirsə toxunma
+                        if (currentCategory != null && currentCategory.equals(correctKey)) {
+                            continue;
+                        }
+
+                        // Düzgün key-ə yenilə
+                        doc.getReference().update("category", correctKey)
+                                .addOnSuccessListener(aVoid ->
+                                        Log.d(TAG, "✅ Məhsul kateqoriyası düzəldildi: " + doc.getString("name") + " -> " + correctKey))
+                                .addOnFailureListener(e ->
+                                        Log.e(TAG, "❌ Xəta: " + e.getMessage()));
+                    }
+
+                    // Hamısı düzəldildikdən sonra yenidən yüklə
+                    new Handler().postDelayed(() -> loadProductsByCategory(selectedCategory), 2000);
                 });
     }
 
@@ -1363,11 +1435,14 @@ public class AddDataActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(adapter);
 
+        // Kateqoriya dəyişdikdə məhsulları yenilə
         if (categories.length > 0) {
             spinnerCategory.setSelection(0);
-            selectedCategory = categories[0];
+            selectedCategory = getCategoryKey(categories[0]); // ⭐ key saxla
             isCategoryValid = true;
+            loadProductsByCategory(selectedCategory);
         }
+
     }
 
     // Əvvəlki hardcoded array-ləri SİLİN və bunları əlavə edin:
@@ -2070,26 +2145,30 @@ public class AddDataActivity extends AppCompatActivity {
                 });
     }
 
-    // Yeni məhsulları Firebase-ə əlavə et
     private void saveNewProductsToFirebase(List<ProductItem> products) {
         for (ProductItem product : products) {
-            // Məhsulun Firebase-də olub-olmadığını yoxla
+            // Məhsulun Firebase-də olub-olmadığını yoxla (eyni ad VƏ kateqoriya)
             boolean exists = false;
             for (ProductItem existing : firebaseProducts) {
-                if (existing.getName().equalsIgnoreCase(product.getName())) {
+                if (existing.getName().equalsIgnoreCase(product.getName())
+                        && existing.getCategory().equalsIgnoreCase(selectedCategory)) {
                     exists = true;
                     break;
                 }
             }
 
             if (!exists) {
-                // Yeni məhsulu Firebase-ə əlavə et
+                // ⭐ Seçilmiş kateqoriyanı məhsula təyin et
+                product.setCategory(selectedCategory);
+
                 db.collection("products")
                         .add(product.toMap())
                         .addOnSuccessListener(docRef -> {
-                            Log.d(TAG, "New product added to Firebase: " + product.getName());
+                            Log.d(TAG, "New product added: " + product.getName()
+                                    + " | Category: " + product.getCategory());
                             product.setId(docRef.getId());
                             firebaseProducts.add(product);
+                            updateProductsSpinner();
                         })
                         .addOnFailureListener(e ->
                                 Log.e(TAG, "Failed to add product: " + e.getMessage())

@@ -537,66 +537,6 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- AI Analysis Card - Menu -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardAIAnalysis"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginRight="4dp"
-                    android:layout_marginBottom="8dp"
-                    app:cardBackgroundColor="#9C27B0"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="8dp"
-                    android:foreground="?selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="12dp">
-
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_ai_feature"
-                            android:tint="@color/white"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="AI Analiz"
-                            android:textColor="@color/white"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:layout_marginTop="4dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Proqnoz"
-                            android:textColor="@color/white_80"
-                            android:textSize="12sp"/>
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnAIAnalysis"
-                            android:layout_width="match_parent"
-                            android:layout_height="33dp"
-                            android:layout_marginTop="8dp"
-                            android:text="Analiz et"
-                            android:textAllCaps="false"
-                            android:textSize="10sp"
-                            android:backgroundTint="@color/white"
-                            android:textColor="#9C27B0"
-                            style="@style/Widget.MaterialComponents.Button"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
                 <!-- Settings Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardSettings"
@@ -655,6 +595,7 @@
                             style="@style/Widget.MaterialComponents.Button"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
+
             </GridLayout>
 
             <!-- Version -->

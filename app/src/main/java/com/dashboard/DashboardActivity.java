@@ -1,6 +1,7 @@
 package com.dashboard;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -100,6 +101,7 @@ public class DashboardActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
@@ -115,6 +117,8 @@ public class DashboardActivity extends BaseActivity {
         initViews();
         setupClickListeners();
         updateDateTime();
+
+        openChatBotFromMenu();
 
         initializeMLModels();  // Dəyişdirildi: initializeMLModel -> initializeMLModels
         fetchAllDataFromFirebase();
@@ -216,8 +220,6 @@ public class DashboardActivity extends BaseActivity {
             // Machine Learning Model (Finance)
             financeModel = new FinanceMLModel(this);
 
-            // Deep Learning Model (Product) - FinanceMLModel-in içində ProductMLModel çağırılır
-            // Əgər FinanceMLModel initialize olubsa, deməli hər iki model işləyir
 
             if (financeModel != null && financeModel.isInitialized()) {
                 isMachineLearningActive = true;
@@ -235,8 +237,6 @@ public class DashboardActivity extends BaseActivity {
                 });
                 Log.d("ML_MODEL", "✅✅✅ DEEP LEARNING + MACHINE LEARNING MODELS AKTİV ✅✅✅");
 
-                // Test predictions
-                testBothModels();
 
             } else {
                 throw new Exception("Model initialization failed");
@@ -252,34 +252,7 @@ public class DashboardActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Hər iki modeli test et
-     */
-    private void testBothModels() {
-        // Test üçün sample product
-        ProductMLModel.Product testProduct = new ProductMLModel.Product();
-        testProduct.id = "test_001";
-        testProduct.title = "Test Məhsul";
-        testProduct.brand = "Test Brand";
-        testProduct.price = 99.99;
-        testProduct.inStock = true;
-        testProduct.isLowStock = false;
-        testProduct.titleWordCount = 5;
-        testProduct.priceRankBrand = 0.75f;
-        testProduct.priceRankGlobal = 0.60f;
-        testProduct.priceVsBrandMean = 0.15f;
-        testProduct.volumeStd = 8.5f;
-        testProduct.pricePerUnit = 12.99;
 
-        // Deep Learning test (ProductMLModel)
-        float dlResult = financeModel.predict(testProduct);
-        Log.d("ML_MODEL", "🧪 DEEP LEARNING Test: " + String.format(Locale.US, "%.3f", dlResult));
-
-        // Machine Learning test (FinanceMLModel)
-        float[][] testData = {{100, 50}, {120, 60}, {110, 55}, {130, 65}, {125, 58}};
-        float[] mlResult = financeModel.predictNextDay(testData);
-        Log.d("ML_MODEL", "🧪 MACHINE LEARNING Test: income=" + mlResult[0] + ", expense=" + mlResult[1]);
-    }
 
     /**
      * REAL AI analizini göstər (həm DL, həm ML istifadə edir)
@@ -595,7 +568,7 @@ public class DashboardActivity extends BaseActivity {
 
                         long now = System.currentTimeMillis();
                         long startOfDay = getStartOfDay(now);
-                        long startOfWeek = getStartOfWeek(now);
+                        long startOfWeek = getStartOfWeek(now);   // ✅ getStartOfWeek
                         long startOfMonth = getStartOfMonth(now);
 
                         double todayIncome = 0, todayExpense = 0;
@@ -696,7 +669,6 @@ public class DashboardActivity extends BaseActivity {
                         final double finalMonthlySalary = monthlySalary;
 
                         runOnUiThread(() -> {
-                            // Günlük
                             tvTodayIncome.setText(String.format(Locale.getDefault(), "₼%.2f", finalTodayIncome));
                             tvTodayExpense.setText(String.format(Locale.getDefault(), "₼%.2f", finalTodayExpense));
                             tvTodayNet.setText(String.format(Locale.getDefault(), "₼%.2f", finalTodayNet));
@@ -730,6 +702,19 @@ public class DashboardActivity extends BaseActivity {
                                 calculateFinancialHealth(finalMonthlyIncome, finalMonthlyExpense);
                             }
 
+                            runOnUiThread(() -> {
+                                Log.d("DASHBOARD_DEBUG", "=== YÜKLƏNƏN MƏLUMATLAR ===");
+                                Log.d("DASHBOARD_DEBUG", "Total Income: " + finalTotalIncome);
+                                Log.d("DASHBOARD_DEBUG", "Total Expense: " + finalTotalExpense);
+                                Log.d("DASHBOARD_DEBUG", "Monthly Salary: " + finalMonthlySalary);
+                                Log.d("DASHBOARD_DEBUG", "Transactions count: " + allTransactions.size());
+
+                                // BaseActivity-dəki məlumatları yenilə
+                                updateChatbotData(finalTotalIncome, finalTotalExpense, finalMonthlySalary, tvAiInsights.getText().toString());
+                            });
+
+                            saveFinancialDataForChatbot();
+
                             // Kateqoriya analizi
                             showCategoryAnalysis(categoryTotals);
 
@@ -739,13 +724,74 @@ public class DashboardActivity extends BaseActivity {
 
                             // ML analiz
                             runMLAnalysis();
+
+
                         });
+
+
 
                     } else {
                         Log.e("FIREBASE", "Məlumatlar alına bilmədi", task.getException());
                     }
                 });
     }
+
+    // ✅ DashboardActivity class-ının daxilində, fetchAllDataFromFirebase() metodundan sonra əlavə edin
+
+    /**
+     * Maliyyə məlumatlarını SharedPreferences-də saxla (Chatbot üçün)
+     */
+    private void saveFinancialDataForChatbot() {
+        SharedPreferences prefs = getSharedPreferences("finance_data", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        editor.putFloat("total_income", (float) totalIncome);
+        editor.putFloat("total_expense", (float) totalExpense);
+        editor.putFloat("monthly_salary", (float) monthlySalary);
+        editor.putFloat("monthly_expenses", (float) monthlyExpenses);
+        editor.putString("last_ai_analysis", tvAiInsights.getText().toString());
+        editor.apply();
+
+        Log.d("CHATBOT_DATA", "✅ Məlumatlar saxlanıldı: Gəlir=" + totalIncome + ", Xərc=" + totalExpense + ", Maaş=" + monthlySalary);
+    }
+
+    // İstəyə bağlı: əgər chatbot dialogunu əl ilə açmaq istəyirsinizsə
+    private void openChatBotFromMenu() {
+        openMultilingualChatBot();  // ✅ Düzəldildi
+        openChatBotDialog();
+    }
+
+    /**
+     * Multilingual ChatBot Dialogunu açır
+     */
+    private void openMultilingualChatBot() {
+        Log.d("CHATBOT", "=== CHATBOT AÇILIR ===");
+        Log.d("CHATBOT", "Income: " + totalIncome);
+        Log.d("CHATBOT", "Expense: " + totalExpense);
+        Log.d("CHATBOT", "Salary: " + monthlySalary);
+        Log.d("CHATBOT", "Transactions: " + allTransactions.size());
+
+        // Əgər məlumatlar 0-dırsa, xəbərdarlıq et
+        if (totalIncome == 0 && totalExpense == 0 && allTransactions.isEmpty()) {
+            Toast.makeText(this, "Hələ heç bir məlumat yoxdur. Əvvəlcə əməliyyat əlavə edin.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        try {
+            FragmentManager fm = getSupportFragmentManager();
+            com.model.MultilingualChatBotDialog dialog = new com.model.MultilingualChatBotDialog(
+                    totalIncome,
+                    totalExpense,
+                    monthlySalary,
+                    tvAiInsights.getText().toString()
+            );
+            dialog.show(fm, "MultilingualChatBotDialog");
+        } catch (Exception e) {
+            Log.e("CHATBOT", "Dialog açılmadı: " + e.getMessage());
+            Toast.makeText(this, "Chatbot açılmadı: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     private void showCategoryAnalysis(Map<String, Double> categoryTotals) {
         if (categoryTotals.isEmpty()) return;
@@ -953,20 +999,13 @@ public class DashboardActivity extends BaseActivity {
             Toast.makeText(this, getString(R.string.insufficient_data), Toast.LENGTH_SHORT).show();
             return;
         }
-        Map<String, Double> categoryData = new HashMap<>();
-        for (Map<String, Object> t : allTransactions) {
-            String category = (String) t.get("category");
-            String type = (String) t.get("type");
-            Double amount = (Double) t.get("amount");
-            if ("expense".equals(type) && category != null && amount != null) {
-                categoryData.put(category, categoryData.getOrDefault(category, 0.0) + amount);
-            }
-        }
+
+        // ✅ DÜZGÜN: Birbaşa allTransactions listini göndər
         FragmentManager fm = getSupportFragmentManager();
         AIAnalysisDialog dialog = new AIAnalysisDialog(
                 tvAiInsights.getText().toString(),
                 "🤖 " + getString(R.string.ai_analysis),
-                categoryData,
+                allTransactions,  // ✅ Düzgün: List<Map<String, Object>>
                 totalIncome,
                 totalExpense,
                 monthlySalary

@@ -3,18 +3,16 @@
     <string name="app_name">Jibim</string>
     <string name="app_name_short">Jibim</string>
 
-
-
     <!-- Common -->
     <string name="welcome">Xoş gəldiniz</string>
-    <string name="save">Yadda Saxla</string>
-    <string name="cancel">Ləğv Et</string>
+    <string name="save">Yadda saxla</string>
+    <string name="cancel">Ləğv et</string>
     <string name="ok">OK</string>
     <string name="yes">Bəli</string>
     <string name="no">Xeyr</string>
     <string name="loading">Yüklənir...</string>
     <string name="refresh">Yenilə</string>
-    <string name="add">Əlavə Et</string>
+    <string name="add">Əlavə et</string>
     <string name="logout">Çıxış</string>
     <string name="settings">Parametrlər</string>
     <string name="language">Dil</string>
@@ -22,16 +20,16 @@
     <string name="dark_mode">Qaranlıq Rejim</string>
     <string name="version">Versiya</string>
     <string name="about">Haqqında</string>
-    <string name="profile">Mənim Məlumatlarım</string>
-    <string name="reset_password">Şifrəni Sıfırla</string>
-    <string name="add_salary">Maaş Əlavə Et</string>
+    <string name="profile">Profil</string>
+    <string name="reset_password">Şifrə sıfırla</string>
+    <string name="add_salary">Maaş əlavə et</string>
 
     <!-- Dashboard -->
     <string name="dashboard">İdarə Paneli</string>
     <string name="current_balance">Cari Balans</string>
     <string name="monthly_salary">Aylıq Maaş</string>
     <string name="monthly_expense">Aylıq Xərc</string>
-    <string name="today">Bugün</string>
+    <string name="today">Bu Gün</string>
     <string name="this_week">Bu Həftə</string>
     <string name="this_month">Bu Ay</string>
     <string name="income">Gəlir</string>
@@ -43,20 +41,31 @@
     <string name="financial_health">Maliyyə Sağlamlığı</string>
     <string name="savings_rate">Qənaət dərəcəsi</string>
     <string name="expense_ratio">Xərc nisbəti</string>
-    <string name="status">Vəziyyət</string>
-    <string name="ai_prediction">AI Proqnoz</string>
-    <string name="tomorrow_estimate">Sabah üçün təxmin</string>
+    <string name="status">Status</string>
+    <string name="ai_prediction">AI Proqnozu</string>
+    <string name="tomorrow_estimate">Sabahın təxmini</string>
     <string name="prediction_accuracy">Proqnoz dəqiqliyi</string>
-    <string name="ai_analysis">AI Analiz</string>
-    <string name="click_for_details">Ətraflı analiz üçün klikləyin →</string>
+    <string name="ai_analysis">AI Analizi</string>
+    <string name="click_for_details">Ətraflı üçün klikləyin →</string>
     <string name="all_transactions">Bütün Əməliyyatlar</string>
-    <string name="view_recent_transactions">Son əməliyyatları gör</string>
-    <string name="insufficient_data">Məlumat az</string>
+    <string name="view_recent_transactions">Son əməliyyatlara bax</string>
+    <string name="insufficient_data">Məlumat yetərsiz</string>
     <string name="excellent">Əla</string>
     <string name="good">Yaxşı</string>
     <string name="average">Orta</string>
     <string name="poor">Zəif</string>
     <string name="analyzing">Analiz edilir...</string>
+
+    <!-- Notification Settings -->
+    <string name="notifications">Bildirişlər</string>
+    <string name="notification_settings">Bildiriş Parametrləri</string>
+    <string name="notification_finance">💰 Maliyyə Analizi (hər 1 saat)</string>
+    <string name="notification_discounts">🛍️ Endirim Xəbərdarlıqları (hər 20 dəq)</string>
+    <string name="notification_salary">📅 Maaş Xatırlatması (ayın 1-5 arası)</string>
+    <string name="notification_chatbot">🤖 Chatbot Məsləhətləri (hər 1 saat)</string>
+    <string name="notification_saved">Bildiriş parametrləri yadda saxlandı</string>
+    <string name="notification_all_off">Hamısı söndürülüb</string>
+    <string name="notification_active_count">%d/4 aktiv</string>
 
     <!-- Days -->
     <string name="monday">Bazar ertəsi</string>
@@ -79,11 +88,11 @@
     <string name="guest">Qonaq</string>
 
     <!-- AI Analysis Dialog -->
-    <string name="ai_analysis_title">🤖 AI Analiz</string>
-    <string name="total_statistics">📊 Ümumi Statistika</string>
+    <string name="ai_analysis_title">🤖 AI Analizi</string>
+    <string name="total_statistics">📊 Ümumi Statistikalar</string>
     <string name="total_income">Ümumi Gəlir</string>
     <string name="total_expense">Ümumi Xərc</string>
-    <string name="net_profit">Xalis Mənfəət</string>
+    <string name="net_profit">Net Mənfəət</string>
     <string name="monthly_salary_label">Aylıq Maaş:</string>
     <string name="category_analysis_title">📋 Kateqoriya Analizi</string>
     <string name="recommendations_title">💡 Tövsiyələr</string>
@@ -94,11 +103,11 @@
     <!-- Onboarding -->
     <string name="skip">Keç</string>
     <string name="next">Növbəti</string>
-    <string name="get_started">Başlayaq</string>
+    <string name="get_started">Başla</string>
     <string name="onboarding_title_1">Satışları İzlə</string>
-    <string name="onboarding_desc_1">Günlük, həftəlik və aylıq satışlarınızı real-time izləyin</string>
-    <string name="onboarding_title_2">AI Analiz</string>
-    <string name="onboarding_desc_2">Süni intellekt satışlarınızı analiz edib tövsiyələr verir</string>
+    <string name="onboarding_desc_1">Gündəlik, həftəlik və aylıq satışlarınızı real vaxtda izləyin</string>
+    <string name="onboarding_title_2">AI Analizi</string>
+    <string name="onboarding_desc_2">Süni intellekt satışlarınızı analiz edir və tövsiyələr verir</string>
     <string name="onboarding_title_3">Proqnozlaşdırma</string>
     <string name="onboarding_desc_3">Gələcək satış trendlərini proqnozlaşdırın</string>
     <string name="onboarding_title_4">Firebase ilə Təhlükəsiz</string>
@@ -107,7 +116,7 @@
     <!-- Add Data Activity -->
     <string name="add_data_title">Məlumat Əlavə Et</string>
     <string name="date">Tarix</string>
-    <string name="time">Saat</string>
+    <string name="time">Vaxt</string>
     <string name="day">Gün</string>
     <string name="transaction_type">Əməliyyat Növü</string>
     <string name="category">Kateqoriya</string>
@@ -117,30 +126,30 @@
     <string name="add_new_product">Yeni Məhsul Əlavə Et</string>
     <string name="product_name">Məhsul adı</string>
     <string name="price">Qiymət</string>
-    <string name="quantity">Miqdar</string>
+    <string name="quantity">Say</string>
     <string name="liter">Litr</string>
     <string name="kilogram">Kiloqram</string>
-    <string name="add_to_list">Məhsulu Listə Əlavə Et</string>
-    <string name="product_list">Məhsul Listi</string>
+    <string name="add_to_list">Siyahıya Əlavə Et</string>
+    <string name="product_list">Məhsul Siyahısı</string>
     <string name="selected_count">seçilib</string>
-    <string name="total_selected">Seçilmiş ümumi</string>
-    <string name="location">Konum</string>
-    <string name="get_location">Konum Al</string>
-    <string name="new_location">Yeni konum</string>
-    <string name="add_location">Konum Əlavə Et</string>
+    <string name="total_selected">Seçilən cəmi</string>
+    <string name="location">Məkan</string>
+    <string name="get_location">Məkanı Al</string>
+    <string name="new_location">Yeni məkan</string>
+    <string name="add_location">Məkan Əlavə Et</string>
     <string name="note_optional">Qeyd (istəyə bağlı)</string>
     <string name="additional_note">Əlavə qeyd</string>
-    <string name="preview">Önizləmə</string>
+    <string name="preview">Önbaxış</string>
     <string name="type">Növ</string>
     <string name="total">Cəmi</string>
     <string name="scan">Skan et</string>
-    <string name="online">Online</string>
-    <string name="offline_mode">Offline rejim</string>
-    <string name="offline_data_saved">Offline rejim: Məlumatlar lokalda saxlanılacaq</string>
-    <string name="location_not_loaded">Konum alınmadı</string>
-    <string name="getting_location">Konum alınır...</string>
-    <string name="location_permission_required">Konum izni tələb olunur</string>
-    <string name="camera_permission_required">Qəbz skan etmək üçün kamera icazəsi lazımdır</string>
+    <string name="online">Onlayn</string>
+    <string name="offline_mode">Oflayn rejim</string>
+    <string name="offline_data_saved">Oflayn: Məlumatlar lokal saxlanılacaq</string>
+    <string name="location_not_loaded">Məkan yüklənmədi</string>
+    <string name="getting_location">Məkan alınır...</string>
+    <string name="location_permission_required">Məkan icazəsi tələb olunur</string>
+    <string name="camera_permission_required">Qəbz skan etmək üçün kamera icazəsi tələb olunur</string>
 
     <!-- Categories -->
     <string name="category_grocery">🛒 Ərzaq</string>
@@ -148,28 +157,72 @@
     <string name="category_rent">🏠 Kirayə</string>
     <string name="category_utilities">💡 Kommunal</string>
     <string name="category_entertainment">🎮 Əyləncə</string>
-    <string name="category_health">🏥 Səhiyyə</string>
+    <string name="category_health">🏥 Sağlamlıq</string>
     <string name="category_education">📚 Təhsil</string>
     <string name="category_clothing">👕 Geyim</string>
     <string name="category_technology">📱 Texnologiya</string>
-    <string name="category_restaurant">🍽️ Restoran</string>
-    <string name="category_travel">✈️ Səyahət</string>
+    <string name="category_restaurant">🍽ə Restoran</string>
+    <string name="category_travel">✈ə Səyahət</string>
     <string name="category_other">💼 Digər</string>
     <string name="category_salary">💰 Maaş</string>
     <string name="category_bonus">💼 Bonus</string>
     <string name="category_investment">📈 İnvestisiya</string>
-    <string name="category_sale">🛍️ Satış</string>
+    <string name="category_sale">🛍ə Satış</string>
     <string name="category_gift">🎁 Hədiyyə</string>
     <string name="category_freelance">💵 Freelance</string>
     <string name="category_business">🏢 Biznes</string>
 
-
     <string name="tab_all">Hamısı</string>
-    <string name="best_price_label">Ən ucuz</string>
+    <string name="best_price_label">Ən yaxşı qiymət</string>
     <string name="search_hint">Məhsul axtar…</string>
     <string name="loading_text">Endirimlər yüklənir…</string>
     <string name="no_products_found">Məhsul tapılmadı</string>
     <string name="product_image_desc">Məhsul şəkli</string>
 
+    <!-- User Profile Activity -->
+    <string name="my_profile">Mənim Profilim</string>
+    <string name="email_verified">Təsdiqlənib</string>
+    <string name="email_not_verified">Təsdiqlənməyib</string>
+    <string name="user_id">İstifadəçi ID</string>
+    <string name="member_since">Üzv olduğu tarix</string>
+    <string name="verification_email_sent">Təsdiq emaili göndərildi</string>
+    <string name="change_password">Şifrəni Dəyiş</string>
+    <string name="change_email">Emaili Dəyiş</string>
+    <string name="delete_account">Hesabı Sil</string>
+    <string name="fill_all_fields">Bütün sahələri doldurun</string>
+    <string name="password_mismatch">Şifrələr uyğun gəlmir</string>
+    <string name="password_min_length">Şifrə ən az 6 simvol olmalıdır</string>
+    <string name="wrong_current_password">Cari şifrə yanlışdır</string>
+    <string name="wrong_password">Şifrə yanlışdır</string>
+    <string name="password_changed">Şifrə uğurla dəyişdirildi</string>
+    <string name="verification_email_sent_new_email">Təsdiq linki yeni email ünvanınıza göndərildi</string>
+    <string name="delete_account_confirmation">Hesabınızı silmək istədiyinizə əminsiniz? Bu əməliyyat geri alına bilməz.</string>
+    <string name="account_deleted">Hesabınız silindi</string>
+    <string name="current_password">Cari Şifrə</string>
+    <string name="new_password">Yeni Şifrə</string>
+    <string name="confirm_new_password">Yeni Şifrəni Təsdiqlə</string>
+    <string name="new_email">Yeni Email</string>
+    <string name="password_confirm">Şifrə (Təsdiq üçün)</string>
 
+    <!-- Personal Info -->
+    <string name="personal_info">Şəxsi Məlumatlar</string>
+    <string name="first_name">Ad</string>
+    <string name="last_name">Soyad</string>
+    <string name="gender">Cins</string>
+    <string name="male">Kişi</string>
+    <string name="female">Qadın</string>
+    <string name="other">Digər</string>
+    <string name="marital_status">Ailə Vəziyyəti</string>
+    <string name="single">Subay</string>
+    <string name="married">Evli</string>
+    <string name="divorced">Boşanmış</string>
+    <string name="widowed">Dul</string>
+    <string name="phone_number">Telefon Nömrəsi</string>
+    <string name="birth_date">Doğum Tarixi</string>
+    <string name="address">Ünvan</string>
+    <string name="account_info">Hesab Məlumatları</string>
+    <string name="security">Təhlükəsizlik</string>
+    <string name="save_changes">Dəyişiklikləri Yadda Saxla</string>
+    <string name="error">Xəta</string>
+    <string name="back">Geri</string>
 </resources>

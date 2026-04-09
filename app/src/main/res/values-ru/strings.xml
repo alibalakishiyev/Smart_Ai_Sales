@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Jibim</string>
     <string name="app_name_short">Jibim</string>
 
@@ -17,11 +16,11 @@
     <string name="logout">Выйти</string>
     <string name="settings">Настройки</string>
     <string name="language">Язык</string>
-    <string name="language_changed">Язык изменен</string>
-    <string name="dark_mode">Темный режим</string>
+    <string name="language_changed">Язык изменён</string>
+    <string name="dark_mode">Тёмный режим</string>
     <string name="version">Версия</string>
     <string name="about">О приложении</string>
-    <string name="profile">Мои данные</string>
+    <string name="profile">Профиль</string>
     <string name="reset_password">Сбросить пароль</string>
     <string name="add_salary">Добавить зарплату</string>
 
@@ -35,27 +34,38 @@
     <string name="this_month">Этот месяц</string>
     <string name="income">Доход</string>
     <string name="expense">Расход</string>
-    <string name="net">Чистый</string>
+    <string name="net">Чистый доход</string>
     <string name="income_vs_expense_trend">Тренд доходов и расходов</string>
     <string name="last_30_days">Последние 30 дней</string>
     <string name="expense_categories">Категории расходов</string>
     <string name="financial_health">Финансовое здоровье</string>
     <string name="savings_rate">Норма сбережений</string>
     <string name="expense_ratio">Коэффициент расходов</string>
-    <string name="status">Состояние</string>
+    <string name="status">Статус</string>
     <string name="ai_prediction">AI Прогноз</string>
     <string name="tomorrow_estimate">Прогноз на завтра</string>
     <string name="prediction_accuracy">Точность прогноза</string>
     <string name="ai_analysis">AI Анализ</string>
     <string name="click_for_details">Нажмите для деталей →</string>
-    <string name="all_transactions">Все операции</string>
-    <string name="view_recent_transactions">Посмотреть последние операции</string>
+    <string name="all_transactions">Все транзакции</string>
+    <string name="view_recent_transactions">Просмотреть последние транзакции</string>
     <string name="insufficient_data">Недостаточно данных</string>
     <string name="excellent">Отлично</string>
     <string name="good">Хорошо</string>
     <string name="average">Средне</string>
     <string name="poor">Плохо</string>
     <string name="analyzing">Анализ...</string>
+
+    <!-- Notification Settings -->
+    <string name="notifications">Уведомления</string>
+    <string name="notification_settings">Настройки уведомлений</string>
+    <string name="notification_finance">💰 Финансовый анализ (каждый час)</string>
+    <string name="notification_discounts">🛍️ Оповещения о скидках (каждые 20 мин)</string>
+    <string name="notification_salary">📅 Напоминание о зарплате (1-5 числа)</string>
+    <string name="notification_chatbot">🤖 Советы чат-бота (каждый час)</string>
+    <string name="notification_saved">Настройки уведомлений сохранены</string>
+    <string name="notification_all_off">Все выключены</string>
+    <string name="notification_active_count">%d/4 активно</string>
 
     <!-- Days -->
     <string name="monday">Понедельник</string>
@@ -68,7 +78,7 @@
 
     <!-- Navigation Drawer -->
     <string name="nav_dashboard">Панель управления</string>
-    <string name="nav_reports">Отчеты</string>
+    <string name="nav_reports">Отчёты</string>
     <string name="nav_sales_analysis">Анализ продаж</string>
     <string name="nav_settings">Настройки</string>
     <string name="nav_logout">Выйти</string>
@@ -90,7 +100,6 @@
     <string name="close">Закрыть</string>
     <string name="insufficient_salary_data">Введите данные о зарплате</string>
 
-
     <!-- Onboarding -->
     <string name="skip">Пропустить</string>
     <string name="next">Далее</string>
@@ -98,19 +107,18 @@
     <string name="onboarding_title_1">Отслеживайте продажи</string>
     <string name="onboarding_desc_1">Отслеживайте ежедневные, еженедельные и ежемесячные продажи в реальном времени</string>
     <string name="onboarding_title_2">AI Анализ</string>
-    <string name="onboarding_desc_2">Искусственный интеллект анализирует ваши продажи и дает рекомендации</string>
+    <string name="onboarding_desc_2">Искусственный интеллект анализирует ваши продажи и даёт рекомендации</string>
     <string name="onboarding_title_3">Прогнозирование</string>
     <string name="onboarding_desc_3">Прогнозируйте будущие тенденции продаж</string>
-    <string name="onboarding_title_4">Безопасность с Firebase</string>
-    <string name="onboarding_desc_4">Все ваши данные надежно хранятся в облаке Firebase</string>
-
+    <string name="onboarding_title_4">Безопасность Firebase</string>
+    <string name="onboarding_desc_4">Все ваши данные безопасно хранятся в облаке Firebase</string>
 
     <!-- Add Data Activity -->
     <string name="add_data_title">Добавить данные</string>
     <string name="date">Дата</string>
     <string name="time">Время</string>
     <string name="day">День</string>
-    <string name="transaction_type">Тип операции</string>
+    <string name="transaction_type">Тип транзакции</string>
     <string name="category">Категория</string>
     <string name="products">Товары</string>
     <string name="select_product">Выберите товар...</string>
@@ -119,35 +127,35 @@
     <string name="product_name">Название товара</string>
     <string name="price">Цена</string>
     <string name="quantity">Количество</string>
-    <string name="liter">Литры</string>
-    <string name="kilogram">Килограммы</string>
+    <string name="liter">Литр</string>
+    <string name="kilogram">Килограмм</string>
     <string name="add_to_list">Добавить в список</string>
     <string name="product_list">Список товаров</string>
     <string name="selected_count">выбрано</string>
     <string name="total_selected">Выбрано всего</string>
     <string name="location">Местоположение</string>
-    <string name="get_location">Получить</string>
-    <string name="new_location">Новое место</string>
-    <string name="add_location">Добавить</string>
-    <string name="note_optional">Заметка (необязательно)</string>
-    <string name="additional_note">Дополнительная заметка</string>
+    <string name="get_location">Получить местоположение</string>
+    <string name="new_location">Новое местоположение</string>
+    <string name="add_location">Добавить местоположение</string>
+    <string name="note_optional">Примечание (необязательно)</string>
+    <string name="additional_note">Дополнительное примечание</string>
     <string name="preview">Предпросмотр</string>
     <string name="type">Тип</string>
     <string name="total">Итого</string>
     <string name="scan">Сканировать</string>
     <string name="online">Онлайн</string>
-    <string name="offline_mode">Оффлайн режим</string>
-    <string name="offline_data_saved">Оффлайн: данные сохранены локально</string>
-    <string name="location_not_loaded">Местоположение не получено</string>
+    <string name="offline_mode">Офлайн режим</string>
+    <string name="offline_data_saved">Офлайн: данные будут сохранены локально</string>
+    <string name="location_not_loaded">Местоположение не загружено</string>
     <string name="getting_location">Получение местоположения...</string>
     <string name="location_permission_required">Требуется разрешение на местоположение</string>
-    <string name="camera_permission_required">Для сканирования чеков требуется разрешение камеры</string>
+    <string name="camera_permission_required">Требуется разрешение на камеру для сканирования чеков</string>
 
     <!-- Categories -->
     <string name="category_grocery">🛒 Продукты</string>
     <string name="category_transport">🚗 Транспорт</string>
     <string name="category_rent">🏠 Аренда</string>
-    <string name="category_utilities">💡 Коммунальные</string>
+    <string name="category_utilities">💡 Коммунальные услуги</string>
     <string name="category_entertainment">🎮 Развлечения</string>
     <string name="category_health">🏥 Здоровье</string>
     <string name="category_education">📚 Образование</string>
@@ -171,4 +179,50 @@
     <string name="no_products_found">Товары не найдены</string>
     <string name="product_image_desc">Изображение товара</string>
 
+    <!-- User Profile Activity -->
+    <string name="my_profile">Мой профиль</string>
+    <string name="email_verified">Подтверждён</string>
+    <string name="email_not_verified">Не подтверждён</string>
+    <string name="user_id">ID пользователя</string>
+    <string name="member_since">Участник с</string>
+    <string name="verification_email_sent">Письмо для подтверждения отправлено</string>
+    <string name="change_password">Изменить пароль</string>
+    <string name="change_email">Изменить email</string>
+    <string name="delete_account">Удалить аккаунт</string>
+    <string name="fill_all_fields">Заполните все поля</string>
+    <string name="password_mismatch">Пароли не совпадают</string>
+    <string name="password_min_length">Пароль должен содержать не менее 6 символов</string>
+    <string name="wrong_current_password">Неверный текущий пароль</string>
+    <string name="wrong_password">Неверный пароль</string>
+    <string name="password_changed">Пароль успешно изменён</string>
+    <string name="verification_email_sent_new_email">Ссылка для подтверждения отправлена на ваш новый email</string>
+    <string name="delete_account_confirmation">Вы уверены, что хотите удалить свой аккаунт? Это действие необратимо.</string>
+    <string name="account_deleted">Ваш аккаунт был удалён</string>
+    <string name="current_password">Текущий пароль</string>
+    <string name="new_password">Новый пароль</string>
+    <string name="confirm_new_password">Подтвердите новый пароль</string>
+    <string name="new_email">Новый email</string>
+    <string name="password_confirm">Пароль (для подтверждения)</string>
+
+    <!-- Personal Info -->
+    <string name="personal_info">Личная информация</string>
+    <string name="first_name">Имя</string>
+    <string name="last_name">Фамилия</string>
+    <string name="gender">Пол</string>
+    <string name="male">Мужской</string>
+    <string name="female">Женский</string>
+    <string name="other">Другой</string>
+    <string name="marital_status">Семейное положение</string>
+    <string name="single">Холост/Не замужем</string>
+    <string name="married">Женат/Замужем</string>
+    <string name="divorced">Разведён(а)</string>
+    <string name="widowed">Вдовец/Вдова</string>
+    <string name="phone_number">Номер телефона</string>
+    <string name="birth_date">Дата рождения</string>
+    <string name="address">Адрес</string>
+    <string name="account_info">Информация об аккаунте</string>
+    <string name="security">Безопасность</string>
+    <string name="save_changes">Сохранить изменения</string>
+    <string name="error">Ошибка</string>
+    <string name="back">Назад</string>
 </resources>

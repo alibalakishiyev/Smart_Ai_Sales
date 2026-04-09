@@ -59,6 +59,41 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- ⚠️ Xəbərdarlıq mesajı (ayın 1-5 arası və təkrar əlavə üçün) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardWarning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/warning_dark_background"
+                app:cardCornerRadius="12dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_warning"
+                        android:tint="@color/warning_orange"
+                        android:layout_marginEnd="12dp"/>
+
+                    <TextView
+                        android:id="@+id/tvWarningMessage"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/warning_orange"
+                        android:textSize="14sp"
+                        android:text="⚠️ Bu ay üçün artıq maaş əlavə edilib!"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Məbləğ -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -124,6 +159,38 @@
                         android:text="Dəyiş"
                         android:textAllCaps="false"
                         android:backgroundTint="@color/purple_500"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 📅 Ayın 1-5 arası məlumatı -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/info_dark_background"
+                app:cardCornerRadius="12dp"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_info"
+                        android:tint="@color/info_blue"
+                        android:layout_marginEnd="12dp"/>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/info_blue"
+                        android:textSize="13sp"
+                        android:text="ℹ️ Maaş yalnız ayın 1-5 arasında əlavə edilə bilər. Hər ay yalnız bir dəfə."/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

@@ -1,6 +1,5 @@
 package com.utils;
 
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -25,8 +24,12 @@ import java.util.Map;
 
 public class AddSalaryActivity extends AppCompatActivity {
 
+    private static final String PREF_NAME = "salary_reminder_prefs";
+    private static final String KEY_LAST_SALARY_MONTH = "last_salary_month";
+    private static final String KEY_LAST_SALARY_YEAR = "last_salary_year";
+
     private EditText etSalaryAmount, etSalaryNote;
-    private TextView tvSelectedDate, tvCurrentBalance;
+    private TextView tvSelectedDate, tvCurrentBalance, tvWarningMessage;
     private Button btnSelectDate, btnAddSalary, btnCancel;
 
     private FirebaseAuth mAuth;
@@ -54,6 +57,7 @@ public class AddSalaryActivity extends AppCompatActivity {
         initViews();
         loadCurrentBalance();
         setupDatePicker();
+        checkIfSalaryAlreadyAddedThisMonth();
     }
 
     private void initViews() {
@@ -61,6 +65,7 @@ public class AddSalaryActivity extends AppCompatActivity {
         etSalaryNote = findViewById(R.id.etSalaryNote);
         tvSelectedDate = findViewById(R.id.tvSelectedDate);
         tvCurrentBalance = findViewById(R.id.tvCurrentBalance);
+        tvWarningMessage = findViewById(R.id.tvWarningMessage);
         btnSelectDate = findViewById(R.id.btnSelectDate);
         btnAddSalary = findViewById(R.id.btnAddSalary);
         btnCancel = findViewById(R.id.btnCancel);
@@ -68,43 +73,95 @@ public class AddSalaryActivity extends AppCompatActivity {
         tvSelectedDate.setText(dateFormat.format(new Date()));
 
         btnCancel.setOnClickListener(v -> finish());
-        btnAddSalary.setOnClickListener(v -> addSalary());
+        btnAddSalary.setOnClickListener(v -> checkAndAddSalary());
     }
 
-    private void loadCurrentBalance() {
-        db.collection("users").document(userId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Double balance = documentSnapshot.getDouble("currentBalance");
-                        if (balance != null) {
-                            currentBalance = balance;
-                            tvCurrentBalance.setText(String.format(Locale.getDefault(),
-                                    "₼ %.2f", currentBalance));
-                        }
-                    }
-                });
+    /**
+     * Bu ay artıq maaş əlavə edilibsə yoxla
+     */
+    private void checkIfSalaryAlreadyAddedThisMonth() {
+        if (isSalaryAddedThisMonth()) {
+            if (tvWarningMessage != null) {
+                tvWarningMessage.setVisibility(View.VISIBLE);
+                tvWarningMessage.setText("⚠️ Bu ay üçün artıq maaş əlavə edilib!\nNövbəti ayın 1-5 arasında yeniləyə bilərsiniz.");
+            }
+            btnAddSalary.setEnabled(false);
+            btnAddSalary.setAlpha(0.5f);
+        } else {
+            if (tvWarningMessage != null) {
+                tvWarningMessage.setVisibility(View.GONE);
+            }
+            btnAddSalary.setEnabled(true);
+            btnAddSalary.setAlpha(1.0f);
+        }
     }
 
-    private void setupDatePicker() {
-        btnSelectDate.setOnClickListener(v -> {
-            MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
-                    .setTitleText("Maaş tarixini seçin")
-                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                    .build();
+    /**
+     * SharedPreferences-də bu ay üçün maaş əlavə olunub-olunmadığını yoxla
+     */
+    private boolean isSalaryAddedThisMonth() {
+        android.content.SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        Calendar now = Calendar.getInstance();
+        int currentMonth = now.get(Calendar.MONTH);
+        int currentYear = now.get(Calendar.YEAR);
 
-            datePicker.addOnPositiveButtonClickListener(selection -> {
-                selectedDate = selection;
-                tvSelectedDate.setText(dateFormat.format(new Date(selection)));
-            });
+        int lastMonth = prefs.getInt(KEY_LAST_SALARY_MONTH, -1);
+        int lastYear = prefs.getInt(KEY_LAST_SALARY_YEAR, -1);
 
-            datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
-        });
+        return (lastMonth == currentMonth && lastYear == currentYear);
     }
 
-    private void addSalary() {
+    /**
+     * Maaş əlavə edildikdən sonra SharedPreferences-da qeyd et
+     */
+    private void markSalaryAddedThisMonth() {
+        android.content.SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        Calendar now = Calendar.getInstance();
+        android.content.SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_LAST_SALARY_MONTH, now.get(Calendar.MONTH));
+        editor.putInt(KEY_LAST_SALARY_YEAR, now.get(Calendar.YEAR));
+        editor.apply();
+
+        // SalaryReminderReceiver-i də xəbərdar et (bu ay üçün xatırlatmanı sıfırla)
+        SalaryReminderReceiver.onSalaryAdded(this);
+    }
+
+    /**
+     * Seçilmiş tarixin ayın 1-5 arasında olub-olmadığını yoxla
+     */
+    private boolean isDateInSalaryPeriod(long dateMillis) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(dateMillis);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        return dayOfMonth >= 1 && dayOfMonth <= 5;
+    }
+
+    /**
+     * Maaş əlavə etməzdən əvvəl bütün qaydaları yoxla
+     */
+    private void checkAndAddSalary() {
+        // 1. Bu ay artıq maaş əlavə olunub?
+        if (isSalaryAddedThisMonth()) {
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle("Xəbərdarlıq")
+                    .setMessage("Bu ay üçün artıq maaş əlavə edilib!\nNövbəti ayın 1-5 arasında yenidən əlavə edə bilərsiniz.")
+                    .setPositiveButton("Başa düşdüm", (dialog, which) -> finish())
+                    .show();
+            return;
+        }
+
+        // 2. Seçilmiş tarix ayın 1-5 arasındadır?
+        if (!isDateInSalaryPeriod(selectedDate)) {
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle("Xəbərdarlıq")
+                    .setMessage("Maaş yalnız ayın 1-5 arasında əlavə edilə bilər!\nZəhmət olmasa düzgün tarix seçin.")
+                    .setPositiveButton("Tamam", null)
+                    .show();
+            return;
+        }
+
+        // 3. Məbləğ yoxlaması
         String amountStr = etSalaryAmount.getText().toString().trim();
-
         if (amountStr.isEmpty()) {
             etSalaryAmount.setError("Məbləğ daxil edin");
             return;
@@ -122,6 +179,11 @@ public class AddSalaryActivity extends AppCompatActivity {
             return;
         }
 
+        // Bütün yoxlamalar keçdi -> maaşı əlavə et
+        performAddSalary(amount);
+    }
+
+    private void performAddSalary(double amount) {
         double newBalance = currentBalance + amount;
         String note = etSalaryNote.getText().toString().trim();
         if (note.isEmpty()) {
@@ -152,6 +214,9 @@ public class AddSalaryActivity extends AppCompatActivity {
             firestoreTransaction.set(db.collection("transactions").document(), salaryTransaction);
             return null;
         }).addOnSuccessListener(aVoid -> {
+            // Maaş əlavə olunduğunu qeyd et
+            markSalaryAddedThisMonth();
+
             new MaterialAlertDialogBuilder(this)
                     .setTitle("Uğurlu!")
                     .setMessage(String.format("Maaş əlavə edildi\nYeni balans: ₼ %.2f", newBalance))
@@ -159,6 +224,42 @@ public class AddSalaryActivity extends AppCompatActivity {
                     .show();
         }).addOnFailureListener(e -> {
             Toast.makeText(this, "Xəta: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void loadCurrentBalance() {
+        db.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Double balance = documentSnapshot.getDouble("currentBalance");
+                        if (balance != null) {
+                            currentBalance = balance;
+                            tvCurrentBalance.setText(String.format(Locale.getDefault(),
+                                    "₼ %.2f", currentBalance));
+                        }
+                    }
+                });
+    }
+
+    private void setupDatePicker() {
+        btnSelectDate.setOnClickListener(v -> {
+            MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Maaş tarixini seçin")
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .build();
+
+            datePicker.addOnPositiveButtonClickListener(selection -> {
+                selectedDate = selection;
+                tvSelectedDate.setText(dateFormat.format(new Date(selection)));
+
+                // Tarix dəyişdikdə, əgər ayın 1-5 arası deyilsə xəbərdarlıq göstər
+                if (!isDateInSalaryPeriod(selectedDate)) {
+                    Toast.makeText(this, "Xəbərdarlıq: Maaş yalnız ayın 1-5 arasında əlavə edilə bilər!", Toast.LENGTH_LONG).show();
+                }
+            });
+
+            datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
         });
     }
 }

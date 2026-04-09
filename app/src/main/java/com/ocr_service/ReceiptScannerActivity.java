@@ -182,6 +182,8 @@ public class ReceiptScannerActivity extends AppCompatActivity {
     private void initOCR() {
         try {
             realOCRHelper = new RealOCRHelper(this);
+            // ← Bu sətri əlavə et:
+            ProductNameMatcher.load(this);
             Log.d(TAG, "RealOCRHelper uğurla işə salındı");
         } catch (Exception e) {
             Log.e(TAG, "OCR işə salınarkən xəta: " + e.getMessage());

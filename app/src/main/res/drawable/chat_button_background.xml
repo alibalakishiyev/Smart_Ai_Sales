@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <!-- Dalğa effekti (arka plan) -->
+    <View
+        android:id="@+id/rippleView"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:background="@drawable/gradient_background"
+        android:alpha="0.3" />
+
+    <!-- Əsas Chat Düyməsi -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/chatFab"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/ic_chat_bot"
+        android:clickable="true"
+        android:focusable="true"
+        app:fabSize="normal"
+        app:backgroundTint="#6200EE"
+        app:rippleColor="#FFFFFF"
+        app:elevation="8dp" />
+
+</FrameLayout>
