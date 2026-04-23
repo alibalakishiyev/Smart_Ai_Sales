@@ -34,6 +34,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.model.FinanceMLModel;
+import com.model.MobileBERTQA;
 import com.model.ProductMLModel;
 import com.smart_ai_sales.R;
 import com.utils.BaseActivity;
@@ -65,6 +66,8 @@ public class DashboardActivity extends BaseActivity {
     private TextView tvTopCategory3, tvTopCategory3Amount, tvTopCategory3Percent;
     private TextView tvSavingsRate, tvExpenseRatio, tvFinancialHealth;
     private LineChart chartIncomeExpense;
+
+    private MobileBERTQA mobileBERT;
     private CardView btnRefresh, cardAddData, cardMLPrediction, cardAiInsights, cardTransactions;
     private ImageView btnLogout, ivModelStatus;
     private DrawerLayout drawerLayout;
@@ -118,7 +121,9 @@ public class DashboardActivity extends BaseActivity {
         setupClickListeners();
         updateDateTime();
 
-        openChatBotFromMenu();
+        mobileBERT = new MobileBERTQA(this);
+        Log.d("DASHBOARD_DEBUG", "✅ mobileBERT yaradıldı");
+
 
         initializeMLModels();  // Dəyişdirildi: initializeMLModel -> initializeMLModels
         fetchAllDataFromFirebase();
@@ -523,23 +528,7 @@ public class DashboardActivity extends BaseActivity {
         return "🔴 Zəif";
     }
 
-    // Test methodu əlavə edin
-    private void testModelWithSampleData() {
-        // Test product yaradın
-        ProductMLModel.Product testProduct = new ProductMLModel.Product();
-        testProduct.price = 99.99;
-        testProduct.inStock = true;
-        testProduct.isLowStock = false;
-        testProduct.titleWordCount = 5;
-        testProduct.priceRankBrand = 0.75f;
-        testProduct.priceRankGlobal = 0.60f;
-        testProduct.priceVsBrandMean = 0.15f;
-        testProduct.volumeStd = 8.5f;
-        testProduct.pricePerUnit = 12.99;
 
-        float prediction = financeModel.predict(testProduct);
-        Log.d("ML_MODEL", "🎯 TEST PREDICTION: " + prediction);
-    }
 
     // BÜTÜN MƏLUMATLARI FİREBASEDƏN ÇƏKİR
     private void fetchAllDataFromFirebase() {
@@ -702,31 +691,35 @@ public class DashboardActivity extends BaseActivity {
                                 calculateFinancialHealth(finalMonthlyIncome, finalMonthlyExpense);
                             }
 
-                            runOnUiThread(() -> {
-                                Log.d("DASHBOARD_DEBUG", "=== YÜKLƏNƏN MƏLUMATLAR ===");
-                                Log.d("DASHBOARD_DEBUG", "Total Income: " + finalTotalIncome);
-                                Log.d("DASHBOARD_DEBUG", "Total Expense: " + finalTotalExpense);
-                                Log.d("DASHBOARD_DEBUG", "Monthly Salary: " + finalMonthlySalary);
-                                Log.d("DASHBOARD_DEBUG", "Transactions count: " + allTransactions.size());
+                            // ============ ✅ MƏHSUL ANALİZİNİ BURADA ÇAĞIRIN ============
+                            if (mobileBERT != null && !allTransactions.isEmpty()) {
+                                Log.d("DASHBOARD_DEBUG", "📤 Məhsul analizi məlumatları göndərilir...");
+                                Log.d("DASHBOARD_DEBUG", "Transaction sayı: " + allTransactions.size());
 
-                                // BaseActivity-dəki məlumatları yenilə
-                                updateChatbotData(finalTotalIncome, finalTotalExpense, finalMonthlySalary, tvAiInsights.getText().toString());
-                            });
+                                // Transaction-ları logda göstər
+                                for (Map<String, Object> t : allTransactions) {
+                                    String type = (String) t.get("type");
+                                    if ("expense".equals(type)) {
+                                        String productName = (String) t.get("productName");
+                                        Double amount = (Double) t.get("amount");
+                                        Log.d("DASHBOARD_DEBUG", "   📦 " + productName + " - " + amount);
+                                    }
+                                }
+
+                                mobileBERT.updateProductAnalytics(allTransactions);
+                            } else {
+                                Log.e("DASHBOARD_DEBUG", "❌ mobileBERT null və ya transactions boşdur!");
+                            }
+                            // ========================================================
 
                             saveFinancialDataForChatbot();
-
-                            // Kateqoriya analizi
                             showCategoryAnalysis(categoryTotals);
-
-                            // Chart
                             prepareChartData(dailyIncome, dailyExpense);
                             updateChart();
-
-                            // ML analiz
                             runMLAnalysis();
-
-
                         });
+
+
 
 
 
@@ -755,42 +748,6 @@ public class DashboardActivity extends BaseActivity {
         Log.d("CHATBOT_DATA", "✅ Məlumatlar saxlanıldı: Gəlir=" + totalIncome + ", Xərc=" + totalExpense + ", Maaş=" + monthlySalary);
     }
 
-    // İstəyə bağlı: əgər chatbot dialogunu əl ilə açmaq istəyirsinizsə
-    private void openChatBotFromMenu() {
-        openMultilingualChatBot();  // ✅ Düzəldildi
-        openChatBotDialog();
-    }
-
-    /**
-     * Multilingual ChatBot Dialogunu açır
-     */
-    private void openMultilingualChatBot() {
-        Log.d("CHATBOT", "=== CHATBOT AÇILIR ===");
-        Log.d("CHATBOT", "Income: " + totalIncome);
-        Log.d("CHATBOT", "Expense: " + totalExpense);
-        Log.d("CHATBOT", "Salary: " + monthlySalary);
-        Log.d("CHATBOT", "Transactions: " + allTransactions.size());
-
-        // Əgər məlumatlar 0-dırsa, xəbərdarlıq et
-        if (totalIncome == 0 && totalExpense == 0 && allTransactions.isEmpty()) {
-            Toast.makeText(this, "Hələ heç bir məlumat yoxdur. Əvvəlcə əməliyyat əlavə edin.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        try {
-            FragmentManager fm = getSupportFragmentManager();
-            com.model.MultilingualChatBotDialog dialog = new com.model.MultilingualChatBotDialog(
-                    totalIncome,
-                    totalExpense,
-                    monthlySalary,
-                    tvAiInsights.getText().toString()
-            );
-            dialog.show(fm, "MultilingualChatBotDialog");
-        } catch (Exception e) {
-            Log.e("CHATBOT", "Dialog açılmadı: " + e.getMessage());
-            Toast.makeText(this, "Chatbot açılmadı: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
 
 
     private void showCategoryAnalysis(Map<String, Double> categoryTotals) {

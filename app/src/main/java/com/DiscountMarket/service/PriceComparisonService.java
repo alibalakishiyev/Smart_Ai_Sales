@@ -111,7 +111,7 @@ public class PriceComparisonService {
             public void onProgress(String message) {
                 callback.onProgress(message);
             }
-        });
+        },context);
     }
 
     private void performComparison() {

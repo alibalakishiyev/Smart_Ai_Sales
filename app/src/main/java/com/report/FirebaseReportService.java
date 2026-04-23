@@ -366,7 +366,7 @@ public class FirebaseReportService {
                     data.storeDiscounts.put(name, new ArrayList<>());
                     if (latch.decrementAndGet() == 0) done.run();
                 }
-            });
+            },context);
         }
     }
 
